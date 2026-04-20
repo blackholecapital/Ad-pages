@@ -4,3 +4,9 @@
 
 # vendored deps in submodule area
 modules/payme/node_modules/
+
+# node_modules (installed dev/build deps — not committed)
+node_modules/
+
+# local build outputs (produced by `npm run build`; deployed via Pages)
+apps/product-shell/dist/

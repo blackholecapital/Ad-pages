@@ -1,0 +1,108 @@
+adpages_cloudflare_plan
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S6
+artifact: /job_site/adpages_cloudflare_plan.txt
+
+=== PLATFORM MODEL (UNCHANGED) ===
+Model:            Cloudflare Pages (Target A — Pages-first)
+Decision:         KEEP. No Worker-first cutover required for Ad Pages.
+                  All /api/* endpoints continue to live under
+                  apps/product-shell/functions and deploy as Pages Functions.
+Justification:    Functions already route ad slugs through ADPAGES_TENANTS
+                  (see current_cloudflare_surface.txt §SLUG PREFIX ROUTING
+                  and adpages_publish_surface.txt LAYER 2). No code path
+                  in scope of this SKU requires a Worker entry.
+
+=== PROJECT IDENTITY RENAME ===
+BEFORE: wrangler.toml name = "biz-pages"
+AFTER:  wrangler.toml name = "ad-pages"
+
+Files updated:
+  /repo/wrangler.toml                                   → name = "ad-pages"
+  /repo/apps/product-shell/wrangler.toml                → name = "ad-pages"
+  Both header blocks re-stamped with
+     job_id: ADPAGES-SKU-REDUCTION-001, stage/pass: S6 / Worker A.
+
+Operator follow-up (dashboard, NOT code):
+  Create a new Cloudflare Pages project named "ad-pages" that builds
+  apps/product-shell/ with output dir ./dist, OR rename the existing
+  "biz-pages" project to "ad-pages" via the dashboard. The production
+  domain record below must point at this renamed/new project.
+
+=== BUILD SETTINGS (Cloudflare Pages dashboard) ===
+Framework preset:      None
+Root directory:        apps/product-shell
+Build command:         npm run build
+Build output directory: dist
+Node version:          20.x (inherits Pages default)
+Pages Functions:       apps/product-shell/functions  (auto-detected)
+
+=== R2 BINDINGS (preserved) ===
+Binding name       Bucket name          Required  Purpose
+TENANTS_BUCKET     gateway-tenants      yes       Legacy / demo route
+BIZPAGES_TENANTS   bizpages-tenants     yes       Biz slug route (co-host)
+ADPAGES_TENANTS    adpages-tenants      yes       Ad slug route (this SKU)
+DEMO_BUCKET        demo-bucket          optional  json/<slug>/site.json
+MEDIA_ASSETS       media-assets         yes       /assets/* fallback primary
+MEDIA_ASSETS2      media-assets2        yes       /assets/* fallback secondary
+
+Notes:
+  - BIZPAGES_TENANTS is kept declared because the Pages Functions still
+    import it and route non-ad slugs. Leaving it bound costs nothing and
+    lets the same functions bundle serve both products if co-hosted.
+  - ADPAGES_TENANTS must exist and be populated before go-live.
+    Populate via Studio save → object write pipeline.
+
+=== PLAIN-TEXT VARS ===
+ASSET_BASE_URL = "https://media.xyz-labs.xyz"   (production + preview)
+  Consumed by: functions/_lib/runtime-r2.js → getAssetBaseUrl(env)
+  Unchanged; no Ad Pages-specific override required.
+
+=== ENVIRONMENTS ===
+env.production:
+  - inherits top-level r2_buckets
+  - ASSET_BASE_URL: https://media.xyz-labs.xyz
+env.preview:
+  - inherits top-level r2_buckets
+  - ASSET_BASE_URL: https://media.xyz-labs.xyz
+  - Preview URL pattern: <branch>.ad-pages.pages.dev
+
+=== DOMAIN / ROUTING PLAN ===
+Proposed production custom domain: adpages.xyz-labs.xyz
+  → CNAME to ad-pages.pages.dev (Cloudflare-managed within the zone)
+  → Keep bizpages.xyz-labs.xyz pointing at biz-pages project, unchanged.
+
+Slug routing inside Ad Pages product (published-page.js / manifest):
+  xyz-ad-*  → ADPAGES_TENANTS   (canonical)
+  ad-*      → ADPAGES_TENANTS   (short prefix; runtime-compiler.isAdSlug)
+  xyz-biz-* → BIZPAGES_TENANTS  (co-host; no nav surface for Ad Pages)
+  xyz-*     → TENANTS_BUCKET    (legacy / demo)
+
+=== FUNCTIONS SURFACE (UNCHANGED, RE-HOSTED UNDER AD-PAGES PROJECT) ===
+/api/published-page           functions/api/published-page.js
+/api/published-manifest       functions/api/published-manifest.js
+/api/page                     functions/api/page.js (legacy read)
+/api/invoice-link             functions/api/invoice-link.js (S4 PayMe)
+/api/microfrontend-bootstrap  functions/api/microfrontend-bootstrap.js
+/api/microfrontend-trust-log  functions/api/microfrontend-trust-log.js
+/media/*                      functions/media/[[path]].js (R2 fallback)
+
+Ad Pages product-specific guards (already in code, from S5):
+  - published-manifest.js          PAGES_AD = ["home","members"]
+  - published-page.js              403 when product==="ad" and page∉valid
+  - runtime-compiler.js            null when isAdSlug && page∉valid
+  - runtime-schema.js              ADPAGES_VALID_PAGES = {home, members}
+
+=== WHAT DID NOT CHANGE ===
+- No platform redesign. No Workers introduced. No Durable Objects added.
+- No binding renames. No bucket renames. No new R2 buckets required.
+- No change to compatibility_date or compatibility_flags.
+- No change to /api/* route paths. No change to functions/_lib/*.
+- Biz Pages project / domain / buckets are untouched by this plan.
+
+=== PROJECT NAMING SUMMARY ===
+Cloudflare Pages project name:  ad-pages
+wrangler.toml name:             ad-pages (root + apps/product-shell)
+R2 tenant bucket:               adpages-tenants (bound as ADPAGES_TENANTS)
+Suggested custom domain:        adpages.xyz-labs.xyz
+Preview host:                   ad-pages.pages.dev

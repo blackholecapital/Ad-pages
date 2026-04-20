@@ -1,19 +1,21 @@
-# Cloudflare Pages — apps/product-shell
+# Cloudflare Pages — apps/product-shell (Ad Pages product identity)
 #
-# job_id:        BIZ-PAGES-PROD-DETANGLE-002
-# stage / pass:  S5 / Worker A
-# artifact id:   /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/wrangler.toml
-# binding map:   /job_site/cloudflare_binding_map.md
-# runbook:       /job_site/cloudflare_rebuild_runbook.md
-# cutover spec:  /job_site/deploy_cutover_spec.md  (Target A — Pages-first)
-# runtime notes: /job_site/cloudflare_runtime_notes.md  (§2, §4)
+# job_id:        ADPAGES-SKU-REDUCTION-001
+# stage / pass:  S6 / Worker A
+# artifact id:   /repo/wrangler.toml (root) mirrored to apps/product-shell/wrangler.toml
+# reference:     /job_site/current_cloudflare_surface.txt
+# plan:          /job_site/adpages_cloudflare_plan.txt
+# deploy notes:  /job_site/adpages_deploy_notes.txt
+# upstream job:  BIZ-PAGES-PROD-DETANGLE-002 (Biz Pages Pages-first baseline)
 #
 # Purpose
 # -------
-# Externalize the Cloudflare Pages project configuration for the Biz Pages
+# Declare the Cloudflare Pages project configuration for the Ad Pages
 # product-shell so the deploy is reproducible from this repo and no longer
-# depends on hidden / drifted Pages dashboard metadata (build-sheet §1.3,
-# operator belief B1/B5).
+# depends on hidden / drifted Pages dashboard metadata. This file renames
+# the Pages project identity from "biz-pages" to "ad-pages" for the Ad
+# Pages SKU while keeping the same Pages-first platform model and the
+# existing ADPAGES_TENANTS / media bindings already declared here.
 #
 # This file declares the Pages-compatible wrangler config:
 #   - project identity (`name`)
@@ -40,7 +42,7 @@
 # owns /api/*). See cloudflare_binding_map.md §3 for the Worker-first
 # binding block.
 
-name = "biz-pages"
+name = "ad-pages"
 pages_build_output_dir = "./dist"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
