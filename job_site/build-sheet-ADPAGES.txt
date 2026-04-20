@@ -1,0 +1,517 @@
+form_id:build-sheet
+
+1. JOB
+   1.1 job_id: ADPAGES-SKU-REDUCTION-001
+   1.2 job_name: Ad Pages Product Derivation From Biz Pages Base
+   1.3 objective: Derive a separate Ad Pages product from the current Biz Pages-based repository by keeping the existing core runtime and aggressively reducing product surface, routes, admin options, and Studio scope.
+   1.4 requested_outcome: A working Ad Pages repo and deployable build that exposes only Home, Members, and Admin; uses admin-only auth entry; removes cart and non-Ad-Pages nav/actions; keeps Studio accessible from admin for decorating only Home and Members; reduces PayMe to invoice creation only with PDF + payment link generation; preserves shared core for later upgrade-by-unlock.
+   1.5 target_root_path: /repo
+   1.6 target_repo_url: [https://github.com/blackholecapital/Ad-pages](https://github.com/blackholecapital/Ad-pages)
+   1.7 inspection_url: [https://bizpages.xyz-labs.xyz/admin](https://bizpages.xyz-labs.xyz/admin)
+
+2. RUN CONTROL
+   2.1 mode: LEAN FACTORY MODE
+   2.2 execution_foreman: Foreman A
+   2.3 checksum_foreman: Foreman B
+   2.4 final_validator: Factory Control Interface
+
+3. TAG FORMAT
+   3.1 foreman_header
+   3.1.1 job_id: ADPAGES-SKU-REDUCTION-001
+   3.1.2 foreman:
+   3.1.3 current_stage:
+   3.1.4 current_pass:
+   3.1.5 next_stage:
+   3.1.6 next_owner:
+   3.1.7 passes_remaining:
+   3.1.8 status:
+   3.1.9 current_action:
+
+3.2 worker_tag_format
+3.2.1 [ADPAGES-SKU-REDUCTION-001 | WORKER | STAGE | RESULT]
+
+4. PATHS
+   4.1 stage_activity_log: /job_site/stage_activity_log.txt
+   4.2 final_checksum_path: /job_site/final_checksum.txt
+   4.3 final_tps_report: /job_site/TPS_REPORT.txt
+
+5. REFERENCES
+   5.1 required_references:
+
+   * /job_site/build_sheet.txt
+   * /job_site/factory-manual-v1.11.txt
+   * /job_site/foreman-manual-v1.11.txt
+   * /job_site/worker-execution-manual-v1.1.txt
+   * /job_site/repo_inventory.txt
+   * /job_site/current_route_map.txt
+   * /job_site/current_admin_surface.txt
+   * /job_site/current_studio_surface.txt
+   * /job_site/current_payme_surface.txt
+     5.2 external_references:
+   * [https://github.com/blackholecapital/Ad-pages](https://github.com/blackholecapital/Ad-pages)
+   * [https://bizpages.xyz-labs.xyz/admin](https://bizpages.xyz-labs.xyz/admin)
+
+6. STAGE
+   6.1 stage_id: S1
+   6.2 stage_name: Repo Mirror And Surface Inventory
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Mirror the target repo, identify exact shell/admin/studio/payme/cloudflare files, and produce the current feature/route inventory needed for deterministic reduction.
+   6.5 stage_inputs:
+
+   * target_repo_url
+   * target_root_path
+   * inspection_url
+   * attached manuals
+   * build_sheet
+
+6.6 worker_a_order
+6.6.1 [ADPAGES-SKU-REDUCTION-001 | WORKER A | S1 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Clone or mirror the target repository into /repo, inspect the codebase, and produce a file inventory covering app shell, navigation, routes, auth entry, admin UI, Studio entry points, PayMe invoice-related logic, PDF generation path if present, and Cloudflare config/build files. Create a concise route map and surface inventory for current product exposure.
+6.6.4 expected_artifacts:
+
+* /repo/.git
+* /job_site/repo_inventory.txt
+* /job_site/current_route_map.txt
+* /job_site/current_admin_surface.txt
+* /job_site/current_studio_surface.txt
+* /job_site/current_payme_surface.txt
+* /job_site/current_cloudflare_surface.txt
+  6.6.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/factory-manual-v1.11.txt
+* /job_site/worker-execution-manual-v1.1.txt
+  6.6.6 repo_mirror_required: yes
+  6.6.7 commit_required: no
+  6.6.8 push_required: no
+
+6.7 worker_b_order
+6.7.1 [ADPAGES-SKU-REDUCTION-001 | WORKER B | S1 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Verify the repo mirror exists, verify all required inventory artifacts exist at the exact declared paths, and verify the inventory identifies concrete files or directories for shell, admin, Studio, PayMe, and Cloudflare config.
+6.7.4 expected_artifacts:
+
+* /job_site/repo_inventory.txt
+* /job_site/current_route_map.txt
+* /job_site/current_admin_surface.txt
+* /job_site/current_studio_surface.txt
+* /job_site/current_payme_surface.txt
+* /job_site/current_cloudflare_surface.txt
+  6.7.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/repo_inventory.txt
+  6.7.6 repo_mirror_required: no
+  6.7.7 commit_required: no
+  6.7.8 push_required: no
+
+6.8 required_stage_artifacts:
+
+* /repo/.git
+* /job_site/repo_inventory.txt
+* /job_site/current_route_map.txt
+* /job_site/current_admin_surface.txt
+* /job_site/current_studio_surface.txt
+* /job_site/current_payme_surface.txt
+* /job_site/current_cloudflare_surface.txt
+  6.9 checkpoint_id: CP-S1-INVENTORY-LOCK
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Repo mirror exists and all S1 artifacts exist with exact paths and include enough concrete file references to drive implementation without guessing.
+   7.2 patch_condition: Missing repo mirror, missing inventory artifacts, ambiguous run identity, or inventory does not identify concrete implementation files.
+   7.3 handoff_on_pass: Proceed to S2.
+   7.4 handoff_on_patch: Return to Foreman A for correction inside S1.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S2
+   6.2 stage_name: Product Identity And Surface Reduction
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Convert the shell and product identity from Biz Pages to Ad Pages and reduce public/product exposure to Home, Members, and Admin only, removing cart and all non-Ad-Pages top-level actions from the user-facing shell.
+   6.5 stage_inputs:
+
+   * /repo
+   * /job_site/current_route_map.txt
+   * /job_site/current_admin_surface.txt
+
+6.6 worker_a_order
+6.6.1 [ADPAGES-SKU-REDUCTION-001 | WORKER A | S2 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Update the product shell branding, page titles, nav labels, route exposure, and visible controls so the public-facing product shows only Home, Members, and Admin; remove or disable cart access; remove or disable Services, Exclusive, Customer, Engage, Referrals, Skins, Biz Studio, and any other non-target surface from public navigation and customer-facing quick actions; keep the underlying core runtime intact unless a visible surface cannot otherwise be closed.
+6.6.4 expected_artifacts:
+
+* /job_site/adpages_surface_plan.txt
+* /job_site/adpages_route_map.txt
+* /repo/apps/product-shell/src
+* /repo/apps/product-shell/public
+  6.6.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/current_route_map.txt
+* /job_site/current_admin_surface.txt
+  6.6.6 repo_mirror_required: yes
+  6.6.7 commit_required: yes
+  6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [ADPAGES-SKU-REDUCTION-001 | WORKER B | S2 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Verify that the modified shell exposes only Home, Members, and Admin in the declared route/nav surface artifacts, verify cart and non-target actions are removed from the visible shell, and verify no undeclared replacement surface was introduced.
+6.6.4 expected_artifacts:
+
+* /job_site/adpages_surface_plan.txt
+* /job_site/adpages_route_map.txt
+  6.7.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/adpages_route_map.txt
+* /job_site/current_route_map.txt
+  6.7.6 repo_mirror_required: no
+  6.7.7 commit_required: no
+  6.7.8 push_required: no
+
+6.8 required_stage_artifacts:
+
+* /job_site/adpages_surface_plan.txt
+* /job_site/adpages_route_map.txt
+  6.9 checkpoint_id: CP-S2-SHELL-REDUCED
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Visible shell and declared route map show only Home, Members, and Admin; cart is removed; non-target nav/actions are removed or inaccessible from the visible shell.
+   7.2 patch_condition: Any non-target nav/action remains visible, target pages are missing, or route/surface artifacts are missing.
+   7.3 handoff_on_pass: Proceed to S3.
+   7.4 handoff_on_patch: Return to Foreman A for correction inside S2.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S3
+   6.2 stage_name: Admin Auth Gate And Minimal Admin Shell
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Make Admin an auth-gated entry point and reduce the authenticated admin surface to a minimal page containing only the retained default admin content, a PayMe entry that opens invoice creation, and a Studio link for page decoration.
+   6.5 stage_inputs:
+
+   * /repo
+   * /job_site/current_admin_surface.txt
+   * /job_site/adpages_route_map.txt
+
+6.6 worker_a_order
+6.6.1 [ADPAGES-SKU-REDUCTION-001 | WORKER A | S3 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Implement admin-only auth entry behavior so clicking Admin triggers the existing login/signup or equivalent auth gate when unauthenticated, then lands on a reduced admin page when authenticated. Preserve existing stable auth mechanics where possible. Remove all non-target admin actions and leave only the retained default admin page content, a PayMe entry mapped to invoice creation, and a Studio entry.
+6.6.4 expected_artifacts:
+
+* /job_site/adpages_admin_surface.txt
+* /job_site/adpages_auth_flow.txt
+* /repo/apps/product-shell/src
+  6.6.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/current_admin_surface.txt
+* /job_site/adpages_route_map.txt
+  6.6.6 repo_mirror_required: yes
+  6.6.7 commit_required: yes
+  6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [ADPAGES-SKU-REDUCTION-001 | WORKER B | S3 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Verify the declared auth flow shows Admin as an auth gate and verify the reduced admin surface artifact contains only retained default admin content, PayMe invoice entry, and Studio entry. Verify no undeclared admin modules remain exposed.
+6.7.4 expected_artifacts:
+
+* /job_site/adpages_admin_surface.txt
+* /job_site/adpages_auth_flow.txt
+  6.7.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/adpages_admin_surface.txt
+* /job_site/adpages_auth_flow.txt
+  6.7.6 repo_mirror_required: no
+  6.7.7 commit_required: no
+  6.7.8 push_required: no
+
+6.8 required_stage_artifacts:
+
+* /job_site/adpages_admin_surface.txt
+* /job_site/adpages_auth_flow.txt
+  6.9 checkpoint_id: CP-S3-ADMIN-LOCK
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Admin is auth-gated when unauthenticated and the authenticated admin surface is reduced to the declared minimal set only.
+   7.2 patch_condition: Admin bypasses auth unexpectedly, target admin entries are missing, or non-target admin entries remain exposed.
+   7.3 handoff_on_pass: Proceed to S4.
+   7.4 handoff_on_patch: Return to Foreman A for correction inside S3.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S4
+   6.2 stage_name: PayMe Invoice-Only Flow
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Reduce PayMe to one retained customer-facing function: create invoice with invoice number, dollar amount, subject, notes, payment link generation, and PDF output.
+   6.5 stage_inputs:
+
+   * /repo
+   * /job_site/current_payme_surface.txt
+   * /job_site/adpages_admin_surface.txt
+
+6.6 worker_a_order
+6.6.1 [ADPAGES-SKU-REDUCTION-001 | WORKER A | S4 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Reuse the existing stable PayMe/payment-link logic where possible and reduce the admin-facing PayMe experience to a single invoice composer. Required fields: invoice number, dollar amount, subject, notes. Required outcomes: generated payment link and generated PDF invoice suitable for email/text sharing. Remove or disable all other PayMe flows from the Ad Pages admin experience.
+6.6.4 expected_artifacts:
+
+* /job_site/adpages_payme_contract.txt
+* /job_site/adpages_invoice_fields.txt
+* /job_site/adpages_invoice_test_notes.txt
+* /repo/apps/product-shell/src
+* /repo/apps/product-shell/functions
+  6.6.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/current_payme_surface.txt
+* /job_site/adpages_admin_surface.txt
+  6.6.6 repo_mirror_required: yes
+  6.6.7 commit_required: yes
+  6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [ADPAGES-SKU-REDUCTION-001 | WORKER B | S4 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Verify the PayMe contract artifact shows only invoice creation as the retained function, verify the required fields are exact, and verify both payment-link generation and PDF generation are declared outputs of the implemented flow.
+6.7.4 expected_artifacts:
+
+* /job_site/adpages_payme_contract.txt
+* /job_site/adpages_invoice_fields.txt
+* /job_site/adpages_invoice_test_notes.txt
+  6.7.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/adpages_payme_contract.txt
+* /job_site/adpages_invoice_fields.txt
+  6.7.6 repo_mirror_required: no
+  6.7.7 commit_required: no
+  6.7.8 push_required: no
+
+6.8 required_stage_artifacts:
+
+* /job_site/adpages_payme_contract.txt
+* /job_site/adpages_invoice_fields.txt
+* /job_site/adpages_invoice_test_notes.txt
+  6.9 checkpoint_id: CP-S4-PAYME-REDUCED
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: PayMe admin exposure is limited to invoice creation, required fields match exactly, and the flow produces a payment link and PDF.
+   7.2 patch_condition: Additional PayMe actions remain exposed, required fields drift, or payment-link/PDF outputs are missing or ambiguous.
+   7.3 handoff_on_pass: Proceed to S5.
+   7.4 handoff_on_patch: Return to Foreman A for correction inside S4.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S5
+   6.2 stage_name: Studio Restriction To Two Public Pages
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Keep Studio accessible from admin while restricting the editable/publishable Ad Pages page set to Home and Members only.
+   6.5 stage_inputs:
+
+   * /repo
+   * /job_site/current_studio_surface.txt
+   * /job_site/adpages_route_map.txt
+
+6.6 worker_a_order
+6.6.1 [ADPAGES-SKU-REDUCTION-001 | WORKER A | S5 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Update Studio-facing page schema, page picker exposure, template/page manifest behavior, and any publish-time page list so Ad Pages customers can decorate only Home and Members. Prevent undeclared public pages from appearing in Studio or publish outputs for Ad Pages.
+6.6.4 expected_artifacts:
+
+* /job_site/adpages_studio_contract.txt
+* /job_site/adpages_publish_surface.txt
+* /repo/apps/product-shell/src
+* /repo/packages
+  6.6.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/current_studio_surface.txt
+* /job_site/adpages_route_map.txt
+  6.6.6 repo_mirror_required: yes
+  6.6.7 commit_required: yes
+  6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [ADPAGES-SKU-REDUCTION-001 | WORKER B | S5 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Verify the Studio contract and publish surface artifacts expose only Home and Members as editable/publishable public pages for Ad Pages and verify no additional public pages remain declared for this SKU.
+6.7.4 expected_artifacts:
+
+* /job_site/adpages_studio_contract.txt
+* /job_site/adpages_publish_surface.txt
+  6.7.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/adpages_studio_contract.txt
+* /job_site/adpages_publish_surface.txt
+  6.7.6 repo_mirror_required: no
+  6.7.7 commit_required: no
+  6.7.8 push_required: no
+
+6.8 required_stage_artifacts:
+
+* /job_site/adpages_studio_contract.txt
+* /job_site/adpages_publish_surface.txt
+  6.9 checkpoint_id: CP-S5-STUDIO-RESTRICTED
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Studio remains available from admin and only Home and Members are editable/publishable for Ad Pages.
+   7.2 patch_condition: Studio access is removed, extra public pages remain editable/publishable, or Studio contract artifacts are missing.
+   7.3 handoff_on_pass: Proceed to S6.
+   7.4 handoff_on_patch: Return to Foreman A for correction inside S5.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S6
+   6.2 stage_name: Build Deploy Preview And Cloudflare Alignment
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Produce a deployable Ad Pages preview build, align Cloudflare Pages configuration and product identity, and document operator test prompts for preview and production.
+   6.5 stage_inputs:
+
+   * /repo
+   * /job_site/current_cloudflare_surface.txt
+   * all prior stage artifacts
+
+6.6 worker_a_order
+6.6.1 [ADPAGES-SKU-REDUCTION-001 | WORKER A | S6 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Update build/deploy configuration as needed for Ad Pages identity while keeping the existing Cloudflare Pages model unless code proves otherwise. Produce a successful local or CI-equivalent build artifact path, record the Cloudflare deployment alignment notes, and write operator preview/production test prompts. Include project naming, bindings used, and any domain/project rename requirements without redesigning the platform.
+6.6.4 expected_artifacts:
+
+* /job_site/adpages_build_result.txt
+* /job_site/adpages_cloudflare_plan.txt
+* /job_site/adpages_operator_test_prompts.txt
+* /job_site/adpages_deploy_notes.txt
+* /repo/wrangler.toml
+  6.6.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/current_cloudflare_surface.txt
+* /job_site/adpages_route_map.txt
+* /job_site/adpages_studio_contract.txt
+* /job_site/adpages_payme_contract.txt
+  6.6.6 repo_mirror_required: yes
+  6.6.7 commit_required: yes
+  6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [ADPAGES-SKU-REDUCTION-001 | WORKER B | S6 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Verify build-result, Cloudflare-plan, deploy-notes, and operator-test artifacts exist at exact paths; verify the plan preserves Cloudflare Pages deployment model unless implementation evidence requires otherwise; verify operator test prompts cover preview nav/admin/auth, invoice link/PDF, Studio two-page restriction, domain/project routing, tenant binding isolation, and legacy-route inaccessibility.
+6.7.4 expected_artifacts:
+
+* /job_site/adpages_build_result.txt
+* /job_site/adpages_cloudflare_plan.txt
+* /job_site/adpages_operator_test_prompts.txt
+* /job_site/adpages_deploy_notes.txt
+  6.7.5 required_references:
+* /job_site/build_sheet.txt
+* /job_site/adpages_cloudflare_plan.txt
+* /job_site/adpages_operator_test_prompts.txt
+  6.7.6 repo_mirror_required: no
+  6.7.7 commit_required: no
+  6.7.8 push_required: no
+
+6.8 required_stage_artifacts:
+
+* /job_site/adpages_build_result.txt
+* /job_site/adpages_cloudflare_plan.txt
+* /job_site/adpages_operator_test_prompts.txt
+* /job_site/adpages_deploy_notes.txt
+  6.9 checkpoint_id: CP-S6-BUILD-DEPLOY-READY
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Build/deploy artifacts exist, Cloudflare alignment is documented, Pages deployment model is preserved unless implementation evidence requires deviation, and operator tests cover all declared preview/production checks.
+   7.2 patch_condition: Build result missing, Cloudflare plan missing, operator tests incomplete, or deployment model changed without declared implementation evidence.
+   7.3 handoff_on_pass: Proceed to FINAL VALIDATION.
+   7.4 handoff_on_patch: Return to Foreman A for correction inside S6.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. FINAL VALIDATION
+   8.1 required_inputs:
+
+   * /repo
+   * /job_site/stage_activity_log.txt
+   * /job_site/repo_inventory.txt
+   * /job_site/adpages_route_map.txt
+   * /job_site/adpages_admin_surface.txt
+   * /job_site/adpages_payme_contract.txt
+   * /job_site/adpages_studio_contract.txt
+   * /job_site/adpages_build_result.txt
+   * /job_site/adpages_cloudflare_plan.txt
+   * /job_site/adpages_operator_test_prompts.txt
+   * commit history or declared commit refs from worker artifacts
+   * push evidence or declared push refs from worker artifacts
+     8.2 validation_check_1: Verify the reduced product contract is met exactly: public surface limited to Home, Members, Admin; Admin is auth-gated; cart and non-target user/admin actions are removed from exposed surface.
+     8.3 validation_check_2: Verify the retained admin functions are limited to the minimal admin page, PayMe invoice-only flow, and Studio access; verify PayMe required fields are exact and output contract includes payment link and PDF.
+     8.4 validation_check_3: Verify Studio is limited to Home and Members for Ad Pages; verify build/deploy artifacts and Cloudflare plan exist; verify repo-writing stages reported mirror, commit, and push completion.
+     8.5 outputs:
+   * /job_site/final_checksum.txt
+   * /job_site/TPS_REPORT.txt
+     8.6 completion_status: PASS only when all declared stages pass, all required artifacts exist at exact paths, final checksum is written, and TPS report is written.
+
+9. FOREMAN OUTPUT FORM
+   9.1 job_id: ADPAGES-SKU-REDUCTION-001
+   9.2 foreman:
+   9.3 current_stage:
+   9.4 current_pass:
+   9.5 next_stage:
+   9.6 next_owner:
+   9.7 passes_remaining:
+   9.8 status:
+   9.9 current_action:
+   9.10 artifacts:
+   9.11 checkpoint_result:
+   9.12 handoff_instruction:
+   9.13 issue:
+
+10. WORKER DISPATCH FORM
+    10.1 [ADPAGES-SKU-REDUCTION-001 | WORKER | STAGE | RESULT]
+    10.2 expected_status:
+    10.3 task:
+    10.4 expected_artifacts:
+    10.5 required_references:
+    10.6 repo_mirror_required:
+    10.7 commit_required:
+    10.8 push_required:
+
+11. WORKER RESULT FORM
+    11.1 [ADPAGES-SKU-REDUCTION-001 | WORKER | STAGE | RESULT]
+    11.2 status:
+    11.3 artifacts:
+    11.4 summary:
+    11.5 issues:
+
+12. TPS REPORT FORM
+    12.1 job_id: ADPAGES-SKU-REDUCTION-001
+    12.2 completion_status:
+    12.3 job_summary:
+    12.4 stage_results:
+    12.5 artifact_summary:
+    12.6 patch_history:
+    12.7 closeout_note:
+
+13. REFERENCE MATERIAL
+    13.1 job_site: /job_site
+    13.2 target_file_system: /repo
+    13.3 factory_manual: /job_site/factory-manual-v1.11.txt
+    13.4 foreman_manual: /job_site/foreman-manual-v1.11.txt
+    13.5 worker_execution_manual: /job_site/worker-execution-manual-v1.1.txt
+    13.6 active_build_sheet: /job_site/build_sheet.txt
+    13.7 reference_repo_1:
+    13.7.1 url: [https://github.com/blackholecapital/Ad-pages](https://github.com/blackholecapital/Ad-pages)
+    13.7.2 reference_use: Active target repository for Ad Pages reduction run
+    13.8 reference_repo_2:
+    13.8.1 url: [https://bizpages.xyz-labs.xyz/admin](https://bizpages.xyz-labs.xyz/admin)
+    13.8.2 reference_use: Product behavior reference for current Biz Pages-derived admin surface
+    13.9 reference_repo_3:
+    13.9.1 url:
+    13.9.2 reference_use:
+
+FORM LAW BLOCK
+L1. stage numbering must use S1, S2, S3 format only
+L2. field numbering must use 1.1, 1.2, 1.3 format only
+L3. foreman status values allowed: PASS | PATCH | ERROR
+L4. worker status values allowed: PASS | PATCH
+L5. unused fields must remain blank
+L6. do not delete fields from the template
+L7. all expected_artifacts must be exact target paths
+L8. worker dispatch tag must exactly match worker result tag format
+L9. required_references only in worker orders
+L10. all file writes must use declared target paths only
+
+
