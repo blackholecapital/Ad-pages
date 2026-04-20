@@ -1,0 +1,61 @@
+adpages_surface_plan
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S2
+artifact: /job_site/adpages_surface_plan.txt
+
+=== OBJECTIVE ===
+Reduce public-facing product surface from Biz Pages (11 routes, 6 nav items, cart) to
+Ad Pages (3 nav items: Home, Members, Admin; no cart; no non-target quick actions).
+
+=== CHANGES APPLIED ===
+
+1. BRANDING
+   File: apps/product-shell/index.html
+   Change: <title>Biz Pages</title> → <title>Ad Pages</title>
+
+   File: apps/product-shell/src/components/nav/TopNav.tsx
+   Change: brandTitle "Biz Pages" → "Ad Pages" (both desktop and mobile variants)
+
+2. NAV REDUCTION
+   File: apps/product-shell/src/components/nav/TopNav.tsx
+   Before NAV_ITEMS: home, members, services, exclusive, customer, admin (6 items)
+   After NAV_ITEMS:  home, members, admin (3 items)
+   Removed from nav: services, exclusive, customer
+   Note: derivePublishedBase pageNames set kept intact for URL resolver correctness.
+
+3. CART REMOVAL
+   File: apps/product-shell/src/components/nav/TopNav.tsx
+   Removed: cart icon button (togglePayMe); removed usePayMeCart import
+   File: apps/product-shell/src/app/AppShell.tsx
+   Removed: <PayMePanel /> mount; PayMeCartProvider wrapper; PayMePanel and PayMeCartProvider imports
+   Result: Cart panel and cart state are no longer mounted in the app shell.
+   Note: paymeCartState.tsx and PayMePanel.tsx files retained in codebase (runtime intact).
+
+4. ADMIN QUICK-ACTION REDUCTION
+   File: apps/product-shell/src/pages/AdminPage.tsx
+   Before headerTabs: Pay Me, Engage, Referrals, Skins, Biz Studio (5 tabs)
+   After headerTabs:  Pay Me (1 tab)
+   Removed: Engage, Referrals, Skins, Biz Studio tabs
+
+5. ROUTE TYPE REDUCTION
+   File: apps/product-shell/src/app/routes.ts
+   Before RouteKey: home | members | exclusive | customer | admin
+   After RouteKey:  home | members | admin
+   Before routes[]: home, members, exclusive, customer, admin (5 entries)
+   After routes[]:  home, members, admin (3 entries)
+   Note: Underlying router.tsx routes kept intact (runtime intact per build sheet).
+
+=== RETAINED RUNTIME (NOT REMOVED) ===
+- router.tsx: all route definitions retained (services, exclusive, customer, payme, engage, referrals, skins, studio reachable by direct URL — runtime intact)
+- paymeCartState.tsx: retained (PayMePanel just not mounted)
+- PayMePanel.tsx: retained
+- ServicesPage, ExclusivePage, CustomerPage, EngagePage, ReferralsPage, SkinMarketplacePage: retained
+- AdminPanel.tsx blocks: all 8 blocks retained (S3 will reduce)
+
+=== PASS CONDITIONS MET ===
+- Public nav: Home, Members, Admin only ✓
+- Cart: removed from shell ✓
+- Services, Exclusive, Customer: removed from nav ✓
+- Engage, Referrals, Skins, Biz Studio: removed from admin quick-actions ✓
+- Core runtime intact ✓
+- Branding: "Ad Pages" ✓

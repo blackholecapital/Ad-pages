@@ -23,10 +23,6 @@ export function AdminPage() {
   const headerTabs = (
     <>
       <button className="workspaceTab" type="button" onClick={() => nav(buildTo("/payme", designation, slug))}>Pay Me</button>
-      <button className="workspaceTab" type="button" onClick={() => nav(buildTo("/engage", designation, slug))}>Engage</button>
-      <button className="workspaceTab" type="button" onClick={() => nav(buildTo("/referrals", designation, slug))}>Referrals</button>
-      <button className="workspaceTab" type="button" onClick={() => nav(buildTo("/skins", designation, slug))}>Skins</button>
-      <button className="workspaceTab" type="button" onClick={() => window.open("https://studio.xyz-labs.xyz/", "_blank", "noopener,noreferrer")}>Biz Studio</button>
     </>
   );
 
