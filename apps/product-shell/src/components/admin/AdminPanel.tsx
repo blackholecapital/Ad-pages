@@ -7,7 +7,7 @@ const MOCK_EMPLOYEES = [
   { name: "Frank", wallet: "0xF4A2...3E1B", level: "Viewer" },
 ];
 
-const PAGE_OPTIONS = ["Homepage", "Pay Me", "Engage", "Referrals", "Skins", "Access"];
+const PAGE_OPTIONS = ["Homepage", "Members", "Admin"];
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (

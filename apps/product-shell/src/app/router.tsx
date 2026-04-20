@@ -11,6 +11,7 @@ import { PayMePage } from "../pages/PayMePage";
 import { EngagePage } from "../pages/EngagePage";
 import { ReferralsPage } from "../pages/ReferralsPage";
 import { SkinMarketplacePage } from "../pages/SkinMarketplacePage";
+import { RequireGate } from "../components/gate/RequireGate";
 
 const nullSurface = <div style={{ display: "none" }} />;
 
@@ -39,8 +40,6 @@ export const router = createBrowserRouter([
       { path: ":slug/engage", element: <EngagePage />, handle: { pageKey: "engage" } },
       { path: ":slug/referrals", element: <ReferralsPage />, handle: { pageKey: "referrals" } },
       { path: ":slug/skins", element: <SkinMarketplacePage />, handle: { pageKey: "skins" } },
-      { path: ":slug/admin", element: <AdminPage />, handle: { pageKey: "admin" } },
-      { path: ":slug/studio", element: <StudioPage />, handle: { pageKey: "studio" } },
 
       { path: ":designation/:slug/members", element: <MembersPage />, handle: { pageKey: "members" } },
       { path: ":designation/:slug/services", element: <ServicesPage />, handle: { pageKey: "services" } },
@@ -50,10 +49,8 @@ export const router = createBrowserRouter([
       { path: ":designation/:slug/engage", element: <EngagePage />, handle: { pageKey: "engage" } },
       { path: ":designation/:slug/referrals", element: <ReferralsPage />, handle: { pageKey: "referrals" } },
       { path: ":designation/:slug/skins", element: <SkinMarketplacePage />, handle: { pageKey: "skins" } },
-      { path: ":designation/:slug/admin", element: <AdminPage />, handle: { pageKey: "admin" } },
-            { path: ":designation/:slug/studio", element: <StudioPage />, handle: { pageKey: "studio" } },
 
-            { path: "members", element: <MembersPage />, handle: { pageKey: "members" } },
+      { path: "members", element: <MembersPage />, handle: { pageKey: "members" } },
       { path: "services", element: <ServicesPage />, handle: { pageKey: "services" } },
       { path: "exclusive", element: <ExclusivePage />, handle: { pageKey: "exclusive" } },
       { path: "customer", element: <CustomerPage />, handle: { pageKey: "customer" } },
@@ -63,7 +60,17 @@ export const router = createBrowserRouter([
       { path: "referrals", element: <ReferralsPage />, handle: { pageKey: "referrals" } },
       { path: "skins", element: <SkinMarketplacePage />, handle: { pageKey: "skins" } },
 
-      { path: "admin", element: <AdminPage />, handle: { pageKey: "admin" } },
+      // Auth-gated: admin and studio require RequireGate
+      {
+        element: <RequireGate />,
+        children: [
+          { path: "admin", element: <AdminPage />, handle: { pageKey: "admin" } },
+          { path: ":slug/admin", element: <AdminPage />, handle: { pageKey: "admin" } },
+          { path: ":designation/:slug/admin", element: <AdminPage />, handle: { pageKey: "admin" } },
+          { path: ":slug/studio", element: <StudioPage />, handle: { pageKey: "studio" } },
+          { path: ":designation/:slug/studio", element: <StudioPage />, handle: { pageKey: "studio" } },
+        ],
+      },
     ],
   },
   { path: "*", element: <Navigate to="/home" replace /> },
