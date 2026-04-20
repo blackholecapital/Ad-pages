@@ -1,0 +1,70 @@
+adpages_payme_contract
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S4
+artifact: /job_site/adpages_payme_contract.txt
+
+=== CONTRACTED PAYME SURFACE (POST-REDUCTION) ===
+
+ENTRY POINT
+  Route: /:slug/payme  (also /:designation/:slug/payme, /payme)
+  Access: reached from AdminPage "Pay Me" tab; auth-gated via AdminPage → RequireGate
+  Component: PayMePage → InvoiceComposer
+
+TABS RETAINED
+  (none — all tabs removed; InvoiceComposer rendered directly in WorkspaceTile)
+  Header: "← Admin" back-nav only
+
+TABS REMOVED
+  customers         — Customers list (iframe module tab)
+  add               — Add Customer (iframe module tab)
+  history           — Payment History (iframe module tab)
+  invoice           — Create Invoice (iframe module tab, complex line-items form)
+  coupons           — CouponsPanel (standalone React panel)
+  recurring         — RecurringBillingPanel (standalone React panel)
+  settings          — PayMeSettingsPanel (standalone React panel)
+
+  ModuleFrame (payme iframe microfrontend) — no longer mounted
+
+=== INVOICE COMPOSER CONTRACT ===
+FILE: apps/product-shell/src/features/payme/InvoiceComposer.tsx
+
+Required input fields:
+  invoiceNumber   string   auto-generated INV-YYYYMMDD-XXXX; editable
+  amount          number   dollar amount (0.01 step, min 0); required
+  subject         string   invoice subject / description; optional
+  notes           string   textarea; payment terms, instructions; optional
+
+Required output actions:
+  Generate Payment Link
+    — enabled when invoiceNumber + amount are non-empty
+    — builds URL: {origin}/{slug}/payme?inv=&amt=&subj=
+    — displays link in invoiceLinkBox with Copy button
+    — resolved by GET /api/invoice-link?inv=&amt=&subj= (Cloudflare Function)
+
+  Download PDF
+    — enabled when invoiceNumber + amount are non-empty
+    — opens print-ready HTML document in new window
+    — HTML built client-side from buildPrintHtml() (reuses invoiceBuilders escaping pattern)
+    — triggers window.print() after 350 ms render delay
+    — output: browser print-to-PDF suitable for email/text attachment
+
+=== CLOUDFLARE FUNCTION ===
+FILE: apps/product-shell/functions/api/invoice-link.js
+Route: GET /api/invoice-link
+Params: inv, amt, subj
+Returns: JSON { invoiceNumber, amount, subject, resolvedAt }
+Purpose: canonical server-side resolver for shared payment links
+
+=== REUSE OF EXISTING LOGIC ===
+  escaping pattern    — ported from invoiceBuilders.js esc()
+  HTML invoice format — derived from buildInvoiceHtml() layout (header / detail section / pay-link block)
+  downloadTextFile pattern — replaced by window.open + window.print() (browser PDF)
+  payment link format — URL-encoded query params on existing /:slug/payme route
+
+=== SURFACE SUMMARY ===
+  Admin PayMe tabs:          0 (all removed)
+  Invoice composer fields:   4 (invoiceNumber, amount, subject, notes)
+  Payment link output:       YES (client-side URL + /api/invoice-link resolver)
+  PDF invoice output:        YES (print-to-PDF via new window)
+  iframe module mounted:     NO
+  Undeclared flows retained: NONE
