@@ -1,0 +1,54 @@
+adpages_auth_flow
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S3
+artifact: /job_site/adpages_auth_flow.txt
+
+=== AUTH GATE: ADMIN AND STUDIO ===
+Gate component: RequireGate
+File: apps/product-shell/src/components/gate/RequireGate.tsx
+
+Mechanism:
+- RequireGate wraps admin and studio routes as a layout route in router.tsx
+- Unauthenticated visitors are shown LoginModal (title: "Access Gate") instead of the page content
+- Access is granted when: (walletConnected && signedMessage) OR demoBypass === true
+- On access granted: <Outlet /> renders the requested child route (AdminPage or StudioPage)
+
+=== GATED ROUTES (router.tsx lines 64-73) ===
+All routes under RequireGate layout — unauthenticated requests show LoginModal:
+
+  /admin                              → AdminPage
+  /:slug/admin                        → AdminPage
+  /:designation/:slug/admin           → AdminPage
+  /:slug/studio                       → StudioPage
+  /:designation/:slug/studio          → StudioPage
+
+=== AUTH ENTRY TRIGGER ===
+Nav item "Admin" in TopNav links to /:slug/admin.
+Unauthenticated click → RequireGate intercepts → LoginModal rendered.
+LoginModal presents: Connect Wallet button, Sign Message button, Demo Bypass toggle.
+Authenticated (wallet + signed OR demo bypass) → AdminPage rendered.
+
+=== AUTH COMPONENTS ===
+File: apps/product-shell/src/components/gate/RequireGate.tsx
+  - RequireGate: layout route component, checks access state, renders Outlet or LoginModal
+
+File: apps/product-shell/src/components/gate/LoginModal.tsx
+  - LoginModal: modal overlay shown when unauthenticated, hosts auth controls
+
+File: apps/product-shell/src/components/gate/WalletConnectButton.tsx
+  - WalletConnectButton: sets connected = true on click (simulated connect)
+
+File: apps/product-shell/src/components/gate/SignMessageButton.tsx
+  - SignMessageButton: sets signed = true; requires wallet connected first
+
+File: apps/product-shell/src/components/gate/DemoBypassButton.tsx
+  - DemoBypassButton: toggles demoBypass; available for local operator flows
+
+File: apps/product-shell/src/components/gate/GateStatusPill.tsx
+  - GateStatusPill: visual status indicator (connected/signed/bypass state)
+
+=== PASS CONDITIONS ===
+- Admin route is RequireGate-wrapped: YES (router.tsx lines 64-73)
+- Studio route is RequireGate-wrapped: YES (router.tsx lines 64-73)
+- Unauthenticated admin access blocked: YES (LoginModal rendered)
+- Auth entry point declared: YES (wallet + sign-message, demo bypass available)

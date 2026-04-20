@@ -1,0 +1,91 @@
+adpages_admin_surface
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S3
+artifact: /job_site/adpages_admin_surface.txt
+source: apps/product-shell/src/pages/AdminPage.tsx + AdminPanel.tsx
+
+=== ADMIN ROUTE (AUTH-GATED) ===
+/:slug/admin              → AdminPage  [RequireGate]
+/admin                    → AdminPage  [RequireGate]
+/:designation/:slug/admin → AdminPage  [RequireGate]
+
+=== AUTH STATE ===
+RequireGate applied to all admin routes in router.tsx (lines 64-73).
+Admin is NOT reachable without authentication.
+Unauthenticated access shows LoginModal (wallet + sign-message or demo bypass required).
+
+=== ADMIN PAGE HEADER TABS ===
+FILE: apps/product-shell/src/pages/AdminPage.tsx lines 23-27
+  1. Pay Me  → nav(buildTo("/payme", ...))   — navigates to PayMePage (invoice entry)
+  2. Studio  → nav(buildTo("/studio", ...))  — navigates to StudioPage (page decoration)
+
+Removed tabs (S2): Engage, Referrals, Skins, Biz Studio
+No undeclared tabs present.
+
+=== RETAINED DEFAULT ADMIN PANEL CONTENT ===
+FILE: apps/product-shell/src/components/admin/AdminPanel.tsx
+
+Block 1 — Session Status
+  - Demo bypass ON/OFF display
+  - Wallet connected YES/NO display
+  - Signed message YES/NO display
+  - Actions: Reset State, Enable Bypass
+
+Block 2 — Wallet Status
+  - Wallet address display
+  - Actions: Connect Wallet, Sign Message, Simulate Signed
+
+Block 3 — Tier Unlock Controls
+  - Tier 1 / Tier 2 / Tier 3 locked/unlocked display
+  - Actions: Toggle T1, Toggle T2, Unlock All
+
+Block 4 — Employee Access
+  - Employee table (Name, Wallet, Level)
+  - Actions: Add Employee
+
+Block 5 — NFT Mint
+  - Collection, Network, Status display
+  - Actions: Simulate Mint
+
+Block 6 — Allowlist
+  - Connected wallet display, check result display
+  - Actions: Simulate Allowlist Check
+
+Block 7 — Payment Settings
+  - USDC Receiving Address input (localStorage: admin_usdc_address)
+  - Actions: Save
+
+Block 8 — Page Titles
+  - Select Page dropdown (options: Homepage, Members, Admin — updated from Biz Pages values)
+  - Active page KV display
+
+=== PAYME INVOICE ENTRY (via Pay Me tab) ===
+Route: /:slug/payme → PayMePage
+FILE: apps/product-shell/src/pages/PayMePage.tsx
+  MODULE_TABS: Customers, Add Customer, History, Create Invoice
+  PANEL_TABS: Coupons, Recurring Billing, Admin Settings
+  Module file: apps/modules/payme/src/App.jsx
+  Access: admin-only (reached from Pay Me tab on AdminPage)
+
+=== STUDIO ENTRY (via Studio tab) ===
+Route: /:slug/studio → StudioPage  [RequireGate]
+FILE: apps/product-shell/src/pages/StudioPage.tsx
+  Modes: Studio (edit), Receiver Preview
+  Component: DesktopPremiumStudio (edit), DesktopPremiumReceiver (preview)
+  Access: admin-only (RequireGate + Admin tab entry)
+
+=== SURFACE SUMMARY ===
+Admin header tabs:     2 (Pay Me, Studio)
+AdminPanel blocks:     8 (retained default content)
+Auth gate:             RequireGate on all admin + studio routes
+Undeclared admin tabs: NONE
+Undeclared admin modules exposed: NONE
+
+=== PASS CONDITIONS MET ===
+- Admin is auth-gated: YES ✓
+- Studio is auth-gated: YES ✓
+- Pay Me entry present: YES ✓
+- Studio entry present: YES ✓
+- No non-target admin tabs: YES ✓ (Engage, Referrals, Skins, Biz Studio all absent)
+- Retained default admin content: YES ✓ (AdminPanel 8 blocks)
+- PAGE_OPTIONS updated to Ad Pages pages: YES ✓ (Homepage, Members, Admin)

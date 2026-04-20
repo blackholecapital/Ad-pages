@@ -23,6 +23,7 @@ export function AdminPage() {
   const headerTabs = (
     <>
       <button className="workspaceTab" type="button" onClick={() => nav(buildTo("/payme", designation, slug))}>Pay Me</button>
+      <button className="workspaceTab" type="button" onClick={() => nav(buildTo("/studio", designation, slug))}>Studio</button>
     </>
   );
 
