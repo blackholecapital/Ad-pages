@@ -1,0 +1,147 @@
+repo_inventory
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S1
+artifact: /job_site/repo_inventory.txt
+source_repo: /home/user/Ad-pages (mirrored to /repo)
+
+=== APP SHELL ===
+apps/product-shell/src/app/AppShell.tsx          — root shell; mounts TopNav + PayMePanel overlay + route outlet; wrapped in PayMeCartProvider
+apps/product-shell/src/app/router.tsx             — createBrowserRouter; all route definitions
+apps/product-shell/src/app/routes.ts              — AppRoute[] typed route keys: home, members, exclusive, customer, admin
+apps/product-shell/src/main.tsx                   — React entry point (RouterProvider)
+apps/product-shell/index.html                     — HTML entry
+apps/product-shell/vite.config.ts                 — Vite build config
+apps/product-shell/package.json                   — name: gateway-demo-zero; build:shell + build:engage + build:payme scripts
+
+=== NAVIGATION ===
+apps/product-shell/src/components/nav/TopNav.tsx  — NAV_ITEMS array: home, members, services, exclusive, customer, admin; Login button; cart icon button (togglePayMe)
+apps/product-shell/src/components/nav/AuthModal.tsx — login/signup/restore modal triggered from TopNav Login button
+apps/product-shell/src/styles/nav.css             — TopNav styles
+
+=== ROUTES (router.tsx) ===
+/                                  → Navigate to /home
+/home                              → HomePage
+/:slug                             → Navigate to ./home
+/:slug/home                        → HomePage
+/:slug/members                     → MembersPage
+/:slug/services                    → ServicesPage
+/:slug/exclusive                   → ExclusivePage
+/:slug/customer                    → CustomerPage
+/:slug/payme                       → PayMePage
+/:slug/engage                      → EngagePage
+/:slug/referrals                   → ReferralsPage
+/:slug/skins                       → SkinMarketplacePage
+/:slug/admin                       → AdminPage
+/:slug/studio                      → StudioPage
+/:designation/:slug/...            → same as /:slug/... (multi-designation support)
+/members                           → MembersPage (bare, no slug)
+/services                          → ServicesPage
+/exclusive                         → ExclusivePage
+/customer                          → CustomerPage
+/payme                             → PayMePage
+/engage                            → EngagePage
+/referrals                         → ReferralsPage
+/skins                             → SkinMarketplacePage
+/admin                             → AdminPage
+*                                  → Navigate to /home
+
+=== PAGE COMPONENTS ===
+apps/product-shell/src/pages/HomePage.tsx
+apps/product-shell/src/pages/MembersPage.tsx
+apps/product-shell/src/pages/ServicesPage.tsx
+apps/product-shell/src/pages/ExclusivePage.tsx
+apps/product-shell/src/pages/CustomerPage.tsx
+apps/product-shell/src/pages/PayMePage.tsx
+apps/product-shell/src/pages/EngagePage.tsx
+apps/product-shell/src/pages/ReferralsPage.tsx
+apps/product-shell/src/pages/SkinMarketplacePage.tsx
+apps/product-shell/src/pages/AdminPage.tsx
+apps/product-shell/src/pages/StudioPage.tsx
+
+=== AUTH ENTRY ===
+apps/product-shell/src/components/nav/AuthModal.tsx       — auth modal (login/signup/restore); triggered by "Login" button in TopNav
+apps/product-shell/src/components/gate/LoginModal.tsx     — gate-level login modal
+apps/product-shell/src/components/gate/RequireGate.tsx    — protected route wrapper
+apps/product-shell/src/components/gate/WalletConnectButton.tsx
+apps/product-shell/src/components/gate/SignMessageButton.tsx
+apps/product-shell/src/components/gate/GateStatusPill.tsx
+apps/product-shell/src/components/gate/DemoBypassButton.tsx
+apps/product-shell/src/state/demoGateState.tsx            — walletConnected, signedMessage, walletAddress, demoBypass, tier1/2/3 state
+apps/product-shell/src/wallet/connectWallet.ts
+apps/product-shell/src/wallet/signMessage.ts
+apps/product-shell/src/wallet/sendUsdcOnBase.ts
+apps/product-shell/src/wallet/constants.ts
+
+=== ADMIN UI ===
+apps/product-shell/src/pages/AdminPage.tsx                — AdminPage; WorkspaceTile with 5 header tabs (Pay Me, Engage, Referrals, Skins, Biz Studio)
+apps/product-shell/src/components/admin/AdminPanel.tsx    — 8 admin blocks: Session Status, Wallet Status, Tier Unlock, Employee Access, NFT Mint, Allowlist, Payment Settings, Page Titles
+apps/product-shell/src/components/admin/AdminActionButton.tsx
+apps/product-shell/src/components/admin/AdminStatusBlock.tsx
+apps/product-shell/src/components/layout/WorkspaceTile.tsx — tile container with header tabs
+apps/product-shell/src/styles/admin.css
+apps/modules/engage/src/admin/AdminLayout.tsx             — Engage module admin layout
+apps/modules/engage/src/admin/AdminQuests.tsx
+apps/modules/engage/src/admin/AdminUsers.tsx
+apps/modules/engage/src/admin/AdminCompletions.tsx
+
+=== STUDIO ENTRY POINTS ===
+apps/product-shell/src/pages/StudioPage.tsx               — StudioPage; modes: edit (DesktopPremiumStudio) / preview (DesktopPremiumReceiver); route: /:slug/studio
+apps/product-shell/src/features/desktop-premium/DesktopPremiumStudio.tsx — editor interface
+apps/product-shell/src/features/desktop-premium/DesktopPremiumReceiver.tsx — live preview renderer
+apps/product-shell/src/features/desktop-premium/DesktopPremiumShell.tsx
+apps/product-shell/src/features/desktop-premium/shellConfig.ts            — PremiumShellLayout type, layout config
+apps/product-shell/src/features/desktop-premium/useStageScale.ts
+apps/product-shell/src/features/desktop-premium/desktop-premium.css
+apps/product-shell/src/components/integrations/ModuleFrame.tsx            — iframe embedder for microfrontends
+apps/product-shell/src/components/integrations/moduleRegistry.ts          — module registry
+apps/product-shell/src/components/integrations/embedUtils.ts
+
+=== PAYME / INVOICE LOGIC ===
+apps/product-shell/src/pages/PayMePage.tsx                — MODULE_TABS: customers, add, history, invoice; PANEL_TABS: coupons, recurring, settings
+apps/product-shell/src/features/payme/CouponsPanel.tsx
+apps/product-shell/src/features/payme/RecurringBillingPanel.tsx
+apps/product-shell/src/features/payme/PayMeSettingsPanel.tsx
+apps/product-shell/src/state/paymeCartState.tsx           — cart open/close state for PayMePanel overlay
+apps/product-shell/src/components/layout/PayMePanel.tsx   — sliding panel overlay
+apps/modules/payme/src/App.jsx                            — PayMe microfrontend app; customers/invoices stored in localStorage (payme_customers_v1, payme_invoices_v1)
+payme-admin-minimal/modules/light-crm/lib/invoiceBuilders.js — buildInvoiceWireText, buildInvoiceHtml, computeInvoiceTotal, normalizeInvoiceItems, buildMailtoHref, buildTxUrl, downloadTextFile, formatMoney
+
+=== PDF GENERATION ===
+NO dedicated PDF library found.
+Invoice output path: buildInvoiceHtml() produces HTML suitable for browser print-to-PDF.
+downloadTextFile() in invoiceBuilders.js produces .txt client-side download.
+PDF generation deferred to browser print-to-PDF or external service.
+
+=== CLOUDFLARE CONFIG / BUILD ===
+wrangler.toml                                             — name: biz-pages; pages_build_output_dir: ./dist; compatibility_date: 2025-01-01; nodejs_compat
+apps/product-shell/functions/api/published-page.js        — fetches compiled runtime page from R2; routes by slug prefix (xyz-biz-, xyz-ad-)
+apps/product-shell/functions/api/published-manifest.js    — tenant manifest from R2
+apps/product-shell/functions/api/page.js                  — legacy page fetch from TENANTS_BUCKET
+apps/product-shell/functions/api/microfrontend-bootstrap.js
+apps/product-shell/functions/api/microfrontend-trust-log.js
+apps/product-shell/functions/media/[[path]].js            — asset serving fallback
+apps/product-shell/functions/_lib/runtime-compiler.js
+apps/product-shell/functions/_lib/runtime-r2.js           — R2 read utilities; getAssetBaseUrl(env)
+apps/product-shell/functions/_lib/runtime-schema.js       — request validation
+
+=== SHARED PACKAGES ===
+packages/contracts-core/src/chassis/                      — TOUCHPOINT_IDS, ROUTE_IDS, SURFACE_IDS, EVENT_IDS
+packages/lifecycle-chassis/
+packages/policy-chassis/
+packages/proof-chassis/
+packages/registry-chassis/
+packages/runtime-bridge/
+packages/schema-chassis/
+packages/session-transport/
+packages/validation-chassis/
+
+=== ADDITIONAL APPS ===
+apps/core-runtime/src/routes/                             — install, update, disable, remove, payme-admin, referral-admin routes
+apps/local-host/src/                                      — bridge + transport layer
+apps/operator-shell/src/                                  — operator shell with mounts
+apps/web-public/src/                                      — web-public shell with mounts
+apps/modules/engage/                                      — Engage/EngageFi microfrontend (MUI + Supabase + wagmi)
+apps/modules/referrals/                                   — Referrals microfrontend
+payme-admin-minimal/                                      — standalone PayMe admin minimal app
+engagefi-admin-minimal/                                   — standalone Engage admin minimal app
+referral-admin-minimal/                                   — standalone Referral admin minimal app

@@ -1,0 +1,66 @@
+current_cloudflare_surface
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S1
+artifact: /job_site/current_cloudflare_surface.txt
+source: wrangler.toml + apps/product-shell/functions/
+
+=== CLOUDFLARE PAGES PROJECT CONFIG (wrangler.toml) ===
+name                  = "biz-pages"
+pages_build_output_dir = "./dist"
+compatibility_date    = "2025-01-01"
+compatibility_flags   = ["nodejs_compat"]
+
+=== R2 BUCKET BINDINGS ===
+BINDING NAME       BUCKET NAME          PURPOSE
+TENANTS_BUCKET     gateway-tenants      Primary tenant storage; read by published-page.js, published-manifest.js, page.js
+BIZPAGES_TENANTS   bizpages-tenants     Biz Pages tenant data; read by published-page.js, published-manifest.js
+ADPAGES_TENANTS    adpages-tenants      Ad Pages tenant data; read by published-page.js, published-manifest.js
+DEMO_BUCKET        demo-bucket          Studio/demo bundles (json/<slug>/site.json); optional (guarded with env?.DEMO_BUCKET)
+MEDIA_ASSETS       media-assets         Primary media assets for /assets/* fallback
+MEDIA_ASSETS2      media-assets2        Secondary media assets
+
+=== PLAIN-TEXT VARS ===
+ASSET_BASE_URL = "https://media.xyz-labs.xyz"
+  Read by: functions/_lib/runtime-r2.js → getAssetBaseUrl(env)
+  Behavior: non-empty = prefix external asset URLs; empty = use /assets/<folder>/<code>.<ext> local path
+
+=== ENVIRONMENTS ===
+env.production — inherits all top-level bindings; ASSET_BASE_URL = "https://media.xyz-labs.xyz"
+env.preview    — inherits all top-level bindings; ASSET_BASE_URL = "https://media.xyz-labs.xyz"
+
+=== CLOUDFLARE PAGES FUNCTIONS ===
+FILE                                                    ROUTE        PURPOSE
+functions/api/published-page.js                         /api/published-page    Fetch compiled runtime page from R2; slug-prefix routing (xyz-biz- → BIZPAGES_TENANTS, xyz-ad- → ADPAGES_TENANTS, xyz- → TENANTS_BUCKET/DEMO_BUCKET)
+functions/api/published-manifest.js                     /api/published-manifest  Tenant manifest from R2; same bucket routing
+functions/api/page.js                                   /api/page              Legacy page fetch from TENANTS_BUCKET; maps old JSON format to new
+functions/api/microfrontend-bootstrap.js                /api/microfrontend-bootstrap  Module bootstrap endpoint
+functions/api/microfrontend-trust-log.js                /api/microfrontend-trust-log  Trust/audit logging
+functions/media/[[path]].js                             /media/*               Asset serving fallback from R2
+
+=== RUNTIME LIB FILES ===
+functions/_lib/runtime-compiler.js   — runtime page compilation from manifest+layout
+functions/_lib/runtime-r2.js         — R2 bucket read utilities; getAssetBaseUrl(env); key shapes for tenants, media
+functions/_lib/runtime-schema.js     — request validation (slug sanitization, page name sanitization)
+
+=== SLUG PREFIX ROUTING (published-page.js logic) ===
+slug starts with "xyz-biz-" → read from BIZPAGES_TENANTS
+slug starts with "xyz-ad-"  → read from ADPAGES_TENANTS
+slug starts with "xyz-"     → read from TENANTS_BUCKET (legacy/demo path)
+DEMO_BUCKET checked for demo bundle: json/<slug>/site.json
+
+=== BUILD PIPELINE ===
+Command: npm run build (in apps/product-shell/)
+  build:engage → apps/modules/engage install + build
+  build:payme  → apps/modules/payme install + build
+  build:shell  → vite build
+Output: apps/product-shell/dist/
+Built microfrontend assets: apps/product-shell/public/apps/engage/, public/apps/payme/, public/apps/referrals/
+
+=== PRODUCT IDENTITY NOTE ===
+Current wrangler.toml name = "biz-pages" (Biz Pages identity, not Ad Pages).
+ADPAGES_TENANTS binding already present (adpages-tenants bucket).
+Slug prefix "xyz-ad-" already has routing logic in published-page.js and published-manifest.js.
+Ad Pages product can be activated by renaming project and ensuring ADPAGES_TENANTS bucket is populated.
+
+=== WORKER APP (separate) ===
+worker-wb/         — standalone Cloudflare Worker app (separate wrangler config; not product-shell)

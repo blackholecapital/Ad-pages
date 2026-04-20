@@ -1,0 +1,90 @@
+current_route_map
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S1
+artifact: /job_site/current_route_map.txt
+source: apps/product-shell/src/app/router.tsx + routes.ts + TopNav.tsx
+
+=== DECLARED ROUTE KEYS (routes.ts) ===
+home      /
+members   /members
+exclusive /exclusive
+customer  /customer
+admin     /admin
+
+=== FULL ROUTER TABLE (router.tsx) ===
+PATH PATTERN                          COMPONENT              PAGE_KEY
+/                                     Navigate → /home
+/not-found                            Navigate → /home
+/home                                 HomePage               home
+/:slug                                Navigate → ./home
+/:slug/home                           HomePage               home
+/:slug/members                        MembersPage            members
+/:slug/services                       ServicesPage           services
+/:slug/exclusive                      ExclusivePage          exclusive
+/:slug/customer                       CustomerPage           customer
+/:slug/payme                          PayMePage              payme
+/:slug/engage                         EngagePage             engage
+/:slug/referrals                      ReferralsPage          referrals
+/:slug/skins                          SkinMarketplacePage    skins
+/:slug/admin                          AdminPage              admin
+/:slug/studio                         StudioPage             studio
+/:designation/:slug                   Navigate → ./home
+/:designation/:slug/home              HomePage               home
+/:designation/:slug/members           MembersPage            members
+/:designation/:slug/services          ServicesPage           services
+/:designation/:slug/exclusive         ExclusivePage          exclusive
+/:designation/:slug/customer          CustomerPage           customer
+/:designation/:slug/payme             PayMePage              payme
+/:designation/:slug/engage            EngagePage             engage
+/:designation/:slug/referrals         ReferralsPage          referrals
+/:designation/:slug/skins             SkinMarketplacePage    skins
+/:designation/:slug/admin             AdminPage              admin
+/:designation/:slug/studio            StudioPage             studio
+/members                              MembersPage            members
+/services                             ServicesPage           services
+/exclusive                            ExclusivePage          exclusive
+/customer                             CustomerPage           customer
+/payme                                PayMePage              payme
+/engage                               EngagePage             engage
+/referrals                            ReferralsPage          referrals
+/skins                                SkinMarketplacePage    skins
+/admin                                AdminPage              admin
+*                                     Navigate → /home
+
+=== NAV ITEMS (TopNav.tsx NAV_ITEMS array) ===
+KEY       LABEL      SUFFIX       VISIBLE IN NAV
+home      Home       /home        YES (exact)
+members   Members    /members     YES
+services  Services   /services    YES
+exclusive Exclusive  /exclusive   YES
+customer  Customer   /customer    YES
+admin     Admin      /admin       YES
+[login]   Login      (button)     YES — opens AuthModal
+[cart]    Cart icon  (button)     YES — toggles PayMePanel overlay
+
+=== PAGES KNOWN TO NAVIGATION RESOLVER (TopNav.tsx derivePublishedBase) ===
+home, members, services, exclusive, customer, admin, payme, engage, referrals, skins, studio
+
+=== ADMIN PAGE TABS (AdminPage.tsx headerTabs) ===
+Pay Me     → nav to /:slug/payme
+Engage     → nav to /:slug/engage
+Referrals  → nav to /:slug/referrals
+Skins      → nav to /:slug/skins
+Biz Studio → window.open("https://studio.xyz-labs.xyz/", "_blank")
+
+=== PAYME PAGE TABS (PayMePage.tsx) ===
+MODULE TABS (iframe postMessage):
+  customers    — Customers list
+  add          — Add Customer
+  history      — Payment History
+  invoice      — Create Invoice
+PANEL TABS (in-shell):
+  coupons      — CouponsPanel
+  recurring    — RecurringBillingPanel
+  settings     — PayMeSettingsPanel
+← Admin back button → adminPath()
+
+=== PUBLIC SURFACE SUMMARY ===
+Total routed pages: 11 (home, members, services, exclusive, customer, payme, engage, referrals, skins, admin, studio)
+Top-level nav exposed: 6 (home, members, services, exclusive, customer, admin) + login + cart
+Pages accessible but not in top nav: payme, engage, referrals, skins, studio (reached via admin tabs or direct URL)

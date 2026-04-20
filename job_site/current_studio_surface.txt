@@ -1,0 +1,49 @@
+current_studio_surface
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S1
+artifact: /job_site/current_studio_surface.txt
+source: apps/product-shell/src/pages/StudioPage.tsx + desktop-premium/
+
+=== STUDIO ROUTE ===
+/:slug/studio              → StudioPage
+/:designation/:slug/studio → StudioPage
+
+=== STUDIO ENTRY POINT ===
+FILE: apps/product-shell/src/pages/StudioPage.tsx
+Access: Via direct URL /:slug/studio; no nav link in TopNav or AdminPage currently.
+Note: AdminPage "Biz Studio" tab opens https://studio.xyz-labs.xyz/ (external URL) — NOT the local StudioPage.
+
+=== STUDIO MODES ===
+edit    → renders DesktopPremiumStudio  (default mode)
+preview → renders DesktopPremiumReceiver (enabled after first save)
+
+=== STUDIO COMPONENTS ===
+apps/product-shell/src/features/desktop-premium/DesktopPremiumStudio.tsx   — editor; onSave(layout) callback
+apps/product-shell/src/features/desktop-premium/DesktopPremiumReceiver.tsx — live preview; accepts PremiumShellLayout
+apps/product-shell/src/features/desktop-premium/DesktopPremiumShell.tsx    — shell wrapper
+apps/product-shell/src/features/desktop-premium/shellConfig.ts             — PremiumShellLayout type: { tiles: TileConfig[] }
+apps/product-shell/src/features/desktop-premium/useStageScale.ts           — responsive stage scaling
+apps/product-shell/src/features/desktop-premium/desktop-premium.css        — Studio styles
+
+=== PAGE SCOPE (CURRENT) ===
+Studio does NOT have a hard-coded page picker limiting which pages can be decorated.
+The Studio editor (DesktopPremiumStudio) operates on a layout object (PremiumShellLayout) passed in memory.
+No page manifest or allowlist currently restricts which published pages Studio can target.
+External Studio URL (https://studio.xyz-labs.xyz/) is referenced in AdminPage but content of that service is outside this repo.
+
+=== CLOUDFLARE FUNCTIONS RELEVANT TO STUDIO OUTPUT ===
+apps/product-shell/functions/api/published-page.js    — serves compiled runtime page from R2 (DEMO_BUCKET: json/<slug>/site.json)
+apps/product-shell/functions/api/published-manifest.js — serves tenant manifest from R2
+apps/product-shell/functions/_lib/runtime-compiler.js — compiles runtime page from manifest+layout
+R2 bucket DEMO_BUCKET (binding name) contains Studio/demo bundles at key shape: json/<slug>/site.json
+
+=== MICROFRONTEND EMBEDDING (used on published pages) ===
+apps/product-shell/src/components/integrations/ModuleFrame.tsx   — <iframe> embedder
+apps/product-shell/src/components/integrations/moduleRegistry.ts — maps module keys to /public/apps/<module>/ paths
+apps/product-shell/src/components/integrations/embedUtils.ts     — sandbox/postMessage helpers
+
+=== SURFACE COUNT ===
+Editable page scope: UNRESTRICTED in current codebase (no page picker filter)
+Studio modes: 2 (edit, preview/receiver)
+Studio accessible from nav: NO (no TopNav link, no Admin tab pointing to local /studio route)
+Studio accessible via direct URL: YES (/:slug/studio)
