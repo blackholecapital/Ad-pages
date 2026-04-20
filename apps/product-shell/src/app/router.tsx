@@ -60,13 +60,14 @@ export const router = createBrowserRouter([
       { path: "referrals", element: <ReferralsPage />, handle: { pageKey: "referrals" } },
       { path: "skins", element: <SkinMarketplacePage />, handle: { pageKey: "skins" } },
 
-      // Auth-gated: admin and studio require RequireGate
+      { path: "admin", element: <AdminPage />, handle: { pageKey: "admin" } },
+      { path: ":slug/admin", element: <AdminPage />, handle: { pageKey: "admin" } },
+      { path: ":designation/:slug/admin", element: <AdminPage />, handle: { pageKey: "admin" } },
+
+      // Auth-gated: studio requires RequireGate
       {
         element: <RequireGate />,
         children: [
-          { path: "admin", element: <AdminPage />, handle: { pageKey: "admin" } },
-          { path: ":slug/admin", element: <AdminPage />, handle: { pageKey: "admin" } },
-          { path: ":designation/:slug/admin", element: <AdminPage />, handle: { pageKey: "admin" } },
           { path: ":slug/studio", element: <StudioPage />, handle: { pageKey: "studio" } },
           { path: ":designation/:slug/studio", element: <StudioPage />, handle: { pageKey: "studio" } },
         ],
