@@ -1,0 +1,63 @@
+adpages_admin_surface
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S3
+artifact: /job_site/adpages_admin_surface.txt
+
+=== ADMIN ROUTE (AUTH-GATED) ===
+/:slug/admin              → RequireGate → AdminPage
+/admin                    → RequireGate → AdminPage
+/:designation/:slug/admin → RequireGate → AdminPage
+Auth gate: wallet connect + sign message OR demo bypass (RequireGate component)
+Unauthenticated access: blocked — LoginModal gate rendered instead
+
+=== STUDIO ROUTE (AUTH-GATED) ===
+/:slug/studio              → RequireGate → StudioPage
+/studio                    → RequireGate → StudioPage
+/:designation/:slug/studio → RequireGate → StudioPage
+Reached via: Admin header tab "Studio"
+Auth gate: same RequireGate (shared gate session)
+
+=== ADMIN PAGE HEADER TABS ===
+FILE: apps/product-shell/src/pages/AdminPage.tsx
+  1. Pay Me  → nav(buildTo("/payme", designation, slug))   — navigates to PayMePage (invoice creation)
+  2. Studio  → nav(buildTo("/studio", designation, slug))  — navigates to StudioPage (in-app editor)
+Removed tabs: Engage, Referrals, Skins, Biz Studio (removed in S2, not restored)
+
+=== ADMIN PANEL BLOCKS (retained default content) ===
+FILE: apps/product-shell/src/components/admin/AdminPanel.tsx
+Block 1 — Session Status
+  - Demo bypass ON/OFF, Wallet connected YES/NO, Signed message YES/NO
+  - Actions: Reset State, Enable Bypass
+Block 2 — Wallet Status
+  - Wallet address display
+  - Actions: Connect Wallet, Sign Message, Simulate Signed
+Block 3 — Tier Unlock Controls
+  - Tier 1/2/3 locked/unlocked display
+  - Actions: Toggle T1, Toggle T2, Unlock All
+Block 4 — Employee Access
+  - Mock employee table (Name, Wallet, Level)
+  - Actions: Add Employee
+Block 5 — NFT Mint
+  - Collection, Network, Status
+  - Actions: Simulate Mint
+Block 6 — Allowlist
+  - Connected wallet, check result
+  - Actions: Simulate Allowlist Check
+Block 7 — Payment Settings (Demo)
+  - USDC Receiving Address input (localStorage: admin_usdc_address)
+  - Actions: Save
+Block 8 — Page Titles
+  - Select Page dropdown, Active page KV display
+
+=== SURFACE SUMMARY ===
+Auth gate:             YES — RequireGate (wallet+sign or bypass)
+Admin header tabs:     2 (Pay Me, Studio)
+Admin panel blocks:    8 (retained default content, unchanged)
+Removed admin tabs:    Engage, Referrals, Skins, Biz Studio
+Non-target actions:    none remaining in exposed admin surface
+
+=== PASS CONDITIONS MET ===
+- Admin is auth-gated when unauthenticated ✓
+- Authenticated surface: retained default AdminPanel + Pay Me + Studio ✓
+- Non-target admin tabs absent ✓
+- No undeclared admin modules exposed ✓

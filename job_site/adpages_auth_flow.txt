@@ -1,0 +1,64 @@
+adpages_auth_flow
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S3
+artifact: /job_site/adpages_auth_flow.txt
+
+=== AUTH GATE MECHANISM ===
+Component: apps/product-shell/src/components/gate/RequireGate.tsx
+Type: React Router layout route (pathless, element: <RequireGate />)
+Pattern: wraps child routes; renders <Outlet /> when access is granted, renders LoginModal gate when not
+
+=== ACCESS CONDITIONS ===
+Access granted when ANY of:
+  1. bypassEnabled = true  (Demo bypass — local operator flow)
+  2. connected = true AND signed = true  (wallet connected + message signed)
+
+Access denied (gate shown) when:
+  bypassEnabled = false AND (connected = false OR signed = false)
+
+=== GATE STATE ===
+State source: local useState within RequireGate (not global DemoGateContext)
+Persistence: session only (state resets on page reload)
+State fields:
+  connected: boolean     — wallet connected via WalletConnectButton
+  signed: boolean        — message signed via SignMessageButton
+  bypassEnabled: boolean — demo bypass toggled via DemoBypassButton
+
+=== GATE UI (when unauthenticated) ===
+Component: LoginModal (title: "Access Gate")
+Contents:
+  - GateStatusPill: shows current step label (Wallet required / Wallet connected / Access verified / Demo bypass enabled)
+  - Descriptive copy: "Connect wallet and sign a message to continue."
+  - WalletConnectButton: sets connected = true on success
+  - SignMessageButton: enabled only when connected; sets signed = true on success
+  - DemoBypassButton: toggles bypassEnabled for local operator flows
+
+=== GATED ROUTES (router.tsx — RequireGate group) ===
+admin                         → AdminPage
+studio                        → StudioPage
+:slug/admin                   → AdminPage
+:slug/studio                  → StudioPage
+:designation/:slug/admin      → AdminPage
+:designation/:slug/studio     → StudioPage
+
+=== TRIGGER PATH ===
+User clicks Admin nav link → navigates to /admin or /:slug/admin
+  → matched by RequireGate layout route
+  → if unauthenticated: RequireGate renders LoginModal gate (AdminPage NOT rendered)
+  → user completes wallet connect + sign (or enables bypass)
+  → RequireGate renders <Outlet /> → AdminPage renders
+
+=== AUTH COMPONENT FILES ===
+apps/product-shell/src/components/gate/RequireGate.tsx     — route guard (layout route)
+apps/product-shell/src/components/gate/LoginModal.tsx      — gate UI shell
+apps/product-shell/src/components/gate/GateStatusPill.tsx  — status label
+apps/product-shell/src/components/gate/WalletConnectButton.tsx (re-exports from wallet/)
+apps/product-shell/src/components/gate/SignMessageButton.tsx
+apps/product-shell/src/components/gate/DemoBypassButton.tsx
+apps/product-shell/src/wallet/WalletConnectButton.tsx
+apps/product-shell/src/wallet/connectWallet.ts
+apps/product-shell/src/wallet/signMessage.ts
+
+=== UNCHANGED AUTH COMPONENTS ===
+AuthModal.tsx (TopNav Login button) — unchanged; separate from admin gate
+DemoGateContext / DemoGateProvider — unchanged; used by AdminPanel for panel-level state display
