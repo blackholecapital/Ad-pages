@@ -1,0 +1,120 @@
+adpages_deploy_notes
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S6
+artifact: /job_site/adpages_deploy_notes.txt
+
+=== SCOPE ===
+Align the Cloudflare Pages deployment with the Ad Pages product identity
+while retaining the existing Pages-first platform model. No platform
+redesign. No Worker cutover. Scope is: project name, bindings alignment,
+domain routing, and the operator's go-live checklist.
+
+=== FILES CHANGED IN THIS STAGE ===
+  /repo/wrangler.toml
+    - header job_id/stage rewritten: ADPAGES-SKU-REDUCTION-001 / S6
+    - name: "biz-pages" → "ad-pages"
+  /repo/apps/product-shell/wrangler.toml
+    - same header rewrite
+    - same name rename
+  (content of both files remains byte-identical to each other — preserved)
+
+All R2 binding blocks (TENANTS_BUCKET, BIZPAGES_TENANTS, ADPAGES_TENANTS,
+DEMO_BUCKET, MEDIA_ASSETS, MEDIA_ASSETS2) and both env.production /
+env.preview override blocks are PRESERVED as declared in S1
+current_cloudflare_surface.txt. ASSET_BASE_URL unchanged.
+
+=== DEPLOYMENT ALIGNMENT (DASHBOARD ACTIONS — OPERATOR) ===
+1. In Cloudflare dashboard, create a new Pages project from this repo:
+     Project name:        ad-pages
+     Production branch:   main (or the branch the operator designates)
+     Root directory:      apps/product-shell
+     Build command:       npm run build
+     Build output dir:    dist
+   OR rename the existing "biz-pages" Pages project to "ad-pages" and
+   repoint its repo/branch as above. Both paths are valid; creating a
+   new project is preferred so Biz Pages remains untouched.
+
+2. Under the new ad-pages project → Settings → Functions → Bindings,
+   ensure the R2 buckets below are bound with the exact binding names:
+     TENANTS_BUCKET      → gateway-tenants
+     BIZPAGES_TENANTS    → bizpages-tenants   (co-host, optional)
+     ADPAGES_TENANTS     → adpages-tenants    (REQUIRED)
+     DEMO_BUCKET         → demo-bucket        (optional)
+     MEDIA_ASSETS        → media-assets
+     MEDIA_ASSETS2       → media-assets2
+   Apply the same bindings to BOTH production and preview environments.
+
+3. Under Settings → Environment variables, set:
+     ASSET_BASE_URL = https://media.xyz-labs.xyz
+   in production AND preview.
+
+4. Under Custom domains, add:
+     adpages.xyz-labs.xyz → ad-pages.pages.dev
+   Leave bizpages.xyz-labs.xyz untouched.
+
+=== BUILD CONTRACT (CI / PAGES) ===
+Command that must succeed for a deployable build:
+  npm --prefix apps/product-shell install
+  npm --prefix apps/product-shell run build
+Output:
+  apps/product-shell/dist (shell + vendored modules)
+  apps/product-shell/functions (Pages Functions source)
+
+A green local build has been captured in
+/job_site/adpages_build_result.txt (S6 Worker A). Pages will replicate
+this build per push to the production or preview branch.
+
+=== PROJECT NAMING ===
+  Pages project:          ad-pages
+  wrangler name:          ad-pages (root and apps/product-shell)
+  Build output dir:       ./dist (relative to apps/product-shell)
+  Production domain:      adpages.xyz-labs.xyz (CNAME to Pages)
+  Preview host pattern:   <branch>.ad-pages.pages.dev
+
+=== BINDINGS USED ===
+R2:
+  TENANTS_BUCKET      (legacy / demo route)
+  BIZPAGES_TENANTS    (co-host; non-ad slugs)
+  ADPAGES_TENANTS     (ad product tenant data — primary for this SKU)
+  DEMO_BUCKET         (optional; json/<slug>/site.json)
+  MEDIA_ASSETS        (/assets/* primary)
+  MEDIA_ASSETS2       (/assets/* secondary)
+
+Vars:
+  ASSET_BASE_URL = https://media.xyz-labs.xyz
+
+No KV, D1, Durable Objects, Queues, or Service bindings declared or
+required for this SKU.
+
+=== DOMAIN / RENAME REQUIREMENTS ===
+Required renames:
+  wrangler.toml "name" field: biz-pages → ad-pages  (DONE in this stage)
+  Pages project name:         biz-pages → ad-pages  (OPERATOR — dashboard)
+Optional renames (not required for PASS):
+  biz-pages.png launch asset in dist → ad-pages.png (cosmetic; next pass)
+Not renamed:
+  R2 binding names (TENANTS_BUCKET, BIZPAGES_TENANTS, ADPAGES_TENANTS,
+    DEMO_BUCKET, MEDIA_ASSETS, MEDIA_ASSETS2) — pinned by Functions
+    source code; renaming would require cross-file edits not in scope.
+  R2 bucket names (gateway-tenants, adpages-tenants, etc.) — operator-
+    managed resources; no rename required.
+  Compatibility date / flags (nodejs_compat) — unchanged.
+
+=== WHAT NOT TO DO (GUARDRAILS) ===
+- Do NOT delete the biz-pages Pages project; Biz Pages is a live co-host.
+- Do NOT rename any R2 binding in wrangler.toml without updating every
+  import in apps/product-shell/functions/*.
+- Do NOT switch to Worker-first (Target B); this SKU does not require it.
+- Do NOT modify /api/* routes or the shared runtime-schema / compiler.
+- Do NOT repoint bizpages.xyz-labs.xyz at the ad-pages project.
+
+=== GO-LIVE CHECKLIST ===
+[ ] wrangler.toml name = "ad-pages" at root and apps/product-shell (DONE)
+[ ] Cloudflare Pages project "ad-pages" exists with correct root/build
+[ ] R2 bindings attached to production + preview
+[ ] ASSET_BASE_URL set in production + preview
+[ ] Custom domain adpages.xyz-labs.xyz attached to ad-pages project
+[ ] Operator test prompts (adpages_operator_test_prompts.txt) all pass
+    in preview
+[ ] Operator test prompts all pass in production
+[ ] Biz Pages project + domain unaffected (regression negative check)

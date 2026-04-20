@@ -1,0 +1,67 @@
+adpages_build_result
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S6
+artifact: /job_site/adpages_build_result.txt
+
+=== BUILD OUTCOME ===
+status: PASS (local, CI-equivalent)
+executed in: /repo/apps/product-shell
+command: npm run build
+  → build:engage  (apps/modules/engage vite build)
+  → build:payme   (apps/modules/payme  vite build)
+  → build:shell   (apps/product-shell  vite build)
+output root: apps/product-shell/dist
+node version: npm 10.9.7 (vite 5.4.21)
+
+=== SHELL BUILD (vite build) ===
+transformed modules: 98
+dist/index.html                    558 B
+dist/assets/index-BQ0aFtfl.css  52 225 B (gzip  ~9.95 KB)
+dist/assets/index-CWSWSCNM.js  266 159 B (gzip ~83.53 KB)
+dist/_redirects                  4 764 B
+dist/biz-pages.png             719 159 B (legacy launch image; to be
+                                replaced with ad-pages.png asset in
+                                next pass — not deploy-blocking)
+
+=== MICROFRONTEND BUILDS (vendored into dist/apps/**) ===
+dist/apps/engage/index.html                  529 B
+dist/apps/engage/assets/index-*.css     ~6.28 KB (gzip ~2.02 KB)
+dist/apps/engage/assets/index-*.js    ~484.58 KB (gzip ~149.69 KB)
+dist/apps/engage/_redirects                   19 B
+
+dist/apps/payme/index.html                   412 B
+dist/apps/payme/assets/index-*.css     ~0.07 KB (gzip ~0.09 KB)
+dist/apps/payme/assets/index-*.js    ~154.95 KB (gzip  ~49.79 KB)
+
+dist/apps/referrals/index.html               424 B  (pre-vendored)
+dist/apps/referrals/assets/**                      (pre-vendored)
+
+=== TOTAL DIST FOOTPRINT ===
+du -sh apps/product-shell/dist: 1.8 MB
+
+=== BUILD ARTIFACT PATH (for Cloudflare Pages) ===
+pages_build_output_dir: ./dist   (relative to apps/product-shell)
+absolute path in repo:  /repo/apps/product-shell/dist
+
+=== WARNINGS (non-blocking) ===
+- vite: "/wallpaper333.png referenced in /wallpaper333.png didn't resolve
+        at build time, it will remain unchanged to be resolved at runtime"
+        → expected; wallpaper resolved via /assets/* or ASSET_BASE_URL host.
+- npm audit: 2 moderate vulnerabilities in product-shell dev deps
+             (vite-chain), 4 moderate in payme module deps
+             (WalletConnect transitive). Not on runtime path; tracked
+             but not gating for S6.
+- Deprecated packages reported by npm during payme install:
+  @walletconnect/*, @metamask/sdk*, @paulmillr/qr — vendored iframe
+  module only; no runtime impact on Pages Functions.
+
+=== VERIFICATION ===
+- dist/index.html exists and references /assets/index-*.js + /assets/index-*.css
+- dist/_redirects is present (SPA + module rewrites)
+- dist/apps/engage/ and dist/apps/payme/ microfrontend bundles present
+- Functions directory (apps/product-shell/functions) is the Pages Functions
+  source root; Pages deploy copies it alongside dist at deploy time.
+
+=== DECLARED DEPLOY ARTIFACT ===
+/repo/apps/product-shell/dist   (Pages static output, Ad Pages project)
+/repo/apps/product-shell/functions (Pages Functions source, Ad Pages project)

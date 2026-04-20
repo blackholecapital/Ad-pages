@@ -1,0 +1,111 @@
+adpages_operator_test_prompts
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S6
+artifact: /job_site/adpages_operator_test_prompts.txt
+
+=== PURPOSE ===
+Prompts the operator runs against the deployed Ad Pages Cloudflare Pages
+project (preview and production) to confirm identity, routing, Studio
+restriction, and PayMe invoice reduction before marking the SKU live.
+
+Substitutions:
+  <preview>    — Pages preview URL, e.g. https://<branch>.ad-pages.pages.dev
+  <prod>       — production URL,  e.g. https://adpages.xyz-labs.xyz
+  <slug>       — an ad-product tenant slug, must start with xyz-ad- or ad-
+                 (e.g. xyz-ad-demo)
+
+=== BLOCK A — PROJECT IDENTITY / DEPLOY ===
+A1. Open <preview>/. Expect: redirect to /home and shell loads without
+    console errors. Nav shows exactly: Home, Members, Admin, Login.
+A2. View page source at <preview>/. Expect: asset references under
+    /assets/index-*.js and /assets/index-*.css (Pages shell build).
+A3. Cloudflare dashboard → Pages → project "ad-pages". Expect:
+    - Framework preset: None
+    - Root directory: apps/product-shell
+    - Build output directory: dist
+    - Bindings TAB shows TENANTS_BUCKET, BIZPAGES_TENANTS,
+      ADPAGES_TENANTS, DEMO_BUCKET, MEDIA_ASSETS, MEDIA_ASSETS2,
+      and var ASSET_BASE_URL=https://media.xyz-labs.xyz.
+A4. Repeat A1–A3 against <prod>.
+
+=== BLOCK B — PUBLIC NAV SURFACE ===
+B1. Visit <preview>/home. Expect: Home renders; nav highlights Home.
+B2. Visit <preview>/members. Expect: Members renders; nav highlights
+    Members; no cart icon anywhere in the shell.
+B3. Visit <preview>/admin. Expect: AuthModal or admin gate triggers
+    (admin-only auth entry).
+B4. Attempt <preview>/services, <preview>/exclusive, <preview>/customer,
+    <preview>/engage, <preview>/referrals, <preview>/skins. Expect: no
+    nav link anywhere in the shell points to these; direct URL may still
+    resolve to a runtime-only route (unchanged) but is not a product
+    surface for Ad Pages.
+
+=== BLOCK C — PUBLISH API GUARDS ===
+C1. curl "<preview>/api/published-manifest?slug=<slug>"
+    Expect: JSON manifest whose pages object contains ONLY the keys
+    "home" and "members". No "services" or "exclusive" keys.
+C2. curl -o /dev/null -w "%{http_code}\n" \
+         "<preview>/api/published-page?slug=<slug>&page=services"
+    Expect: 403
+C3. curl -o /dev/null -w "%{http_code}\n" \
+         "<preview>/api/published-page?slug=<slug>&page=exclusive"
+    Expect: 403
+C4. curl "<preview>/api/published-page?slug=<slug>&page=home"
+    Expect: 200 and a JSON body with compiled page payload.
+C5. curl "<preview>/api/published-page?slug=<slug>&page=members"
+    Expect: 200 and a JSON body with compiled page payload.
+C6. curl "<preview>/api/published-manifest?slug=xyz-biz-demo"
+    Expect: pages object contains home, members, services, exclusive
+    (non-ad product unchanged; co-host parity intact).
+
+=== BLOCK D — STUDIO RESTRICTION ===
+D1. Log in as admin, open <preview>/:slug/admin, click Pay Me tab once
+    to confirm admin access. Then navigate to <preview>/:slug/studio.
+    Expect: Studio opens.
+D2. In Studio, locate the page picker toolbar. Expect: exactly 2 buttons,
+    labelled "Home" and "Members". Default selected: Home.
+D3. Switch to Members, decorate, click Save. Expect: save succeeds and
+    PremiumShellLayout.page = "members" in the saved payload.
+D4. Switch back to Home. Expect: lastLayout resets for that session.
+D5. Inspect Studio page picker markup: no entry for services, exclusive,
+    customer, access, engage, referrals, or skins.
+
+=== BLOCK E — PAYME SINGLE-SURFACE INVOICE ===
+E1. Visit <preview>/:slug/payme (admin-authenticated).
+    Expect: header "← Admin" and an InvoiceComposer form. No tabs.
+E2. Fill invoiceNumber + amount. Expect: "Generate Payment Link" and
+    "Download PDF" both become enabled.
+E3. Click "Generate Payment Link". Expect: link of shape
+    <preview>/:slug/payme?inv=&amt=&subj= appears in invoiceLinkBox with
+    a Copy button.
+E4. curl "<preview>/api/invoice-link?inv=INV-1&amt=10.00&subj=Test"
+    Expect: JSON { invoiceNumber, amount, subject, resolvedAt } echoing
+    the inputs with a server-side resolvedAt timestamp.
+E5. Click "Download PDF". Expect: a new window opens with a print-ready
+    invoice HTML, window.print() triggered after ~350 ms; output is a
+    browser-generated PDF suitable for email/text.
+E6. Confirm NO iframe ModuleFrame mounts and NO tabs (customers, add,
+    history, invoice, coupons, recurring, settings) appear anywhere on
+    the PayMe surface.
+
+=== BLOCK F — MEDIA / ASSETS ===
+F1. In Studio, set a wallpaper. Save. Visit <preview>/:slug/home in a
+    clean session. Expect: wallpaper resolves (either from
+    https://media.xyz-labs.xyz/wallpaper/<code>.png or the /media/*
+    fallback binding).
+F2. Confirm no 404s on /assets/* in browser devtools.
+
+=== BLOCK G — PRODUCTION PROMOTION ===
+G1. Re-run BLOCK A–F against <prod> (adpages.xyz-labs.xyz) after the
+    branch is promoted to production.
+G2. Confirm bizpages.xyz-labs.xyz still resolves to the Biz Pages
+    project (no accidental override by the ad-pages project).
+
+=== EXPECTED ALL-PASS SUMMARY ===
+  A: identity & bindings visible and correct
+  B: only Home / Members / Admin exposed in nav
+  C: manifest & page API gated; 403 on out-of-scope pages for ad slugs
+  D: Studio picker limited to Home and Members
+  E: PayMe reduced to single InvoiceComposer with link + PDF
+  F: media assets serve through configured ASSET_BASE_URL or fallback
+  G: production mirrors preview; Biz Pages unaffected
