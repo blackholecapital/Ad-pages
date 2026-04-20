@@ -1,10 +1,9 @@
 import { useMemo, useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
-import { usePayMeCart } from "../../state/paymeCartState";
 import { AuthModal } from "./AuthModal";
 
 type NavItem = {
-  key: "home" | "members" | "services" | "exclusive" | "customer" | "admin";
+  key: "home" | "members" | "admin";
   label: string;
   suffix: string;
   exact?: boolean;
@@ -13,9 +12,6 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { key: "home", label: "Home", suffix: "/home", exact: true },
   { key: "members", label: "Members", suffix: "/members" },
-  { key: "services", label: "Services", suffix: "/services" },
-  { key: "exclusive", label: "Exclusive", suffix: "/exclusive" },
-  { key: "customer", label: "Customer", suffix: "/customer" },
   { key: "admin", label: "Admin", suffix: "/admin" },
 ];
 
@@ -74,7 +70,6 @@ function derivePublishedBase(pathname: string): string | null {
 }
 
 export function TopNav() {
-  const { toggle: togglePayMe, open: payMeOpen } = usePayMeCart();
   const [authOpen, setAuthOpen] = useState(false);
   const location = useLocation();
 
@@ -124,8 +119,8 @@ export function TopNav() {
             <path d="M18 14h14M18 19h14M18 24h10" stroke="rgba(255,255,255,.85)" strokeWidth="1.2" strokeLinecap="round" />
           </svg>
           <div className="brandText">
-            <div className="brandTitle brandTitleDesktop">Biz Pages</div>
-            <div className="brandTitle brandTitleMobile">Biz Pages</div>
+            <div className="brandTitle brandTitleDesktop">Ad Pages</div>
+            <div className="brandTitle brandTitleMobile">Ad Pages</div>
           </div>
         </Link>
 
@@ -147,19 +142,6 @@ export function TopNav() {
         <div className="topNavRight">
           <button type="button" className="loginTextBtn" onClick={() => setAuthOpen(true)}>
             Login
-          </button>
-          <button
-            type="button"
-            className={"cartIconBtn" + (payMeOpen ? " active" : "")}
-            aria-label="Toggle PayMe panel"
-            aria-pressed={payMeOpen}
-            onClick={togglePayMe}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-            </svg>
           </button>
         </div>
       </div>

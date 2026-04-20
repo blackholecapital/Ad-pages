@@ -1,0 +1,88 @@
+current_admin_surface
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S1
+artifact: /job_site/current_admin_surface.txt
+source: apps/product-shell/src/pages/AdminPage.tsx + AdminPanel.tsx
+
+=== ADMIN ROUTE ===
+/:slug/admin → AdminPage (no auth gate currently — page is openly accessible)
+/admin       → AdminPage (bare path, no slug)
+
+=== AUTH STATE ===
+No RequireGate wrapping AdminPage in router.tsx.
+Admin is reachable without authentication in the current codebase.
+Auth components exist (RequireGate, LoginModal, WalletConnectButton) but are NOT applied to the admin route.
+Demo bypass state (demoBypass) and wallet/sign-message proof state exist in demoGateState.tsx but are admin-panel controls, not route guards.
+
+=== ADMIN PAGE HEADER TABS ===
+FILE: apps/product-shell/src/pages/AdminPage.tsx lines 23-30
+  1. Pay Me       → nav(buildTo("/payme", ...))    — navigates to PayMePage
+  2. Engage       → nav(buildTo("/engage", ...))   — navigates to EngagePage (Engage microfrontend)
+  3. Referrals    → nav(buildTo("/referrals", ...)) — navigates to ReferralsPage
+  4. Skins        → nav(buildTo("/skins", ...))    — navigates to SkinMarketplacePage
+  5. Biz Studio   → window.open("https://studio.xyz-labs.xyz/", "_blank") — external Studio URL
+
+=== ADMIN PANEL BLOCKS (AdminPanel.tsx) ===
+FILE: apps/product-shell/src/components/admin/AdminPanel.tsx
+
+Block 1 — Session Status
+  - Demo bypass ON/OFF display
+  - Wallet connected YES/NO display
+  - Signed message YES/NO display
+  - Actions: Reset State (resetDemoState), Enable Bypass (enableBypass)
+
+Block 2 — Wallet Status
+  - Wallet address display
+  - Actions: Connect Wallet, Sign Message (disabled if not connected), Simulate Signed
+
+Block 3 — Tier Unlock Controls
+  - Tier 1 / Tier 2 / Tier 3 locked/unlocked display
+  - Actions: Toggle T1, Toggle T2, Unlock All
+
+Block 4 — Employee Access
+  - Mock employee table (Name, Wallet, Level)
+  - Mock data: Bob (Admin), Sally (Editor), Frank (Viewer)
+  - Actions: Add Employee button
+
+Block 5 — NFT Mint
+  - Collection: "Biz Pages", Network: Base
+  - Actions: Simulate Mint (mock, no real on-chain call)
+
+Block 6 — Allowlist
+  - Connected wallet display, check result display
+  - Actions: Simulate Allowlist Check (mock)
+
+Block 7 — Payment Settings (Demo)
+  - USDC Receiving Address input (localStorage: admin_usdc_address)
+  - Actions: Save
+
+Block 8 — Page Titles
+  - Select Page dropdown (options: Homepage, Pay Me, Engage, Referrals, Skins, Access)
+  - Active page KV display
+
+=== ADMIN AUXILIARY COMPONENTS ===
+apps/product-shell/src/components/admin/AdminActionButton.tsx
+apps/product-shell/src/components/admin/AdminStatusBlock.tsx
+apps/product-shell/src/components/layout/WorkspaceTile.tsx  — tile wrapper
+apps/product-shell/src/styles/admin.css
+
+=== MODULE ADMIN INTERFACES (iframe-embedded, reached from admin tabs) ===
+PayMe Admin (/:slug/payme):
+  - MODULE_TABS: Customers, Add Customer, History, Create Invoice
+  - PANEL_TABS: Coupons, Recurring Billing, Admin Settings
+  - Module file: apps/modules/payme/src/App.jsx
+
+Engage Admin (/:slug/engage):
+  - Module file: apps/modules/engage/src/admin/AdminLayout.tsx
+  - Sub-pages: AdminQuests, AdminUsers, AdminCompletions
+
+Referrals Admin (/:slug/referrals):
+  - Module file: apps/modules/referrals/
+
+Skins/Marketplace (/:slug/skins):
+  - SkinMarketplacePage with ProductGrid, CartPanel, CheckoutPanel (marketplace feature)
+
+=== SURFACE COUNT ===
+Top-level admin tabs: 5 (Pay Me, Engage, Referrals, Skins, Biz Studio external)
+AdminPanel blocks: 8
+Total admin-facing functions: 13 blocks/tabs currently exposed

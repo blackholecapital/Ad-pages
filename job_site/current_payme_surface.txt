@@ -1,0 +1,74 @@
+current_payme_surface
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S1
+artifact: /job_site/current_payme_surface.txt
+source: apps/product-shell/src/pages/PayMePage.tsx + modules/payme/src/App.jsx + invoiceBuilders.js
+
+=== PAYME ROUTES ===
+/:slug/payme            → PayMePage (reached via AdminPage "Pay Me" tab or direct URL)
+/:designation/:slug/payme → PayMePage
+/payme                  → PayMePage (bare path)
+
+=== PAYME PAGE STRUCTURE (PayMePage.tsx) ===
+FILE: apps/product-shell/src/pages/PayMePage.tsx
+
+MODULE TABS (rendered in <iframe> via ModuleFrame, controlled via postMessage PAYME_SWITCH_TAB):
+  1. customers  — Customers list
+  2. add        — Add Customer
+  3. history    — Payment History
+  4. invoice    — Create Invoice
+
+PANEL TABS (rendered as in-shell React components):
+  5. coupons    — CouponsPanel (apps/product-shell/src/features/payme/CouponsPanel.tsx)
+  6. recurring  — RecurringBillingPanel (apps/product-shell/src/features/payme/RecurringBillingPanel.tsx)
+  7. settings   — PayMeSettingsPanel (apps/product-shell/src/features/payme/PayMeSettingsPanel.tsx)
+  ← Admin       — back-nav button → adminPath()
+
+=== PAYME MODULE (apps/modules/payme/src/App.jsx) ===
+Runs as iframe microfrontend at /public/apps/payme/
+localStorage keys: payme_customers_v1 (customer records), payme_invoices_v1 (invoice records)
+postMessage listener: PAYME_SWITCH_TAB → switches active tab without iframe reload
+Payment: USDC on Base chain via wagmi/viem
+
+=== INVOICE BUILDERS (payme-admin-minimal/modules/light-crm/lib/invoiceBuilders.js) ===
+buildInvoiceWireText({ company, customer, invoiceNumber, amount, items, generatedLink })
+  — plain-text invoice format; outputs: company header, bill-to, items list, total, pay link
+
+buildInvoiceHtml({ company, customer, invoiceNumber, amount, items, generatedLink, createdAt })
+  — HTML email invoice with: company logo, company name, invoice#, date, total, bill-to block, line items table, pay link
+  — suitable for browser print-to-PDF
+
+computeInvoiceTotal(items)   — sum of qty × unit for all line items
+normalizeInvoiceItems(items) — validates and filters item entries
+buildMailtoHref({ emailTo, subject, body }) — mailto: link builder
+buildTxUrl(txHash, chainId) — blockchain tx URL (Base: basescan.org, Eth: etherscan.io)
+downloadTextFile({ filename, content, mime }) — client-side file download trigger
+formatMoney(n)               — USDC amount formatter (removes trailing zeros)
+
+=== PDF GENERATION PATH ===
+No dedicated PDF library (no jsPDF, puppeteer, or similar).
+Current PDF path: buildInvoiceHtml() → browser print-to-PDF (manual user action).
+downloadTextFile() generates .txt wire-text download.
+No server-side PDF generation endpoint found.
+
+=== PAYME CART OVERLAY (product-shell) ===
+apps/product-shell/src/state/paymeCartState.tsx   — cart open/close toggle state
+apps/product-shell/src/components/layout/PayMePanel.tsx — sliding panel overlay mounted in AppShell
+Triggered by cart icon in TopNav (currently wired to PayMePanel, not PayMePage)
+
+=== PAYME FEATURES (product-shell/src/features/payme/) ===
+apps/product-shell/src/features/payme/CouponsPanel.tsx
+apps/product-shell/src/features/payme/RecurringBillingPanel.tsx
+apps/product-shell/src/features/payme/PayMeSettingsPanel.tsx
+apps/product-shell/src/features/payme/Basket.tsx            — cart/basket component
+apps/product-shell/src/components/layout/PayMePanel.tsx     — panel overlay
+
+=== STANDALONE PAYME ADMIN APP ===
+payme-admin-minimal/                                       — standalone minimal admin app
+payme-admin-minimal/modules/light-crm/lib/invoiceBuilders.js — invoice builder functions (as above)
+
+=== SURFACE COUNT ===
+PayMe tabs exposed: 7 (customers, add customer, history, create invoice, coupons, recurring billing, settings)
+Invoice fields in builders: invoiceNumber, amount (USDC), items (desc/qty/unit), company info, customer info, generatedLink
+Payment output: USDC on Base chain + generated payment link
+PDF output: HTML print-to-PDF (browser) or .txt download

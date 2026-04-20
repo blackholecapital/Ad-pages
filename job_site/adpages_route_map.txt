@@ -1,0 +1,68 @@
+adpages_route_map
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S2
+artifact: /job_site/adpages_route_map.txt
+
+=== AD PAGES NAV SURFACE (VISIBLE TO USER) ===
+KEY       LABEL    PATH SUFFIX   VISIBLE IN NAV
+home      Home     /home         YES (exact)
+members   Members  /members      YES
+admin     Admin    /admin        YES
+[login]   Login    (button)      YES — opens AuthModal (unchanged)
+[cart]    —        —             REMOVED
+
+=== AD PAGES DECLARED ROUTE KEYS (routes.ts) ===
+home    /
+members /members
+admin   /admin
+
+=== ADMIN PAGE QUICK-ACTION TABS (AdminPage.tsx) ===
+Pay Me  → /:slug/payme   RETAINED
+Engage  →                REMOVED
+Referrals →              REMOVED
+Skins   →                REMOVED
+Biz Studio →             REMOVED
+
+=== UNDERLYING ROUTER TABLE (router.tsx — runtime intact, not exposed in nav) ===
+PATH PATTERN                          COMPONENT              STATUS
+/                                     Navigate → /home       active
+/home                                 HomePage               active (nav)
+/:slug/home                           HomePage               active (nav)
+/:slug/members                        MembersPage            active (nav)
+/:slug/admin                          AdminPage              active (nav)
+/:designation/:slug/home              HomePage               active (nav)
+/:designation/:slug/members           MembersPage            active (nav)
+/:designation/:slug/admin             AdminPage              active (nav)
+/:slug/services                       ServicesPage           runtime-only (no nav link)
+/:slug/exclusive                      ExclusivePage          runtime-only (no nav link)
+/:slug/customer                       CustomerPage           runtime-only (no nav link)
+/:slug/payme                          PayMePage              runtime-only (admin tab only)
+/:slug/engage                         EngagePage             runtime-only (no nav link)
+/:slug/referrals                      ReferralsPage          runtime-only (no nav link)
+/:slug/skins                          SkinMarketplacePage    runtime-only (no nav link)
+/:slug/studio                         StudioPage             runtime-only (direct URL only)
+/:designation/:slug/services          ServicesPage           runtime-only (no nav link)
+/:designation/:slug/exclusive         ExclusivePage          runtime-only (no nav link)
+/:designation/:slug/customer          CustomerPage           runtime-only (no nav link)
+/:designation/:slug/payme             PayMePage              runtime-only (admin tab only)
+/:designation/:slug/engage            EngagePage             runtime-only (no nav link)
+/:designation/:slug/referrals         ReferralsPage          runtime-only (no nav link)
+/:designation/:slug/skins             SkinMarketplacePage    runtime-only (no nav link)
+/:designation/:slug/studio            StudioPage             runtime-only (direct URL only)
+/members                              MembersPage            active (bare path)
+/services                             ServicesPage           runtime-only
+/exclusive                            ExclusivePage          runtime-only
+/customer                             CustomerPage           runtime-only
+/payme                                PayMePage              runtime-only
+/engage                               EngagePage             runtime-only
+/referrals                            ReferralsPage          runtime-only
+/skins                                SkinMarketplacePage    runtime-only
+/admin                                AdminPage              active (bare path)
+*                                     Navigate → /home       active
+
+=== SURFACE SUMMARY ===
+Nav-visible pages:    3 (Home, Members, Admin)
+Admin quick-actions:  1 (Pay Me)
+Cart:                 REMOVED from shell
+Total nav items:      3 + Login button
+Runtime routes:       all preserved (11 pages)
