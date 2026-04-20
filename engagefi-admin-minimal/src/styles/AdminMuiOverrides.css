@@ -1,0 +1,29 @@
+/* Admin MUI overrides: keep text readable over wallpaper + dark UI */
+.MuiTypography-root,
+.MuiTableCell-root,
+.MuiInputBase-input,
+.MuiInputLabel-root,
+.MuiSelect-select,
+.MuiMenuItem-root,
+.MuiListItemText-primary,
+.MuiChip-label {
+  color: var(--fg) !important;
+}
+
+.MuiTable-root {
+  background: rgba(0, 0, 0, 0.72) !important;
+}
+
+.MuiTableCell-root {
+  border-bottom: 1px solid rgba(0, 255, 170, 0.14) !important;
+}
+
+.MuiDrawer-paper,
+.MuiPaper-root {
+  background-color: rgba(0, 0, 0, 0.90) !important;
+  color: var(--fg) !important;
+}
+
+.MuiAppBar-root {
+  background-color: rgba(0, 0, 0, 0.92) !important;
+}

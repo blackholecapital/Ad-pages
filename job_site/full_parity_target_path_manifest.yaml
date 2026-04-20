@@ -1,0 +1,785 @@
+manifest_id: RB-INT-CHASSIS-002-S2-full-parity-target-path-manifest
+job_id: RB-INT-CHASSIS-002
+stage: S2
+pass: partial — deploy app root only
+worker: worker_a
+authority: exact chassis-native target paths for missing deploy app root surfaces
+source_matrix: /job_site/missing_surface_matrix.yaml
+baseline_source: https://github.com/blackholecapital/gatweay-production-FREEZE
+chassis_root: /home/user/gateway-fullbody-freeze
+declared_deploy_root: apps/product-shell
+
+extension:
+  - stage: S3
+    worker: worker_b
+    pass: complete — modules/engage + modules/payme + modules/referrals + modules/vault; mapping and allowlist only; no file creation
+    sections_added: SECTION 7 — MODULE PACKAGES (all four modules)
+    modules_in_scope:
+      - modules/engage
+      - modules/payme
+      - modules/referrals
+      - modules/vault
+    modules_deferred: []
+    deploy_critical_filter: >
+      Only baseline rows with deploy_critical: yes in
+      /job_site/missing_surface_matrix.yaml §module_packages are mapped.
+      Rows with deploy_critical: no are explicitly excluded.
+    chassis_native_mapping_rule_modules: >
+      Baseline `modules/<name>/` maps to chassis-native `apps/modules/<name>/`
+      for every module processed in this extension. For modules/engage this
+      preserves the baseline relative reference `../modules/engage` declared
+      in `apps/product-shell/package.json` build:engage script. The same
+      mapping rule applies to modules/payme (`apps/modules/payme/`),
+      modules/referrals (`apps/modules/referrals/`), and modules/vault
+      (`apps/modules/vault/`). SECTION 7 is complete for all four modules
+      after this pass; no module_packages entries remain deferred.
+
+scope_lock:
+  included:
+    - deploy_app_root/product-shell package.json
+    - deploy_app_root/product-shell index.html
+    - deploy_app_root/product-shell vite.config.ts
+    - deploy_app_root/product-shell tsconfig.json
+    - deploy_app_root/product-shell tsconfig.node.json
+    - deploy_app_root/product-shell src/main.tsx
+    - deploy_app_root/product-shell src/app/
+    - deploy_app_root/product-shell public/_redirects
+    - deploy_app_root/product-shell functions/api/
+    - deploy_app_root/product-shell functions/_lib/
+  included_module_extension:
+    - apps/modules/engage package.json
+    - apps/modules/engage package-lock.json
+    - apps/modules/engage vite.config.js
+    - apps/modules/engage index.html
+    - apps/modules/engage src/main.jsx
+    - apps/modules/engage src/App.jsx
+    - apps/modules/engage src/ (full tree)
+    - apps/modules/engage public/_redirects
+    - apps/modules/payme package.json
+    - apps/modules/payme vite.config.js
+    - apps/modules/payme index.html
+    - apps/modules/payme src/ (full tree)
+    - apps/modules/referrals package.json
+    - apps/modules/referrals vite.config.js
+    - apps/modules/referrals index.html
+    - apps/modules/referrals src/ (full tree)
+    - apps/modules/referrals public/_redirects
+    - apps/modules/vault package.json
+    - apps/modules/vault vite.config.js
+    - apps/modules/vault index.html
+    - apps/modules/vault _routes.json
+    - apps/modules/vault functions/api/ (14 endpoints)
+    - apps/modules/vault src/ (full tree)
+  excluded:
+    - engagefi-admin-minimal/, payme-admin-minimal/, referral-admin-minimal/ (deferred)
+    - src/components/, src/features/, src/pages/, src/hooks/, src/integrations/, src/runtime/, src/state/, src/styles/, src/utils/, src/config/, src/contracts/, src/mobile/ (deferred)
+    - public/ads/, public/apps/, public/demo/, public/wallpapers/, drip.png (deferred)
+    - tests/ (deferred)
+    - production/, resolver-boundary/, variation-control/, _review-required/ (deferred)
+    - docs/, blueprint/, README.md (deferred)
+
+chassis_native_mapping_rule: >
+  Baseline root directory `product-shell/` maps to chassis-native deploy root
+  `apps/product-shell/`. All baseline-relative paths under `product-shell/` are
+  preserved one-for-one beneath `apps/product-shell/`. This preserves baseline
+  internal relative path semantics while placing the deployable app under the
+  chassis `apps/` root convention already used by apps/core-runtime,
+  apps/operator-shell, apps/web-public, and apps/local-host.
+
+# =============================================================================
+# SECTION 1 — PACKAGE MANIFEST
+# =============================================================================
+package_manifest:
+
+  - baseline_path: product-shell/package.json
+    target_path: apps/product-shell/package.json
+    action: create
+    category: package_manifest
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/package.json
+    declared_contents:
+      name: gateway-demo-zero
+      private: true
+      version: 0.0.0
+      type: module
+      scripts:
+        dev: vite
+        build: "npm run build:engage && vite build"
+        preview: vite preview
+        build:engage: "npm --prefix ../modules/engage install --progress=false && npm --prefix ../modules/engage run build"
+        test: "node --test tests/microfrontend/*.test.mjs"
+        test:pass5: "npm run test"
+        typecheck: "tsc --noEmit"
+      dependencies:
+        react: ^18.3.1
+        react-dom: ^18.3.1
+        react-router-dom: ^6.26.2
+      devDependencies:
+        "@types/react": ^18.3.3
+        "@types/react-dom": ^18.3.0
+        "@vitejs/plugin-react": ^4.3.1
+        typescript: ^5.5.4
+        vite: ^5.4.2
+    assigned_worker: worker_a_s3
+
+# =============================================================================
+# SECTION 2 — HTML ENTRYPOINT
+# =============================================================================
+html_entrypoint:
+
+  - baseline_path: product-shell/index.html
+    target_path: apps/product-shell/index.html
+    action: create
+    category: html_entrypoint
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/index.html
+    declared_contents_summary: >
+      <!doctype html> with <html lang="en">, meta charset UTF-8, meta viewport,
+      <title>Gateway</title>, favicon link to /drip.png (icon + apple-touch-icon),
+      <body> containing <div id="root"></div> and
+      <script type="module" src="/src/main.tsx"></script>.
+    assigned_worker: worker_a_s3
+
+# =============================================================================
+# SECTION 3 — BUILD CONFIGS
+# =============================================================================
+build_configs:
+
+  - baseline_path: product-shell/vite.config.ts
+    target_path: apps/product-shell/vite.config.ts
+    action: create
+    category: build_config
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/vite.config.ts
+    declared_contents_summary: >
+      import { defineConfig } from "vite";
+      import react from "@vitejs/plugin-react";
+      export default defineConfig({ plugins: [react()], server: { port: 5173 } });
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/tsconfig.json
+    target_path: apps/product-shell/tsconfig.json
+    action: create
+    category: build_config
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/tsconfig.json
+    declared_contents_summary: >
+      compilerOptions: target ES2022, useDefineForClassFields true,
+      lib ["ES2022","DOM","DOM.Iterable"], module ESNext, skipLibCheck true,
+      moduleResolution "Bundler", resolveJsonModule true, isolatedModules true,
+      noEmit true, jsx "react-jsx", strict true, types ["vite/client"];
+      include ["src"].
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/tsconfig.node.json
+    target_path: apps/product-shell/tsconfig.node.json
+    action: create
+    category: build_config
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/tsconfig.node.json
+    declared_contents_summary: >
+      Node-side tsconfig used by vite.config.ts tooling (10 lines; exact
+      contents to be copied verbatim from baseline in S3).
+    assigned_worker: worker_a_s3
+
+# =============================================================================
+# SECTION 4 — APP BOOTSTRAP (src/main.tsx + src/app/)
+# =============================================================================
+app_bootstrap:
+
+  - baseline_path: product-shell/src/main.tsx
+    target_path: apps/product-shell/src/main.tsx
+    action: create
+    category: app_bootstrap
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/src/main.tsx
+    declared_role: >
+      React bundler entrypoint referenced by apps/product-shell/index.html
+      script tag. Mounts AppShell into the #root element.
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/src/app/
+    target_path: apps/product-shell/src/app/
+    action: create_directory
+    category: app_bootstrap_root
+    deploy_critical: yes
+
+  - baseline_path: product-shell/src/app/AppShell.tsx
+    target_path: apps/product-shell/src/app/AppShell.tsx
+    action: create
+    category: app_bootstrap
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/src/app/AppShell.tsx
+    declared_role: >
+      Top-level app shell component consumed by src/main.tsx. Hosts router
+      mount point and global layout providers.
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/src/app/router.tsx
+    target_path: apps/product-shell/src/app/router.tsx
+    action: create
+    category: router_bootstrap
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/src/app/router.tsx
+    declared_role: >
+      react-router-dom router instance definition consumed by AppShell. Uses
+      route table from ./routes.ts.
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/src/app/routes.ts
+    target_path: apps/product-shell/src/app/routes.ts
+    action: create
+    category: router_bootstrap
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/src/app/routes.ts
+    declared_role: >
+      Route table consumed by router.tsx. Exports the declarative route
+      list for the Gateway deploy app.
+    assigned_worker: worker_a_s3
+
+# =============================================================================
+# SECTION 5 — PUBLIC ASSETS (_redirects only, scoped pass)
+# =============================================================================
+public_assets:
+
+  - baseline_path: product-shell/public/
+    target_path: apps/product-shell/public/
+    action: create_directory
+    category: public_root
+    deploy_critical: yes
+
+  - baseline_path: product-shell/public/_redirects
+    target_path: apps/product-shell/public/_redirects
+    action: create
+    category: redirects
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/public/_redirects
+    declared_contents: |
+      /apps/payme/*    /apps/payme/index.html    200
+      /apps/engage/*   /apps/engage/index.html   200
+      /apps/referrals/* /apps/referrals/index.html 200
+      /apps/vault/*    /apps/vault/index.html    200
+
+      /*    /index.html   200
+    assigned_worker: worker_a_s3
+
+# =============================================================================
+# SECTION 6 — CLOUDFLARE PAGES FUNCTIONS
+# =============================================================================
+pages_functions:
+
+  - baseline_path: product-shell/functions/
+    target_path: apps/product-shell/functions/
+    action: create_directory
+    category: pages_functions_root
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/api/
+    target_path: apps/product-shell/functions/api/
+    action: create_directory
+    category: pages_functions_api_root
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/_lib/
+    target_path: apps/product-shell/functions/_lib/
+    action: create_directory
+    category: pages_functions_lib_root
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/api/microfrontend-bootstrap.js
+    target_path: apps/product-shell/functions/api/microfrontend-bootstrap.js
+    action: create
+    category: pages_function
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/functions/api/microfrontend-bootstrap.js
+    route_binding: /api/microfrontend-bootstrap
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/functions/api/microfrontend-trust-log.js
+    target_path: apps/product-shell/functions/api/microfrontend-trust-log.js
+    action: create
+    category: pages_function
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/functions/api/microfrontend-trust-log.js
+    route_binding: /api/microfrontend-trust-log
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/functions/api/page.js
+    target_path: apps/product-shell/functions/api/page.js
+    action: create
+    category: pages_function
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/functions/api/page.js
+    route_binding: /api/page
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/functions/api/published-manifest.js
+    target_path: apps/product-shell/functions/api/published-manifest.js
+    action: create
+    category: pages_function
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/functions/api/published-manifest.js
+    route_binding: /api/published-manifest
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/functions/api/published-page.js
+    target_path: apps/product-shell/functions/api/published-page.js
+    action: create
+    category: pages_function
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/functions/api/published-page.js
+    route_binding: /api/published-page
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/functions/_lib/runtime-compiler.js
+    target_path: apps/product-shell/functions/_lib/runtime-compiler.js
+    action: create
+    category: pages_function_lib
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/functions/_lib/runtime-compiler.js
+    consumed_by:
+      - apps/product-shell/functions/api/microfrontend-bootstrap.js
+      - apps/product-shell/functions/api/published-manifest.js
+      - apps/product-shell/functions/api/published-page.js
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/functions/_lib/runtime-r2.js
+    target_path: apps/product-shell/functions/_lib/runtime-r2.js
+    action: create
+    category: pages_function_lib
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/functions/_lib/runtime-r2.js
+    consumed_by:
+      - apps/product-shell/functions/api/microfrontend-bootstrap.js
+      - apps/product-shell/functions/api/published-manifest.js
+      - apps/product-shell/functions/api/published-page.js
+    assigned_worker: worker_a_s3
+
+  - baseline_path: product-shell/functions/_lib/runtime-schema.js
+    target_path: apps/product-shell/functions/_lib/runtime-schema.js
+    action: create
+    category: pages_function_lib
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/product-shell/functions/_lib/runtime-schema.js
+    consumed_by:
+      - apps/product-shell/functions/api/microfrontend-bootstrap.js
+      - apps/product-shell/functions/api/published-manifest.js
+      - apps/product-shell/functions/api/published-page.js
+    assigned_worker: worker_a_s3
+
+# =============================================================================
+# SECTION 7 — MODULE PACKAGES (S3 worker_b extension)
+# =============================================================================
+# Only baseline rows with deploy_critical: yes in missing_surface_matrix.yaml
+# §module_packages are mapped. Baseline `modules/<name>/` maps to chassis-native
+# `apps/modules/<name>/` preserving baseline `../modules/<name>` relative
+# reference semantics from apps/product-shell/package.json.
+module_packages:
+
+  # ─── modules/engage ────────────────────────────────────────────────────────
+
+  - baseline_path: modules/engage/
+    target_path: apps/modules/engage/
+    action: create_directory
+    category: module_package_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/engage/package.json
+    target_path: apps/modules/engage/package.json
+    action: create
+    category: package_manifest
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/engage/package.json
+    consumed_by: apps/product-shell/package.json build:engage script via `npm --prefix ../modules/engage install`
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/engage/package-lock.json
+    target_path: apps/modules/engage/package-lock.json
+    action: create
+    category: package_manifest
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/engage/package-lock.json
+    consumed_by: deterministic npm install for modules/engage
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/engage/vite.config.js
+    target_path: apps/modules/engage/vite.config.js
+    action: create
+    category: build_config
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/engage/vite.config.js
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/engage/index.html
+    target_path: apps/modules/engage/index.html
+    action: create
+    category: html_entrypoint
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/engage/index.html
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/engage/src/
+    target_path: apps/modules/engage/src/
+    action: create_directory
+    category: module_source_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/engage/src/main.jsx
+    target_path: apps/modules/engage/src/main.jsx
+    action: create
+    category: app_bootstrap
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/engage/src/main.jsx
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/engage/src/App.jsx
+    target_path: apps/modules/engage/src/App.jsx
+    action: create
+    category: app_bootstrap
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/engage/src/App.jsx
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/engage/src/ (full tree)
+    target_path: apps/modules/engage/src/ (full subtree)
+    action: create_subtree
+    category: module_source_tree
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/tree/main/modules/engage/src
+    notes: admin/, components/, lib/, pages/, styles/ (37 files total per missing_surface_matrix.yaml)
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/engage/public/
+    target_path: apps/modules/engage/public/
+    action: create_directory
+    category: public_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/engage/public/_redirects
+    target_path: apps/modules/engage/public/_redirects
+    action: create
+    category: redirects
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/engage/public/_redirects
+    assigned_worker: worker_b_s3
+
+  # Excluded from SECTION 7 (deploy_critical: no in source matrix):
+  # modules/engage/supabase_schema.sql — runtime_support, not deploy-critical
+
+  # ─── modules/payme ─────────────────────────────────────────────────────────
+
+  - baseline_path: modules/payme/
+    target_path: apps/modules/payme/
+    action: create_directory
+    category: module_package_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/payme/package.json
+    target_path: apps/modules/payme/package.json
+    action: create
+    category: package_manifest
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/payme/package.json
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/payme/vite.config.js
+    target_path: apps/modules/payme/vite.config.js
+    action: create
+    category: build_config
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/payme/vite.config.js
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/payme/index.html
+    target_path: apps/modules/payme/index.html
+    action: create
+    category: html_entrypoint
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/payme/index.html
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/payme/src/
+    target_path: apps/modules/payme/src/
+    action: create_directory
+    category: module_source_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/payme/src/ (full tree)
+    target_path: apps/modules/payme/src/ (full subtree)
+    action: create_subtree
+    category: module_source_tree
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/tree/main/modules/payme/src
+    notes: App.jsx, main.jsx, components/, config/, pages/, services/, styles/, utils/ (30 files total per missing_surface_matrix.yaml)
+    assigned_worker: worker_b_s3
+
+  # Excluded from SECTION 7 for modules/payme (source matrix does not declare any
+  # deploy_critical: no rows for payme; payme has no package-lock.json,
+  # no public/_redirects, no _routes.json, no functions/ in missing_surface_matrix.yaml).
+
+  # ─── modules/referrals ─────────────────────────────────────────────────────
+
+  - baseline_path: modules/referrals/
+    target_path: apps/modules/referrals/
+    action: create_directory
+    category: module_package_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/referrals/package.json
+    target_path: apps/modules/referrals/package.json
+    action: create
+    category: package_manifest
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/referrals/package.json
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/referrals/vite.config.js
+    target_path: apps/modules/referrals/vite.config.js
+    action: create
+    category: build_config
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/referrals/vite.config.js
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/referrals/index.html
+    target_path: apps/modules/referrals/index.html
+    action: create
+    category: html_entrypoint
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/referrals/index.html
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/referrals/src/
+    target_path: apps/modules/referrals/src/
+    action: create_directory
+    category: module_source_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/referrals/src/ (full tree)
+    target_path: apps/modules/referrals/src/ (full subtree)
+    action: create_subtree
+    category: module_source_tree
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/tree/main/modules/referrals/src
+    notes: App.jsx, main.jsx, components/widgets/, lib/, pages/, styles/ (30 files total per missing_surface_matrix.yaml)
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/referrals/public/
+    target_path: apps/modules/referrals/public/
+    action: create_directory
+    category: public_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/referrals/public/_redirects
+    target_path: apps/modules/referrals/public/_redirects
+    action: create
+    category: redirects
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/referrals/public/_redirects
+    assigned_worker: worker_b_s3
+
+  # Excluded from SECTION 7 for modules/referrals (source matrix declares no
+  # deploy_critical: no rows for referrals; referrals has no package-lock.json,
+  # no _routes.json, no functions/ in missing_surface_matrix.yaml).
+
+  # ─── modules/vault ─────────────────────────────────────────────────────────
+
+  - baseline_path: modules/vault/
+    target_path: apps/modules/vault/
+    action: create_directory
+    category: module_package_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/vault/package.json
+    target_path: apps/modules/vault/package.json
+    action: create
+    category: package_manifest
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/vault/package.json
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/vault/vite.config.js
+    target_path: apps/modules/vault/vite.config.js
+    action: create
+    category: build_config
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/vault/vite.config.js
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/vault/index.html
+    target_path: apps/modules/vault/index.html
+    action: create
+    category: html_entrypoint
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/vault/index.html
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/vault/_routes.json
+    target_path: apps/modules/vault/_routes.json
+    action: create
+    category: cloudflare_routes
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/blob/main/modules/vault/_routes.json
+    notes: Cloudflare Pages routing config (excluded paths, include paths) governing which vault paths are served by Pages Functions and which fall through to static assets
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/vault/functions/
+    target_path: apps/modules/vault/functions/
+    action: create_directory
+    category: pages_functions_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/vault/functions/api/
+    target_path: apps/modules/vault/functions/api/
+    action: create_directory
+    category: pages_functions_api_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/vault/functions/api/ (14 endpoints)
+    target_path: apps/modules/vault/functions/api/ (14 endpoints)
+    action: create_subtree
+    category: pages_functions
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/tree/main/modules/vault/functions/api
+    notes: >
+      14 endpoints per missing_surface_matrix.yaml notes —
+      1inch-allowance, 1inch-approve-tx, 1inch-quote, 1inch-swap-tx,
+      1inch-tokens, 1inch/[[path]], 1inch/1inch-balances, balances, quote,
+      plus additional baseline endpoints declared in the baseline subtree.
+      Exact file list is copied verbatim from baseline under the
+      create_subtree action.
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/vault/src/
+    target_path: apps/modules/vault/src/
+    action: create_directory
+    category: module_source_root
+    deploy_critical: yes
+    assigned_worker: worker_b_s3
+
+  - baseline_path: modules/vault/src/ (full tree)
+    target_path: apps/modules/vault/src/ (full subtree)
+    action: create_subtree
+    category: module_source_tree
+    deploy_critical: yes
+    source_ref: https://github.com/blackholecapital/gatweay-production-FREEZE/tree/main/modules/vault/src
+    notes: App.jsx, AppRoutes.jsx, main.jsx, components/, data/, lib/, pages/, styles/, theme/ (60+ files total per missing_surface_matrix.yaml)
+    assigned_worker: worker_b_s3
+
+  # Excluded from SECTION 7 for modules/vault (deploy_critical: no in source matrix):
+  # modules/vault/Vault.MktMaker-main/ — vendor_subtree, not deploy-critical
+
+  # ─── modules/blueprint ─────────────────────────────────────────────────────
+  # modules/blueprint/module-boundary-list.md — deploy_critical: no (module_docs);
+  # not part of any module_package target path mapping.
+
+# =============================================================================
+# SUMMARY
+# =============================================================================
+summary:
+  declared_deploy_root: apps/product-shell
+  files_to_create: 17
+  directories_to_create: 6
+  create_list:
+    - apps/product-shell/package.json
+    - apps/product-shell/index.html
+    - apps/product-shell/vite.config.ts
+    - apps/product-shell/tsconfig.json
+    - apps/product-shell/tsconfig.node.json
+    - apps/product-shell/src/main.tsx
+    - apps/product-shell/src/app/AppShell.tsx
+    - apps/product-shell/src/app/router.tsx
+    - apps/product-shell/src/app/routes.ts
+    - apps/product-shell/public/_redirects
+    - apps/product-shell/functions/api/microfrontend-bootstrap.js
+    - apps/product-shell/functions/api/microfrontend-trust-log.js
+    - apps/product-shell/functions/api/page.js
+    - apps/product-shell/functions/api/published-manifest.js
+    - apps/product-shell/functions/api/published-page.js
+    - apps/product-shell/functions/_lib/runtime-compiler.js
+    - apps/product-shell/functions/_lib/runtime-r2.js
+    - apps/product-shell/functions/_lib/runtime-schema.js
+  directory_create_list:
+    - apps/product-shell/
+    - apps/product-shell/src/
+    - apps/product-shell/src/app/
+    - apps/product-shell/public/
+    - apps/product-shell/functions/
+    - apps/product-shell/functions/api/
+    - apps/product-shell/functions/_lib/
+  deferred_to_later_s2_pass:
+    - app_component_tree        # src/components/, src/features/, src/pages/, etc.
+    - app_support_tree          # src/hooks/, src/runtime/, src/state/, src/utils/, src/config/, src/contracts/, src/integrations/, src/styles/, src/mobile/
+    - public_assets_full        # public/ads/, public/apps/, public/demo/, public/wallpapers/, drip.png
+    - tests                     # tests/microfrontend/*.test.mjs
+    - admin_apps                # engagefi-admin-minimal, payme-admin-minimal, referral-admin-minimal
+    - production_support        # production/
+    - resolver_boundary         # resolver-boundary/
+    - variation_control         # variation-control/
+    - review_artifacts          # _review-required/
+    - docs                      # product-shell/README.md, blueprint/, docs/
+    # module_packages removed from deferred list — completed in SECTION 7 (S3 worker_b)
+
+module_packages_summary:
+  added_by: worker_b_s3
+  pass: mapping complete — all four module packages (engage, payme, referrals, vault); no file creation
+  modules_mapped: 4                    # engage + payme + referrals + vault
+  modules_deferred: 0                  # none — SECTION 7 complete
+  files_to_create: 18                  # engage: 7 + payme: 3 + referrals: 4 + vault: 4 (package.json, vite.config.js, index.html, _routes.json)
+  subtrees_to_create: 5                # engage src/ + payme src/ + referrals src/ + vault src/ + vault functions/api/
+  directories_to_create: 13            # apps/modules/, 4 module roots, 4 src/, 2 public/ (engage, referrals), vault functions/, vault functions/api/
+  create_list_flat_files:
+    - apps/modules/engage/package.json
+    - apps/modules/engage/package-lock.json
+    - apps/modules/engage/vite.config.js
+    - apps/modules/engage/index.html
+    - apps/modules/engage/src/main.jsx
+    - apps/modules/engage/src/App.jsx
+    - apps/modules/engage/public/_redirects
+    - apps/modules/payme/package.json
+    - apps/modules/payme/vite.config.js
+    - apps/modules/payme/index.html
+    - apps/modules/referrals/package.json
+    - apps/modules/referrals/vite.config.js
+    - apps/modules/referrals/index.html
+    - apps/modules/referrals/public/_redirects
+    - apps/modules/vault/package.json
+    - apps/modules/vault/vite.config.js
+    - apps/modules/vault/index.html
+    - apps/modules/vault/_routes.json
+  subtree_list:
+    - apps/modules/engage/src/ (full tree; 37 files)
+    - apps/modules/payme/src/ (full tree; 30 files)
+    - apps/modules/referrals/src/ (full tree; 30 files)
+    - apps/modules/vault/src/ (full tree; 60+ files)
+    - apps/modules/vault/functions/api/ (14 endpoints)
+  directory_create_list:
+    - apps/modules/
+    - apps/modules/engage/
+    - apps/modules/engage/src/
+    - apps/modules/engage/public/
+    - apps/modules/payme/
+    - apps/modules/payme/src/
+    - apps/modules/referrals/
+    - apps/modules/referrals/src/
+    - apps/modules/referrals/public/
+    - apps/modules/vault/
+    - apps/modules/vault/src/
+    - apps/modules/vault/functions/
+    - apps/modules/vault/functions/api/
+  excluded_from_this_pass:
+    - modules/engage/supabase_schema.sql         # deploy_critical: no (runtime_support)
+    - modules/vault/Vault.MktMaker-main/         # deploy_critical: no (vendor_subtree)
+    - modules/blueprint/module-boundary-list.md  # deploy_critical: no (module_docs)
+  deferred_to_later_subpass: []          # SECTION 7 is now complete for all four modules

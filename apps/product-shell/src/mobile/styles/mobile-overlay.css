@@ -1,0 +1,134 @@
+.mobilePublishedOverlayStage{
+  position: relative;
+  width: 100%;
+  max-width: 368px;
+  margin: 0 auto;
+}
+
+.mobilePublishedOverlayCard{
+  position: absolute;
+  border-radius: 16px;
+  background: transparent;
+  padding: 16px;
+}
+
+.mobilePublishedOverlayBadge{
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.16);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mobilePublishedOverlayTitle{
+  margin: 0 36px 12px 0;
+  font-size: 17px;
+  line-height: 1.25;
+  font-weight: 900;
+}
+
+.mobilePublishedOverlayBody{
+  display: grid;
+  gap: 8px;
+  color: rgba(255,255,255,.86);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.mobilePublishedOverlayLine{
+  overflow-wrap: anywhere;
+}
+
+.mobilePublishedOverlayCardMedia{
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+.overlayMediaFrameMobile{
+  position: absolute;
+  inset: 0;
+}
+
+/* ── Mobile-native canvas (percentage-based, 430×860 studio coordinates) ── */
+.mobileNativeCanvas{
+  /* dimensions are set inline (width:100%, padding-bottom:aspect%) */
+  max-width: 430px;   /* centred on desktop / tablet */
+  margin: 0 auto;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .mobileNativeCanvas {
+    max-width: 100%;
+    padding-bottom: 0 !important;
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+.mobileNativeCard{
+  /* left/top/width/height set inline as percentages */
+  border-radius: 2.5%;   /* scales with the card */
+  background: transparent;
+  overflow: hidden;
+}
+
+.mobileNativeCardMedia{
+  background: transparent;
+}
+
+.mobileNativeBadge{
+  position: absolute;
+  top: 6%;
+  right: 6%;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.16);
+  font-size: 11px;
+  font-weight: 900;
+  pointer-events: none;
+}
+
+.mobileNativeCardInner{
+  position: absolute;
+  inset: 0;
+  padding: 10% 8%;
+  display: flex;
+  flex-direction: column;
+  gap: 6%;
+  background: transparent;
+}
+
+.mobileNativeTitle{
+  margin: 0;
+  padding-right: 28px;
+  font-size: clamp(13px, 3.5vw, 18px);
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.mobileNativeBody{
+  display: grid;
+  gap: 4px;
+  color: rgba(255,255,255,.86);
+  font-size: clamp(11px, 3vw, 14px);
+  line-height: 1.4;
+}
+
+.mobileNativeLine{
+  overflow-wrap: anywhere;
+}

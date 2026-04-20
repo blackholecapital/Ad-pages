@@ -1,0 +1,83 @@
+# Cloudflare Pages _redirects - apps/product-shell
+# job_id: BIZ-PAGES-PROD-DETANGLE-002 / S5.3 / Worker B
+# checkpoint: CP-S5-REDIRECTS-NOLOOP
+#
+# ---------------------------------------------------------------------------
+# Why this file contains no splat-to-child rules
+# ---------------------------------------------------------------------------
+# The prior revision declared three rules that Cloudflare Pages' redirect
+# parser classified as infinite redirects and therefore silently discarded
+# the full rule set:
+#
+#   /apps/payme/*    /apps/payme/index.html    200
+#   /apps/engage/*   /apps/engage/index.html   200
+#   /*               /index.html               200
+#
+# In each case the destination path is itself matched by the source splat:
+#   - "/apps/payme/index.html"  is captured by "/apps/payme/*"
+#   - "/apps/engage/index.html" is captured by "/apps/engage/*"
+#   - "/index.html"             is captured by "/*"
+#
+# Cloudflare treats each of those as a self-referential rewrite (the rewrite
+# target re-matches the rule's own pattern), flags the rule as a loop, and
+# drops the entire _redirects file. Symptom observed in the cutover deploy
+# logs: deploy "succeeded" but every path either 404'd or returned the bare
+# asset with no SPA shell, because no _redirects rule actually evaluated.
+#
+# ---------------------------------------------------------------------------
+# Replacement routing contract (non-looping, Cloudflare-Pages-native)
+# ---------------------------------------------------------------------------
+# All live paths are served by Cloudflare's static asset resolution, which
+# does not use _redirects and therefore cannot loop:
+#
+#   Request path                 Served from (physical file)
+#   ---------------------------- ------------------------------------------
+#   /                            dist/index.html
+#   /index.html                  dist/index.html
+#   /apps/payme/                 public/apps/payme/index.html (dir index)
+#   /apps/payme/index.html       public/apps/payme/index.html (exact)
+#   /apps/payme/assets/*         public/apps/payme/assets/* (exact)
+#   /apps/engage/                public/apps/engage/index.html (dir index)
+#   /apps/engage/index.html      public/apps/engage/index.html (exact)
+#   /apps/engage/assets/*        public/apps/engage/assets/* (exact)
+#   /biz-pages.png, /w9*.png     public/* (exact)
+#   /api/*                       Pages Functions (functions/api/*)
+#
+# The iframe mount contract required by S5.3 - "Ensure iframe apps still
+# resolve correctly under /apps/{name}/" - is satisfied by the directory
+# index resolution above: when the GATED build produces
+# apps/product-shell/public/apps/{payme,engage}/index.html, Cloudflare
+# serves those files for /apps/{name}/ navigation without any rewrite rule.
+# See /job_site/module_deploy_gate_spec.md §2 rows 2-3 for the GATED
+# precondition.
+#
+# ---------------------------------------------------------------------------
+# What this file intentionally does NOT declare
+# ---------------------------------------------------------------------------
+# - No product-shell SPA splat catch-all (/* -> /index.html). The
+#   product-shell React Router uses createBrowserRouter with dynamic
+#   segments (:slug, :designation/:slug, :slug/gate, ...). Hard-refresh
+#   deep-link recovery for those dynamic paths is NOT required by the
+#   S5.3 iframe-mount contract and is deferred to a Pages Function
+#   (apps/product-shell/functions/[[catchall]].ts, S6 scope) where a
+#   programmatic rewrite can inspect the URL without being subject to
+#   _redirects loop detection. Adding a splat-based catch-all here would
+#   re-trigger the same loop discard that S5.3 is chartered to fix.
+# - No /apps/payme/* and /apps/engage/* rewrites. Iframe apps at those
+#   paths are resolved via physical index.html + directory index (above).
+#   Iframe-internal BrowserRouter deep-link refresh is handled client-side
+#   when the iframe reloads at its base path.
+# - No rules for /apps/referrals/* or /apps/vault/*. Those modules are
+#   EXCLUDED from the product-shell deploy; see
+#   /job_site/deploy_cleanup_manifest.md §2.1 and §2.2.
+#
+# ---------------------------------------------------------------------------
+# Invariant check for future edits
+# ---------------------------------------------------------------------------
+# Any rule added below MUST satisfy: the destination path MUST NOT be
+# matched by the source pattern. Failing this invariant returns the
+# project to the loop-discard state documented above.
+#
+# File intentionally has no active rules. Directory-index static serving
+# is the routing layer. This is valid for Cloudflare Pages - an empty (or
+# comments-only) _redirects is accepted and simply means "no rewrites".

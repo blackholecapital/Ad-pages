@@ -1,0 +1,40 @@
+.page{
+  position:relative;
+  z-index:2;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 18px 14px 84px;
+}
+.shell{
+  display:grid;
+  grid-template-columns: 360px 1fr;
+  gap: var(--gap);
+  align-items:start;
+}
+
+.questsTopRow{
+  display:grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--gap);
+  align-items:start;
+}
+
+.questsList{
+  width: 100%;
+  max-width: calc(100% - 360px - var(--gap));
+}
+
+@media (max-width: 980px){
+  .shell{
+    grid-template-columns: 1fr;
+  }
+    .questsTopRow{
+    grid-template-columns: 1fr;
+  }
+  .questsList{
+    max-width: 100%;
+  }
+}
+
+

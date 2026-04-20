@@ -1,0 +1,519 @@
+form_id:build-sheet
+
+1. JOB
+   1.1 job_id: BIZ-PAGES-PROD-DETANGLE-002
+   1.2 job_name: Biz Pages fullscreen renderer repair + Cloudflare binding reset path + resolver unification + wallet/connect cleanup
+   1.3 objective: Acknowledge and repair the confirmed stacked failure as execution truth: (a) Biz Pages is not rendering the premium shell fullscreen at the required desktop target and is drifting from the Gateway/Studio runtime contract, (b) the Cloudflare Pages project state is deeper than bucket recreation and must be treated as poisoned control-plane metadata until proven otherwise, (c) runtime media/wallpaper resolution is mismatched, and (d) wallet-connect duplication plus redirect/deploy noise must be removed for final production readiness.
+   1.4 requested_outcome: Biz Pages renders the premium desktop shell fullscreen against the target desktop display envelope using the deployed stage contract, wallpaper and sticker tiles resolve through one working resolver path, Cloudflare deploy no longer depends on hidden/broken Pages metadata, redirect loops are removed, wallet-connect is consolidated to one updated implementation across shell/payme/engage/furlink surfaces, and one known premium slug passes Studio save → object write → publish → Biz render end-to-end.
+   1.5 target_root_path: /job_site/repo_mirror/Biz-Pages-FB-frozen-main
+   1.6 target_repo_url:
+   1.7 inspection_url:
+
+2. RUN CONTROL
+   2.1 mode: lean-factory single deterministic repair run with explicit Cloudflare cutover gate
+   2.2 execution_foreman: Foreman A
+   2.3 checksum_foreman: Foreman B
+   2.4 final_validator: Factory Control Interface
+
+3. TAG FORMAT
+   3.1 foreman_header
+   3.1.1 job_id: BIZ-PAGES-PROD-DETANGLE-002
+   3.1.2 foreman:
+   3.1.3 current_stage:
+   3.1.4 current_pass:
+   3.1.5 next_stage:
+   3.1.6 next_owner:
+   3.1.7 passes_remaining:
+   3.1.8 status:
+   3.1.9 current_action:
+
+3.2 worker_tag_format
+3.2.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER | STAGE | RESULT]
+
+4. PATHS
+   4.1 stage_activity_log: /job_site/stage_activity_log.txt
+   4.2 final_checksum_path: /job_site/final_checksum.md
+   4.3 final_tps_report: /job_site/TPS_REPORT.txt
+
+5. REFERENCES
+   5.1 required_references:
+   5.1.1 /job_site/factory-manual-v1.11.txt
+   5.1.2 /job_site/foreman-manual-v1.11.txt
+   5.1.3 /job_site/worker-execution-manual-v1.1.txt
+   5.1.4 /job_site/build-sheet-active.txt
+   5.1.5 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell
+   5.1.6 /job_site/reference_repo_gateway/gateway-integration-main
+   5.1.7 /job_site/chassis/FULLBODY-CHASSIE-V1-FROZEN--main
+   5.1.8 /job_site/cloudflare_runtime_notes.md
+   5.1.9 /job_site/operator_test_prompts.md
+   5.1.10 /job_site/known_slug_test_vector.json
+   5.1.11 /job_site/wallet_surface_inventory.md
+   5.1.12 /job_site/runtime_parity_matrix.md
+   5.1.13 /job_site/deploy_cutover_spec.md
+   5.2 external_references:
+   5.2.1 existing Cloudflare Worker that fronts bucket access
+   5.2.2 existing R2 bucket binding names and worker environment settings
+   5.2.3 existing Biz Pages project and any replacement Pages/Worker deploy target chosen during cutover stage
+
+6. STAGE
+   6.1 stage_id: S1
+   6.2 stage_name: full audit baseline and fault localization
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Mirror the Biz repo and Gateway reference repo into /job_site/, inventory renderer/resolver/deploy/wallet surfaces, and prove exact code-path divergence causing non-fullscreen wallpaper and bucket/deploy instability before any mutation.
+   6.5 stage_inputs:
+   6.5.1 Biz-Pages-FB-frozen-main archive
+   6.5.2 gateway-integration-main archive
+   6.5.3 chassis archive
+   6.5.4 operator handoff findings
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER A | S1 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Extract and mirror the Biz repo, Gateway reference repo, and chassis into /job_site/. Produce a code audit focused on premium shell rendering, wallpaper scaling, published runtime fetch/compile path, worker/R2 binding references, redirect files, and wallet-connect surfaces. Identify exact files and functions that currently keep Biz on mixed legacy/static and premium paths.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main
+6.6.4.2 /job_site/reference_repo_gateway/gateway-integration-main
+6.6.4.3 /job_site/chassis/FULLBODY-CHASSIE-V1-FROZEN--main
+6.6.4.4 /job_site/runtime_parity_matrix.md
+6.6.4.5 /job_site/wallet_surface_inventory.md
+6.6.4.6 /job_site/deploy_surface_inventory.md
+6.6.4.7 /job_site/wallpaper_renderer_fault_report.md
+6.6.5 required_references:
+6.6.5.1 /job_site/chassis/FULLBODY-CHASSIE-V1-FROZEN--main
+6.6.5.2 /job_site/reference_repo_gateway/gateway-integration-main
+6.6.5.3 /job_site/repo_mirror/Biz-Pages-FB-frozen-main
+6.6.5.4 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER B | S1 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Produce a Cloudflare-specific baseline note that separates repo-config state from dashboard/project metadata state. Record current assumptions for Pages project, Worker fronting pattern, R2 bindings, bucket names, and the operator belief that the failure lives in worker/settings rather than bucket data. Do not modify deploy targets yet.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/cloudflare_runtime_notes.md
+6.7.4.2 /job_site/deploy_cutover_spec.md
+6.7.5 required_references:
+6.7.5.1 /job_site/build-sheet-active.txt
+6.7.5.2 /job_site/runtime_parity_matrix.md
+6.7.5.3 /job_site/wallpaper_renderer_fault_report.md
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/runtime_parity_matrix.md
+6.8.2 /job_site/wallpaper_renderer_fault_report.md
+6.8.3 /job_site/wallet_surface_inventory.md
+6.8.4 /job_site/cloudflare_runtime_notes.md
+6.8.5 /job_site/deploy_cutover_spec.md
+6.8.6 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S1-AUDIT-LOCK
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Exact files causing renderer mismatch, resolver mismatch, redirect-loop risk, wallet-connect duplication, and Cloudflare control-plane dependency are named with target paths. The audit must explicitly state whether Biz is still using PageShell/published-overlay paths when premium shell data is present, whether stage-space 2560x1440 is being consumed end-to-end, and whether deploy config is absent from repo and therefore hidden in Cloudflare project metadata.
+   7.2 patch_condition: Any required artifact missing; audit is narrative only; no exact paths/functions named; or the baseline fails to separate Worker/R2/Pages responsibilities.
+   7.3 handoff_on_pass: Foreman B validates and releases S2.
+   7.4 handoff_on_patch: Return to Foreman A for exact artifact/path correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S2
+   6.2 stage_name: premium fullscreen renderer repair
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Make Biz render the premium layout fullscreen using the premium receiver path and explicit stage contract, eliminating any fallback that causes zoomed wallpaper or top-left-only rendering.
+   6.5 stage_inputs:
+   6.5.1 /job_site/runtime_parity_matrix.md
+   6.5.2 /job_site/wallpaper_renderer_fault_report.md
+   6.5.3 premium desktop target envelope requirement: 2550x1140 display fit behavior
+   6.5.4 Gateway working reference implementation
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER A | S2 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Patch the Biz shell so premium payloads are detected and routed to one canonical premium receiver path instead of mixed legacy/static overlay behavior. Ensure the runtime consumes shellId, stage metadata, wallpaper, and tile coordinates without reinterpretation. Make the receiver fit the full available viewport while preserving stage aspect ratio and centering, with explicit behavior for the operator’s desktop target envelope.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/DesktopPremiumReceiver.tsx
+6.6.4.2 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/DesktopPremiumShell.tsx
+6.6.4.3 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/useStageScale.ts
+6.6.4.4 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/runtime/types.ts
+6.6.4.5 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/components/layout/PageShell.tsx
+6.6.4.6 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/styles/published-overlay.css
+6.6.4.7 /job_site/renderer_change_manifest.md
+6.6.5 required_references:
+6.6.5.1 /job_site/runtime_parity_matrix.md
+6.6.5.2 /job_site/wallpaper_renderer_fault_report.md
+6.6.5.3 /job_site/reference_repo_gateway/gateway-integration-main
+6.6.5.4 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER B | S2 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Add deterministic renderer tests and operator-visible proof notes for premium fullscreen behavior. Include one test fixture proving stage-space coordinates remain correct, one proof that wallpaper uses the premium shell path, and one proof that the viewport-fit behavior covers the desktop target envelope without top-left clipping.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/**tests**/premium-renderer-parity.test.ts
+6.7.4.2 /job_site/operator_test_prompts.md
+6.7.4.3 /job_site/premium_fullscreen_proof.md
+6.7.5 required_references:
+6.7.5.1 /job_site/renderer_change_manifest.md
+6.7.5.2 /job_site/build-sheet-active.txt
+6.7.5.3 /job_site/runtime_parity_matrix.md
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/renderer_change_manifest.md
+6.8.2 /job_site/premium_fullscreen_proof.md
+6.8.3 /job_site/operator_test_prompts.md
+6.8.4 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/DesktopPremiumReceiver.tsx
+6.8.5 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/useStageScale.ts
+6.8.6 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S2-PREMIUM-FULLSCREEN
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Premium runtime pages take the premium receiver path when shellId is desktop-premium-v1; no mixed overlay fallback remains for premium pages; stage metadata is consumed as execution truth; wallpaper and tiles are rendered in the same premium stage; and the proof notes explicitly cover fullscreen fit at the operator’s desktop target envelope.
+   7.2 patch_condition: Premium payload still renders through PageShell/published-overlay path; wallpaper path remains detached from premium receiver; any top-left clipping persists in tests/proof; or target files are missing.
+   7.3 handoff_on_pass: Foreman B validates and releases S3.
+   7.4 handoff_on_patch: Return to Foreman A for renderer patch.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S3
+   6.2 stage_name: resolver unification across Biz and Gateway contract
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Use one runtime media/wallpaper resolver contract for wallpaper and sticker tiles so Biz resolves the same payload shapes and asset URLs as the working Gateway path.
+   6.5 stage_inputs:
+   6.5.1 /job_site/runtime_parity_matrix.md
+   6.5.2 /job_site/reference_repo_gateway/gateway-integration-main
+   6.5.3 /job_site/cloudflare_runtime_notes.md
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER A | S3 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Audit and patch the Biz runtime compiler, published-page API, and frontend runtime consumption so wallpaper and sticker tile assets resolve through a single contract. Prefer the existing worker-fronted access path where available. Remove any divergent slug-based static wallpaper fallback for published premium pages.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/_lib/runtime-compiler.js
+6.6.4.2 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/_lib/runtime-r2.js
+6.6.4.3 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/api/published-page.js
+6.6.4.4 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/api/published-manifest.js
+6.6.4.5 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/runtime/publishedClient.ts
+6.6.4.6 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/utils/resolveWallpaper.ts
+6.6.4.7 /job_site/resolver_contract_spec.md
+6.6.5 required_references:
+6.6.5.1 /job_site/reference_repo_gateway/gateway-integration-main
+6.6.5.2 /job_site/runtime_parity_matrix.md
+6.6.5.3 /job_site/cloudflare_runtime_notes.md
+6.6.5.4 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER B | S3 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Produce resolver regression fixtures covering wallpaper asset, sticker tile asset, missing asset, and worker-fronted bucket fetch. Record exact expected URL/result behavior and the path used to compute it.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/known_slug_test_vector.json
+6.7.4.2 /job_site/resolver_regression_matrix.md
+6.7.5 required_references:
+6.7.5.1 /job_site/resolver_contract_spec.md
+6.7.5.2 /job_site/runtime_parity_matrix.md
+6.7.5.3 /job_site/build-sheet-active.txt
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/resolver_contract_spec.md
+6.8.2 /job_site/resolver_regression_matrix.md
+6.8.3 /job_site/known_slug_test_vector.json
+6.8.4 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/api/published-page.js
+6.8.5 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/runtime/publishedClient.ts
+6.8.6 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S3-RESOLVER-UNITY
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: One resolver contract exists in writing and in code; premium wallpaper and sticker tiles no longer depend on separate Biz-only behavior; published runtime fetch paths are aligned; and the known slug fixture specifies enough data to prove end-to-end render behavior.
+   7.2 patch_condition: Static wallpaper fallback remains primary for published premium pages; worker-fronted asset path not represented; or fixtures/spec do not map to exact code paths.
+   7.3 handoff_on_pass: Foreman B validates and releases S4.
+   7.4 handoff_on_patch: Return to Foreman A for resolver correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S4
+   6.2 stage_name: wallet-connect consolidation and deploy-surface cleanup
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Remove duplicate wallet-connect implementations, gate optional module baggage out of shell deploys, and eliminate redirect rules that create Pages loop/noise.
+   6.5 stage_inputs:
+   6.5.1 /job_site/wallet_surface_inventory.md
+   6.5.2 /job_site/deploy_surface_inventory.md
+   6.5.3 /job_site/runtime_parity_matrix.md
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER A | S4 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Consolidate wallet-connect usage to one updated implementation and patch all Biz shell/payme/engage/furlink surfaces to consume it. Remove dead or duplicate wallet-connect packages/config where possible without breaking required surfaces.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/modules/engage/src/lib/wagmi.js
+6.6.4.2 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/modules/payme/package.json
+6.6.4.3 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/components/gate/WalletConnectButton.tsx
+6.6.4.4 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/components/admin/AdminPanel.tsx
+6.6.4.5 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/modules
+6.6.4.6 /job_site/wallet_unification_manifest.md
+6.6.5 required_references:
+6.6.5.1 /job_site/wallet_surface_inventory.md
+6.6.5.2 /job_site/build-sheet-active.txt
+6.6.5.3 /job_site/runtime_parity_matrix.md
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER B | S4 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Remove redirect loop risk and deploy noise from shell/public surfaces. Replace invalid global fallback rules with a deploy-safe routing spec for the chosen Cloudflare target. Record optional modules that must be excluded or gated from the shell production path.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/public/_redirects
+6.7.4.2 /job_site/deploy_cleanup_manifest.md
+6.7.4.3 /job_site/module_deploy_gate_spec.md
+6.7.5 required_references:
+6.7.5.1 /job_site/deploy_surface_inventory.md
+6.7.5.2 /job_site/cloudflare_runtime_notes.md
+6.7.5.3 /job_site/build-sheet-active.txt
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/wallet_unification_manifest.md
+6.8.2 /job_site/deploy_cleanup_manifest.md
+6.8.3 /job_site/module_deploy_gate_spec.md
+6.8.4 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/public/_redirects
+6.8.5 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S4-DETANGLE-CLEAN
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: One wallet-connect path is declared and wired; duplicate wallet/connect surfaces are either migrated or gated; redirect loop rules are removed from the production shell path; and optional modules are explicitly marked as included or excluded for production deploy.
+   7.2 patch_condition: More than one wallet-connect implementation remains primary; loop-prone redirects remain; or deploy gating is ambiguous.
+   7.3 handoff_on_pass: Foreman B validates and releases S5.
+   7.4 handoff_on_patch: Return to Foreman A for cleanup correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S5
+   6.2 stage_name: Cloudflare deploy reset and cutover plan
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Eliminate dependency on poisoned Pages metadata by externalizing deploy configuration where possible, defining the preferred target between Pages and Worker-routed delivery, and generating operator-ready cutover/test prompts.
+   6.5 stage_inputs:
+   6.5.1 /job_site/cloudflare_runtime_notes.md
+   6.5.2 /job_site/deploy_cutover_spec.md
+   6.5.3 /job_site/deploy_cleanup_manifest.md
+   6.5.4 existing worker-fronted architecture
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER A | S5 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Create the Cloudflare deployment package and cutover instructions. Prefer repo-declared config over dashboard-only state. If Pages cannot safely represent the required bucket/worker topology, document Worker-first or Worker-plus-static-shell deployment as the primary path. Include exact binding names expected, where they are declared, and where hidden Pages metadata must be abandoned.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/wrangler.toml
+6.6.4.2 /job_site/deploy_cutover_spec.md
+6.6.4.3 /job_site/cloudflare_binding_map.md
+6.6.4.4 /job_site/cloudflare_rebuild_runbook.md
+6.6.5 required_references:
+6.6.5.1 /job_site/cloudflare_runtime_notes.md
+6.6.5.2 /job_site/deploy_cleanup_manifest.md
+6.6.5.3 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER B | S5 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Generate operator test prompts for Cloudflare validation and cutover. Prompts must cover: binding verification, worker route verification, slug fetch verification, wallpaper/sticker asset verification, and rollback decision. Include the mandatory operator question that selects the actual cutover path if Pages and Worker-routed deploy remain materially different at execution time.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/operator_test_prompts.md
+6.7.4.2 /job_site/cloudflare_cutover_checklist.md
+6.7.5 required_references:
+6.7.5.1 /job_site/cloudflare_rebuild_runbook.md
+6.7.5.2 /job_site/deploy_cutover_spec.md
+6.7.5.3 /job_site/build-sheet-active.txt
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/wrangler.toml
+6.8.2 /job_site/cloudflare_binding_map.md
+6.8.3 /job_site/cloudflare_rebuild_runbook.md
+6.8.4 /job_site/cloudflare_cutover_checklist.md
+6.8.5 /job_site/operator_test_prompts.md
+6.8.6 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S5-CF-CUTOVER
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Deploy config exists in repo; the binding map separates Worker bindings from Pages assumptions; the runbook explicitly addresses poisoned Pages metadata by reset or avoidance; and operator test prompts exist for the chosen cutover path.
+   7.2 patch_condition: Deploy remains dashboard-only; binding names/targets are ambiguous; or no operator cutover checklist is produced.
+   7.3 handoff_on_pass: Foreman B validates and releases S6.
+   7.4 handoff_on_patch: Return to Foreman A for Cloudflare packaging correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S6
+   6.2 stage_name: end-to-end regression proof and closeout
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Prove one known premium slug from Studio-style payload through object resolution to Biz render, capture checksum, and close the run with TPS report.
+   6.5 stage_inputs:
+   6.5.1 /job_site/known_slug_test_vector.json
+   6.5.2 /job_site/operator_test_prompts.md
+   6.5.3 /job_site/cloudflare_cutover_checklist.md
+   6.5.4 all prior stage artifacts
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER A | S6 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Execute the regression package inside the repo and produce a final evidence bundle showing the chosen slug’s payload, resolved wallpaper URL, resolved sticker tile URLs, premium stage metadata, and expected fullscreen render path. Include commit and push details for the final production-prep state.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/final_regression_evidence.md
+6.6.4.2 /job_site/final_checksum.md
+6.6.4.3 /job_site/commit_push_record.md
+6.6.5 required_references:
+6.6.5.1 /job_site/known_slug_test_vector.json
+6.6.5.2 /job_site/operator_test_prompts.md
+6.6.5.3 /job_site/cloudflare_cutover_checklist.md
+6.6.5.4 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER B | S6 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Validate final stage artifacts, confirm all checkpoint artifacts exist at exact paths, verify the runbook/test prompts/checksum package are coherent, and write the final TPS report with stage results, patch history, artifact summary, and production closeout note.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/TPS_REPORT.txt
+6.7.4.2 /job_site/final_validation_report.md
+6.7.5 required_references:
+6.7.5.1 /job_site/final_regression_evidence.md
+6.7.5.2 /job_site/final_checksum.md
+6.7.5.3 /job_site/commit_push_record.md
+6.7.5.4 /job_site/build-sheet-active.txt
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/final_regression_evidence.md
+6.8.2 /job_site/final_checksum.md
+6.8.3 /job_site/commit_push_record.md
+6.8.4 /job_site/final_validation_report.md
+6.8.5 /job_site/TPS_REPORT.txt
+6.8.6 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S6-CLOSEOUT
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: One known premium slug is traceable from payload to resolved assets to premium fullscreen render path; final checksum exists; commit/push record exists; all stage artifacts exist; and TPS report is present.
+   7.2 patch_condition: Regression evidence is incomplete, checksum missing, or TPS report absent.
+   7.3 handoff_on_pass: Factory Control Interface final validation and closeout.
+   7.4 handoff_on_patch: Return to Foreman A for exact missing artifact correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. FINAL VALIDATION
+   8.1 required_inputs:
+   8.1.1 /job_site/runtime_parity_matrix.md
+   8.1.2 /job_site/wallpaper_renderer_fault_report.md
+   8.1.3 /job_site/renderer_change_manifest.md
+   8.1.4 /job_site/resolver_contract_spec.md
+   8.1.5 /job_site/wallet_unification_manifest.md
+   8.1.6 /job_site/deploy_cleanup_manifest.md
+   8.1.7 /job_site/cloudflare_rebuild_runbook.md
+   8.1.8 /job_site/operator_test_prompts.md
+   8.1.9 /job_site/final_checksum.md
+   8.1.10 /job_site/TPS_REPORT.txt
+   8.1.11 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/wrangler.toml
+   8.1.12 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/DesktopPremiumReceiver.tsx
+   8.1.13 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/api/published-page.js
+   8.1.14 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/public/_redirects
+   8.2 validation_check_1: Renderer parity check — premium payloads must be routed to the premium receiver and explicitly documented as fullscreen-fit for the target desktop envelope without clipping or legacy fallback.
+   8.3 validation_check_2: Resolver/deploy check — wallpaper and sticker tiles must resolve through one declared contract, and Cloudflare binding/cutover documentation must no longer depend on hidden Pages metadata alone.
+   8.4 validation_check_3: Production detangle check — wallet-connect is consolidated, redirect loops are removed, optional module deploy surface is gated, and one premium slug regression package is complete.
+   8.5 outputs:
+   8.5.1 /job_site/final_checksum.md
+   8.5.2 /job_site/TPS_REPORT.txt
+   8.5.3 /job_site/final_validation_report.md
+   8.6 completion_status: PASS only when all six stages pass with exact artifacts and no missing deploy/cutover documentation.
+
+9. FOREMAN OUTPUT FORM
+   9.1 job_id: BIZ-PAGES-PROD-DETANGLE-002
+   9.2 foreman:
+   9.3 current_stage:
+   9.4 current_pass:
+   9.5 next_stage:
+   9.6 next_owner:
+   9.7 passes_remaining:
+   9.8 status:
+   9.9 current_action:
+   9.10 artifacts:
+   9.11 checkpoint_result:
+   9.12 handoff_instruction:
+   9.13 issue:
+
+10. WORKER DISPATCH FORM
+    10.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER | STAGE | RESULT]
+    10.2 expected_status:
+    10.3 task:
+    10.4 expected_artifacts:
+    10.5 required_references:
+    10.6 repo_mirror_required:
+    10.7 commit_required:
+    10.8 push_required:
+
+11. WORKER RESULT FORM
+    11.1 [BIZ-PAGES-PROD-DETANGLE-002 | WORKER | STAGE | RESULT]
+    11.2 status:
+    11.3 artifacts:
+    11.4 summary:
+    11.5 issues:
+
+12. TPS REPORT FORM
+    12.1 job_id: BIZ-PAGES-PROD-DETANGLE-002
+    12.2 completion_status:
+    12.3 job_summary:
+    12.4 stage_results:
+    12.5 artifact_summary:
+    12.6 patch_history:
+    12.7 closeout_note:
+
+13. REFERENCE MATERIAL
+    13.1 job_site: /job_site
+    13.2 target_file_system: /job_site/repo_mirror/Biz-Pages-FB-frozen-main
+    13.3 factory_manual: /job_site/factory-manual-v1.11.txt
+    13.4 foreman_manual: /job_site/foreman-manual-v1.11.txt
+    13.5 worker_execution_manual: /job_site/worker-execution-manual-v1.1.txt
+    13.6 active_build_sheet: /job_site/build-sheet-active.txt
+    13.7 reference_repo_1:
+    13.7.1 url: /job_site/reference_repo_gateway/gateway-integration-main
+    13.7.2 reference_use: working runtime resolver/renderer contract comparison
+    13.8 reference_repo_2:
+    13.8.1 url: /job_site/chassis/FULLBODY-CHASSIE-V1-FROZEN--main
+    13.8.2 reference_use: active chassis reference for structure and boundary
+    13.9 reference_repo_3:
+    13.9.1 url:
+    13.9.2 reference_use:
+
+FORM LAW BLOCK
+L1. stage numbering must use S1, S2, S3 format only
+L2. field numbering must use 1.1, 1.2, 1.3 format only
+L3. foreman status values allowed: PASS | PATCH | ERROR
+L4. worker status values allowed: PASS | PATCH
+L5. unused fields must remain blank
+L6. do not delete fields from the template
+L7. all expected_artifacts must be exact target paths
+L8. worker dispatch tag must exactly match worker result tag format
+L9. required_references only in worker orders
+L10. all file writes must use declared target paths only

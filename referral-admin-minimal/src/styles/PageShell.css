@@ -1,0 +1,5 @@
+.mm-shell{min-height:100vh;position:relative;overflow-x:hidden;}
+.mm-wallpaper{position:fixed;inset:0;pointer-events:none;background:none;mix-blend-mode:normal;opacity:0;}
+.mm-main{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:18px 0 90px;}
+.mm-toprow{display:flex;gap:var(--gap);align-items:center;margin-top:14px;}
+.mm-content{margin-top:var(--gap);}

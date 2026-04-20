@@ -1,0 +1,351 @@
+.primaryBtn, .secondaryBtn, .ghostBtn {
+  border-radius: 10px;
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.10);
+  color: rgba(255,255,255,.92);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.primaryBtn { background: rgba(46, 204, 113, .18); border-color: rgba(46, 204, 113, .35); }
+.secondaryBtn { background: rgba(255,255,255,.08); }
+.ghostBtn { background: transparent; border-color: rgba(255,255,255,.14); }
+
+.primaryBtn:disabled, .secondaryBtn:disabled, .ghostBtn:disabled { opacity: .55; cursor: not-allowed; }
+
+.statusRow { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+
+.statusPill {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.25);
+  color: rgba(255,255,255,.85);
+}
+.statusPill.on { border-color: rgba(46, 204, 113, .45); }
+.statusPill.off { border-color: rgba(255, 77, 77, .45); }
+
+.accessHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 10px 0 16px 0;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,.28);
+}
+
+.accessHeadline { font-weight: 800; margin-bottom: 6px; }
+.accessActions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.tierGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+
+.tierCard {
+  text-align: left;
+  border-radius: var(--radius);
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.22);
+  color: rgba(255,255,255,.92);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.tierCard.locked { border-color: rgba(255, 77, 77, .40); }
+.tierCard.unlocked { border-color: rgba(46, 204, 113, .50); }
+
+.tierTop { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.tierTitle { font-weight: 900; letter-spacing: .2px; }
+
+.tierTag {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 77, 77, .55);
+  color: rgba(255, 210, 210, .92);
+  background: rgba(255, 77, 77, .12);
+}
+
+.tierDesc { margin-top: 8px; color: rgba(255,255,255,.74); }
+.tierState { margin-top: 12px; font-weight: 800; }
+
+.tierCard.locked .tierState { color: var(--red); }
+.tierCard.unlocked .tierState { color: var(--green); }
+
+.inlineNotice {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.25);
+  color: rgba(255,255,255,.84);
+}
+
+@media (max-width: 960px) { .tierGrid { grid-template-columns: 1fr; } }
+
+
+/* === Access landing (tiers only) === */
+.accessLandingTop {
+  position: relative;
+  z-index: 4;
+  padding-top: 2px;
+  margin: 0 0 10px;
+}
+
+.accessTitleRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.accessTitleRow > .pageHeader {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.accessLeftGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.accessRightGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.accessControlPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 10px;
+  border: 1px solid rgba(59,130,246,.22);
+  background: rgba(255,255,255,.92);
+  color: #1E293B;
+  padding: 7px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+
+.accessControlCheck {
+  width: 16px;
+  height: 16px;
+  color: #2ecc71;
+  flex-shrink: 0;
+}
+
+.tierRowTop {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.tierTopBtn {
+  border-radius: 12px;
+  border: 1px solid rgba(59,130,246,.22);
+  background: rgba(255,255,255,.92);
+  color: #1E293B;
+  padding: 7px 14px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.tierTopBtn.locked { border-color: rgba(59,130,246,.22); background: rgba(255,255,255,.92); }
+.tierTopBtn.unlocked { border-color: #3B82F6; background: rgba(255,255,255,.92); }
+
+.tierTopTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 14px;
+  white-space: nowrap;
+  color: #3B82F6;
+}
+
+.tierLockIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #3B82F6;
+}
+
+.tierLockUnlocked {
+  color: #2ecc71;
+}
+
+.tierSignCard {
+  position: relative;
+  z-index: 10;
+  width: min(280px, 50vw);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.85);
+  box-shadow: 0 20px 50px rgba(0,0,0,.6);
+  padding: 12px 14px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.tierSignTitle { font-weight: 900; font-size: 13px; }
+
+.tierSignActions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+@media (max-width: 780px) {
+  .accessTitleRow { gap: 8px; flex-direction: column; align-items: center; }
+  .accessLeftGroup { align-items: center; }
+  .tierSignCard { width: min(520px, 92vw); }
+  .accessControlPill { display: none; }
+  .accessTitleRow > .pageHeader { display: none; }
+}
+
+
+@media (max-width: 900px) {
+  /* Access tier buttons: keep 3-in-a-row, equal width, hugged to top */
+  .tierRowTop { flex-wrap: nowrap; gap: 6px; }
+  .tierTopBtn { flex: 1; min-width: 0; padding: 5px 6px; }
+
+  .primaryBtn, .secondaryBtn, .ghostBtn {
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+
+  .signMessageWrap { display: none; }
+
+  .mobileDemoBypass .ghostBtn {
+    padding: 7px 10px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+}
+
+/* ── Login Modal ── */
+.loginOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(4px);
+}
+
+.loginCard {
+  width: min(360px, 92vw);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  overflow: hidden;
+}
+
+.loginCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid rgba(59,130,246,.10);
+}
+
+.loginCardTitle {
+  font-size: 16px;
+  font-weight: 900;
+  color: #3B82F6;
+}
+
+.loginCloseBtn {
+  background: transparent;
+  border: none;
+  color: #3B82F6;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+.loginCloseBtn:hover { color: #2563EB; }
+
+.loginCardBody {
+  padding: 14px 16px 18px;
+}
+
+.loginLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1E293B;
+  margin-bottom: 6px;
+  margin-top: 12px;
+}
+.loginLabel:first-child { margin-top: 0; }
+
+.loginInput {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(59,130,246,.20);
+  background: #fff;
+  color: #1E293B;
+  padding: 10px 12px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+.loginInput:focus {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.10);
+}
+.loginInput::placeholder { color: #94A3B8; }
+
+.loginActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.loginSubmitBtn {
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-weight: 900;
+  font-size: 13px;
+  border: 1px solid #3B82F6;
+  background: #3B82F6;
+  color: #fff;
+  cursor: pointer;
+}
+.loginSubmitBtn:hover { background: #2563EB; }
+
+.loginResetBtn {
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-weight: 900;
+  font-size: 13px;
+  border: 1px solid rgba(59,130,246,.22);
+  background: #fff;
+  color: #3B82F6;
+  cursor: pointer;
+}
+.loginResetBtn:hover { background: rgba(59,130,246,.05); }
+
+@media (max-width: 780px) {
+  .accessRightGroup { align-items: center; margin-left: 0; }
+}

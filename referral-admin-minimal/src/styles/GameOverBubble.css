@@ -1,0 +1,5 @@
+.mm-go{position:fixed;right:18px;bottom:18px;z-index:10;pointer-events:none;}
+.mm-goInner{width:160px;border-radius:999px;border:1px solid rgba(0,255,170,.25);background:radial-gradient(120px 70px at 40% 20%,rgba(0,255,170,.16),transparent 62%),linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.22));box-shadow:0 0 0 1px rgba(0,255,170,.10) inset,0 0 30px rgba(0,255,170,.12),0 24px 70px rgba(0,0,0,.55);padding:12px 14px;text-align:center;}
+.mm-goTitle{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--fg0);}
+.mm-goSub{margin-top:4px;font-size:11px;letter-spacing:.24em;color:rgba(191,255,230,.70);text-transform:uppercase;}
+@media (max-width:900px){.mm-go{right:10px;bottom:10px}.mm-goInner{width:150px}}

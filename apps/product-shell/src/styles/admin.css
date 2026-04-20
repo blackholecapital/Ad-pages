@@ -1,0 +1,969 @@
+.adminGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+.adminBlock {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(4, 8, 16, .78);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.adminBlockTitle { padding: 12px 14px; font-weight: 900; border-bottom: 1px solid rgba(255,255,255,.08); }
+.adminBlockBody { padding: 12px 14px; }
+
+.kvRow { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; color: rgba(255,255,255,.84); }
+
+.adminActions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+
+.adminBtn {
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(8, 12, 20, .42);
+  color: rgba(255,255,255,.92);
+  cursor: pointer;
+}
+
+.adminBtn.primary { border-color: rgba(59, 130, 246, .40); background: rgba(59, 130, 246, .16); }
+.adminBtn.danger { border-color: rgba(255, 77, 77, .45); background: rgba(255, 77, 77, .12); }
+
+@media (max-width: 960px) { .adminGrid { grid-template-columns: 1fr; } }
+
+
+/* === PayMe demo admin panel — blue/white theme === */
+.paymeWrap { padding-top: 14px; }
+.paymeShell .adminBlock {
+  background: rgba(255,255,255,.97);
+  border: 1px solid rgba(59,130,246,.18);
+  box-shadow: 0 2px 16px rgba(255,255,255,.12), 0 0 40px rgba(255,255,255,.06);
+}
+.paymeShell .adminBlockTitle {
+  color: #3B82F6;
+  background: #F8FAFC;
+  border-bottom: 1px solid rgba(59,130,246,.10);
+}
+.paymeShell .adminBlockBody { color: #1E293B; }
+.paymeShell .adminBtn {
+  background: #fff;
+  border: 1px solid rgba(59,130,246,.22);
+  color: #3B82F6;
+}
+.paymeShell .adminBtn:hover { background: rgba(59,130,246,.05); }
+.paymeShell .adminBtn.primary {
+  background: #3B82F6;
+  border-color: #3B82F6;
+  color: #fff;
+}
+.paymeShell .adminBtn.primary:hover { background: #2563EB; }
+.paymeBanner {
+  padding: 10px 4px 14px;
+  font-size: 13px;
+  color: rgba(255,255,255,.72);
+  line-height: 1.55;
+}
+.paymeBanner strong { color: #fff; }
+.paymeTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 0 auto 12px;
+  width: min(1100px, 94vw);
+}
+
+.paymeTab {
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 900;
+  border: 1px solid rgba(59,130,246,.22);
+  background: rgba(255,255,255,.92);
+  color: #3B82F6;
+  cursor: pointer;
+}
+.paymeTab:hover { background: rgba(59,130,246,.06); }
+
+.paymeTab.active {
+  border-color: #3B82F6;
+  background: #3B82F6;
+  color: #fff;
+}
+
+.paymePanel {
+  width: min(1100px, 94vw);
+  margin: 0 auto;
+}
+
+.paymePanel.wide {
+  width: min(1400px, 96vw);
+}
+
+.paymeGrid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.paymeGrid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.paymeGrid1 { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px; }
+
+.paymeField { display: block; margin-top: 12px; }
+.paymeLabel { font-size: 12px; font-weight: 900; color: #64748B; margin-bottom: 6px; }
+.paymeInput, .paymeTextarea {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(59,130,246,.20);
+  background: #fff;
+  color: #1E293B;
+  padding: 10px 12px;
+  outline: none;
+}
+.paymeInput:focus, .paymeTextarea:focus {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.10);
+}
+.paymeInput::placeholder, .paymeTextarea::placeholder { color: #94A3B8; }
+.paymeTextarea { resize: vertical; }
+
+.paymeCustomersGrid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 12px; }
+.paymeBlockTitleRow { display: flex; align-items: center; justify-content: space-between; }
+.paymeTitleActions { display: inline-flex; gap: 10px; }
+
+.paymeList { display: grid; gap: 10px; }
+.paymeListItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(59, 130, 246, .20);
+  background: #fff;
+  cursor: pointer;
+  color: #1E293B;
+  text-align: left;
+}
+.paymeListItem:hover { border-color: rgba(59,130,246,.40); background: rgba(59,130,246,.03); }
+.paymeListItem.active { background: rgba(59, 130, 246, .06); border-color: #3B82F6; }
+.paymeListName { font-weight: 900; color: #1E293B; }
+.paymeListMeta { color: #64748B; font-size: 12px; }
+
+.paymeExpand {
+  margin-top: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(59,130,246,.15);
+  padding: 10px 12px;
+  background: rgba(59,130,246,.02);
+}
+.paymeExpandTitle { font-weight: 900; margin-bottom: 8px; color: #3B82F6; }
+
+.paymeInvoiceList { display: grid; gap: 10px; }
+.paymeInvoiceRow {
+  display: grid;
+  grid-template-columns: 120px 90px 120px 160px 1fr;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(59, 130, 246, .18);
+  background: #fff;
+  color: #1E293B;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+}
+
+.paymeInvoiceGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 1200px; margin: 0 auto; }
+
+.paymeInvoicePreview { min-height: 520px; }
+.paymePreviewHeader { display: flex; justify-content: space-between; gap: 12px; }
+.paymeLogoBox { width: 70px; height: 70px; border-radius: 18px; border: 1px solid rgba(59, 130, 246, .18); background: rgba(59,130,246,.03); }
+.paymePreviewTitle { font-size: 22px; font-weight: 900; letter-spacing: 3px; }
+.paymePreviewCols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.paymePreviewBlock { border: 1px solid rgba(59,130,246,.12); border-radius: 14px; padding: 10px 12px; background: rgba(59,130,246,.02); }
+.paymePreviewLabel { font-weight: 900; font-size: 12px; opacity: .8; margin-bottom: 6px; }
+.paymePreviewText { font-weight: 900; }
+
+.paymeTableHead { display: grid; grid-template-columns: 1.4fr .4fr .5fr .5fr; gap: 10px; margin-top: 14px; font-weight: 900; font-size: 12px; opacity: .82; }
+.paymeTableRow { margin-top: 10px; padding: 10px 0; }
+.paymeTotalBox { margin-top: 14px; border-radius: 14px; border: 1px solid rgba(59, 130, 246, .20); padding: 10px 12px; width: 220px; text-align: center; font-weight: 900; color: #1E293B; background: rgba(59,130,246,.03); }
+
+.paymeGenTopRow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.paymeChip {
+  border-radius: 999px;
+  padding: 8px 10px;
+  border: 1px solid rgba(59, 130, 246, .20);
+  background: rgba(59,130,246,.04);
+  color: #334155;
+  font-size: 12px;
+}
+
+.paymeLineItemsTitle { margin-top: 14px; font-weight: 900; }
+.paymeLineItemBox { margin-top: 10px; border-radius: 14px; border: 1px solid rgba(59,130,246,.12); padding: 10px 12px; background: rgba(59,130,246,.02); }
+.paymeLineItemHeader { display: flex; justify-content: space-between; align-items: center; }
+
+.paymeSnippetSizes { display: flex; gap: 10px; flex-wrap: wrap; }
+
+@media (max-width: 1100px) {
+  .paymeInvoiceGrid { grid-template-columns: 1fr; }
+  .paymeCustomersGrid { grid-template-columns: 1fr; }
+}
+
+
+/* ---- Page Titles card ---- */
+.ptTopRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ptPageSelect {
+  min-width: 130px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.ptFontBar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.ptFontBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.88);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.ptFontBtn.active {
+  background: rgba(59,130,246,.18);
+  border-color: rgba(59,130,246,.45);
+}
+.ptFontSelect {
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(6,10,18,.44);
+  color: rgba(255,255,255,.88);
+  padding: 0 4px;
+  font-size: 11px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* ---- Admin form fields (Payment Settings) ---- */
+.adminFormGrid{
+  display:grid;
+  gap:12px;
+}
+.adminField{
+  display:grid;
+  gap:6px;
+}
+.adminFieldLabel{
+  font-size:12px;
+  opacity:.8;
+}
+.adminTextInput{
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(6,10,18,0.44);
+  color:inherit;
+  outline:none;
+}
+.paymeShell .adminTextInput{
+  border:1px solid rgba(59,130,246,0.20);
+  background:#fff;
+  color:#1E293B;
+}
+.paymeShell .adminTextInput:focus{
+  border-color:#3B82F6;
+  box-shadow:0 0 0 2px rgba(59,130,246,0.10);
+}
+.paymeShell .adminTextInput::placeholder{ color:#94A3B8; }
+.adminTextInput::placeholder{ opacity:.6; }
+
+/* ---- PayMe customers list — blue/white ---- */
+.paymeListItem{
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(59,130,246,0.20);
+  background:#fff;
+  color:#1E293B;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.paymeListItem:hover{ border-color:rgba(59,130,246,0.40); background:rgba(59,130,246,0.03); }
+.paymeListItemActive{
+  border-color:#3B82F6;
+  box-shadow:0 0 0 1px rgba(59,130,246,0.20) inset;
+  background:rgba(59,130,246,0.04);
+}
+
+/* ---- PayMe wide panel centering ---- */
+.paymePanel.wide{
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---- Payment card styles ---- */
+.usdcPayCard{
+  border:1px solid rgba(59,130,246,0.35);
+  border-radius:16px;
+  padding:14px;
+  background:rgba(240,242,245,0.97);
+  box-shadow: 0 2px 16px rgba(255,255,255,.12), 0 0 40px rgba(255,255,255,.06);
+  color:#1E293B;
+}
+.usdcPayHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.usdcPayTitleRow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+}
+.usdcPayLogo{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  border:1px solid rgba(59,130,246,0.35);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.50);
+}
+.usdcPayLogo img{
+  width:18px;
+  height:18px;
+}
+.usdcPayRow{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:10px;
+}
+.usdcPayRow label{
+  display:grid;
+  gap:6px;
+}
+.usdcPayRow .lbl{
+  font-size:12px;
+  opacity:.8;
+}
+.usdcPayRow input, .usdcPayRow select, .usdcPayRow textarea{
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(59,130,246,0.20);
+  background:#fff;
+  color:#1E293B;
+  outline:none;
+}
+.usdcPayRow input:focus, .usdcPayRow select:focus, .usdcPayRow textarea:focus{
+  border-color:#3B82F6;
+  box-shadow:0 0 0 2px rgba(59,130,246,0.10);
+}
+.usdcPayActions{
+  display:grid;
+  gap:10px;
+  margin-top:10px;
+}
+.usdcPayBtn{
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(59,130,246,0.22);
+  background:#fff;
+  color:#334155;
+  cursor:pointer;
+  font-weight:800;
+}
+.usdcPayBtn:hover{ background:rgba(59,130,246,0.04); }
+.usdcPayBtn.primary{
+  background:#3B82F6;
+  border-color:#3B82F6;
+  color:#fff;
+}
+.usdcPayBtn.primary:hover{ background:#2563EB; }
+.usdcPayBtn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.usdcPayFoot{
+  margin-top:10px;
+  font-size:12px;
+  opacity:.7;
+}
+
+
+/* PayMe invoice centering + preview table */
+.paymeInvoiceGridCentered{
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 1100px){
+  .paymeInvoiceGridCentered{ grid-template-columns: 1fr; }
+}
+.paymePreviewBodyGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.paymePreviewBill, .paymePreviewSummary{
+  border: 1px solid rgba(59,130,246,0.12);
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(59,130,246,0.02);
+}
+.paymePreviewLabel{ font-size:12px; color:#64748B; margin-bottom:6px; letter-spacing:0.08em; }
+.paymePreviewTable{ margin-top: 12px; border: 1px solid rgba(59,130,246,0.12); border-radius: 14px; overflow:hidden; }
+.paymePreviewTableHeader, .paymePreviewRow{
+  display:grid;
+  grid-template-columns: 1fr 80px 110px 110px;
+  gap: 10px;
+  padding: 10px 12px;
+}
+.paymePreviewTableHeader{ background: rgba(59,130,246,0.05); font-size:12px; color:#64748B; }
+.paymePreviewRow{ border-top: 1px solid rgba(59,130,246,0.08); color:#1E293B; }
+.paymePreviewRow .right{ text-align:right; }
+.paymePreviewTableHeader .right{ text-align:right; }
+.truncate{ overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.paymePreviewFooter{ margin-top: 10px; display:flex; flex-direction:column; gap:8px; }
+.paymePayLinkRow{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.paymeActions{ display:flex; flex-wrap:wrap; gap:10px; margin-top: 14px; }
+
+/* Modal */
+.paymeModalOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.40);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index: 50;
+  padding: 18px;
+}
+.paymeModal{
+  width: min(720px, 96vw);
+  border-radius: 18px;
+  border: 1px solid rgba(59,130,246,0.15);
+  background: #fff;
+  color: #1E293B;
+  padding: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+}
+
+.paymeGrid3.compact{
+  display:grid;
+  grid-template-columns: 120px 1fr 120px;
+  gap: 10px;
+}
+
+
+/* --- Surgical patch: PayMe customer/invoice readability --- */
+.paymeCustomerGrid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:12px;
+}
+.paymeCustomerSingleCard .adminBlockBody{
+  display:grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap:14px;
+  align-items:start;
+}
+.paymeCustomerList{
+  display:grid;
+  gap:10px;
+  max-height:340px;
+  overflow:auto;
+  padding-right:4px;
+}
+.paymeCustomerDetailsCard{
+  border:1px solid rgba(59,130,246,0.15);
+  border-radius:14px;
+  background:rgba(59,130,246,0.02);
+  min-height:100%;
+  overflow:hidden;
+}
+.paymeCustomerDetailsHead{
+  padding:12px 14px;
+  font-weight:900;
+  color:#3B82F6;
+  background:#F8FAFC;
+  border-bottom:1px solid rgba(59,130,246,0.10);
+}
+.paymeDetails{
+  display:grid;
+  gap:10px;
+}
+.paymeDetailRow{
+  display:grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap:12px;
+  align-items:start;
+  color:#1E293B;
+}
+.paymeDetailValue{
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
+}
+.paymeInvoiceHeaderRow,
+.paymeInvoiceRow{
+  display:grid;
+  grid-template-columns: 1.05fr .7fr .9fr 1.2fr 1.2fr;
+  gap:12px;
+  align-items:center;
+}
+.paymeInvoiceHeaderRow{
+  padding:0 12px 8px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:#64748B;
+}
+.paymeInvoiceRow{
+  color:#1E293B;
+}
+.paymeInvoiceRow.clickable{
+  width:100%;
+  text-align:left;
+  cursor:pointer;
+}
+.paymeInvoiceRow.active{
+  border-color:#3B82F6;
+  background:rgba(59,130,246,0.05);
+}
+.paymeInvoiceRow .mono{
+  color:inherit;
+}
+.usdcPayBtn.danger{
+  background:rgba(255,77,77,0.16);
+  border-color:rgba(255,77,77,0.42);
+  color:rgba(255,210,210,0.96);
+}
+.usdcPayBtn.ready{
+  background:#3B82F6;
+  border-color:#3B82F6;
+  color:#fff;
+}
+.usdcPayBtn.sendReady{
+  background:#2563EB;
+  border-color:#2563EB;
+  color:#fff;
+  box-shadow:0 0 0 1px rgba(59,130,246,0.18) inset;
+}
+.usdcPayPill{
+  min-width:92px;
+  text-align:center;
+  border-radius:999px;
+  padding:10px 12px;
+  border:1px solid rgba(59,130,246,0.20);
+  background:rgba(59,130,246,0.04);
+  color:#334155;
+  font-size:12px;
+  font-weight:900;
+}
+.usdcPayCollapseCard{
+  margin-top:10px;
+  border:1px solid rgba(59,130,246,0.15);
+  border-radius:12px;
+  background:rgba(59,130,246,0.02);
+  overflow:hidden;
+}
+.usdcPayCollapseToggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 12px;
+  border:0;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+  font-weight:900;
+}
+.usdcPayCollapseBody{
+  padding:0 12px 12px;
+  font-size:12px;
+  opacity:.82;
+  line-height:1.5;
+}
+.marketSidebar{
+  position:fixed;
+  right:18px;
+  top:84px;
+  bottom:18px;
+  width:360px;
+  z-index:5;
+  display:grid;
+  align-content:start;
+  gap:18px;
+  overflow:auto;
+  padding-right:2px;
+}
+.marketPayOptionsWrap{
+  position:relative;
+  overflow:visible;
+}
+.marketPayOptionsCard{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% + 10px);
+  z-index:8;
+  border:1px solid rgba(59,130,246,0.15);
+  border-radius:14px;
+  padding:10px;
+  background:rgba(255,255,255,0.98);
+  box-shadow:0 20px 40px rgba(0,0,0,0.12);
+  display:grid;
+  gap:10px;
+}
+@media (max-width: 1100px){
+  .paymeCustomerSingleCard .adminBlockBody{
+    grid-template-columns: 1fr;
+  }
+  .marketSidebar{
+    position:static;
+    width:100%;
+    max-height:none;
+    overflow:visible;
+    margin-top:14px;
+  }
+}
+
+.paymeCustomerSingleCard .adminBlockTitle,
+.paymeCustomerDetailsHead{
+  color: #3B82F6;
+}
+.paymeInvoiceHeaderRow,
+.paymeInvoiceRow,
+.paymeDetailRow,
+.paymeListItem,
+.paymeListItem .muted,
+.paymeInvoiceRow .muted{
+  color: #1E293B;
+}
+.paymeCustomerSingleCard .adminBlockBody{
+  grid-template-columns: minmax(300px, 340px) minmax(0, 1fr);
+}
+.paymeCustomerDetailsCard{
+  background: rgba(59,130,246,0.02);
+}
+.paymeCustomerDetailsCard .adminBlockBody{
+  padding: 12px 14px;
+}
+.paymeInvoiceList{
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 4px;
+}
+.paymeInvoiceHeaderRow{
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(255,255,255,0.97);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+}
+.paymeInvoiceRow{
+  background: #fff;
+}
+.paymeInvoiceRow:hover{
+  border-color: rgba(59,130,246,0.40);
+  background: rgba(59,130,246,0.03);
+}
+.usdcPayCollapseBar{
+  display:grid;
+  grid-template-columns: 1fr auto;
+  align-items:center;
+  gap:10px;
+}
+.usdcPayMiniTab{
+  border-left:1px solid rgba(59,130,246,0.15);
+  padding:10px 12px;
+  font-size:12px;
+  font-weight:900;
+  color:#64748B;
+}
+.marketSidebar{
+  overflow: hidden;
+  grid-template-rows: minmax(0, auto) minmax(0, 1fr);
+}
+.marketUsdcWrap,
+.marketBasketWrap{
+  min-height: 0;
+}
+.marketUsdcWrap{
+  max-height: 52%;
+  overflow: auto;
+}
+.marketBasketWrap{
+  overflow: auto;
+}
+.marketBasketCard{
+  max-height: 100%;
+  overflow: auto;
+}
+
+
+
+/* marketplace surgical layout */
+.marketUsdcWrap{
+  position: fixed;
+  right: 18px;
+  top: 96px;
+  width: 360px;
+  z-index: 6;
+  overflow: visible;
+  max-height: none;
+}
+.marketUsdcWrap .usdcPayCard{
+  overflow: visible;
+  max-height: none;
+}
+
+.marketBasketWrap{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 360px;
+  height: 360px;
+  z-index: 6;
+  overflow: visible;
+}
+
+.marketBasketCard{
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.marketPayOptionsWrap{
+  position: relative;
+  margin-top: auto;
+  overflow: visible;
+}
+
+.marketPayOptionsCard{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 12px);
+  top: auto;
+  z-index: 12;
+}
+
+@media (max-width: 1100px){
+  .marketUsdcWrap,
+  .marketBasketWrap{
+    position: static;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    margin-top: 14px;
+  }
+
+  .marketBasketCard{
+    height: auto;
+  }
+}
+
+
+/* final marketplace polish */
+.marketUsdcWrap{
+  position: fixed;
+  right: 18px;
+  top: 96px;
+  width: 360px;
+  z-index: 6;
+  overflow: visible;
+  max-height: none;
+}
+.marketUsdcWrap .usdcPayCard{
+  overflow: visible;
+  max-height: none;
+}
+.marketBasketWrap{
+  position: fixed;
+  right: 18px;
+  top: 500px;
+  bottom: 18px;
+  width: 360px;
+  z-index: 6;
+  overflow: visible;
+}
+.marketBasketCard{
+  height: 100%;
+  min-height: 240px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+@media (max-height: 860px){
+  .marketBasketWrap{
+    top: 470px;
+  }
+}
+@media (max-width: 1100px){
+  .marketUsdcWrap,
+  .marketBasketWrap{
+    position: static;
+    width: 100%;
+    top: auto;
+    bottom: auto;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    margin-top: 14px;
+  }
+  .marketBasketCard{
+    height: auto;
+    min-height: 0;
+  }
+}
+
+
+/* === paymeShell overrides for all wrapped pages (blue/white consistency) === */
+.paymeShell .kvRow{
+  color: #1E293B;
+}
+.paymeShell .muted{
+  color: #64748B;
+}
+.paymeShell .pageTitle{
+  color: #fff;
+  margin: 0;
+  font-size: 26px;
+  white-space: nowrap;
+}
+.paymeShell .pageTitleRow{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+/* Invoice row highlight on click/select */
+.paymeInvoiceRow.selected,
+.paymeInvoiceRow:focus{
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.18);
+  background: rgba(59,130,246,.05);
+}
+.paymeShell .paymeInput,
+.paymeShell .paymeTextarea,
+.paymeShell select.paymeInput{
+  background: #fff;
+  color: #1E293B;
+  border-color: rgba(59,130,246,.20);
+}
+.paymeShell .paymeInput:focus,
+.paymeShell .paymeTextarea:focus,
+.paymeShell select.paymeInput:focus{
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.10);
+}
+.paymeShell .engProgress{
+  margin-top: 10px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(59,130,246,.10);
+  overflow: hidden;
+}
+.paymeShell .engProgressBar{
+  height: 100%;
+  border-radius: 999px;
+  background: #3B82F6;
+  transition: width .3s ease;
+}
+.paymeShell .engModalBackdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 18px;
+}
+.paymeShell .engModal{
+  width: min(600px, 96vw);
+  border-radius: 18px;
+  border: 1px solid rgba(59,130,246,.15);
+  background: #fff;
+  color: #1E293B;
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,.18);
+  overflow: hidden;
+}
+.paymeShell .paymeChip{
+  color: #334155;
+}
+.paymeShell .primaryBtn{
+  background: #3B82F6;
+  border-color: #3B82F6;
+  color: #fff;
+}
+.paymeShell .primaryBtn:hover{
+  background: #2563EB;
+}
+
+/* Subtle back-glow for all white cards/tiles inside paymeShell */
+.paymeShell .paymeListItem,
+.paymeShell .paymeInvoiceRow,
+.paymeShell .paymeModal,
+.paymeShell .paymeExpand,
+.paymeShell .paymeCustomerDetailsCard{
+  box-shadow: 0 2px 16px rgba(255,255,255,.10), 0 0 32px rgba(255,255,255,.04);
+}
+/* Glow utility for inline-styled white cards */
+.cardGlow{
+  box-shadow: 0 2px 16px rgba(255,255,255,.12), 0 0 40px rgba(255,255,255,.06) !important;
+}
+
+/* Cart toggle button — floating, aligned under nav cart icon */
+.cartToggleBtn {
+  position: fixed;
+  top: 80px;
+  right: max(18px, calc((100vw - 1300px) / 2 + 18px));
+  z-index: 21;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(59,130,246,.22);
+  background: rgba(255,255,255,.95);
+  color: #1E293B;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+}
+.cartToggleBtn:hover { background: #fff; }
+
+/* Green pulse animation when USDC card is hidden */
+.cartTogglePulse {
+  animation: cartPulse 2s ease-in-out infinite;
+}
+@keyframes cartPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,.7), 0 4px 16px rgba(0,0,0,.15); border-color: rgba(46,204,113,.85); }
+  50% { box-shadow: 0 0 0 10px rgba(46,204,113,0), 0 4px 16px rgba(0,0,0,.15); border-color: rgba(46,204,113,.4); }
+}

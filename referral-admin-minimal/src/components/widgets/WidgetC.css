@@ -1,0 +1,4 @@
+.wC{display:flex;gap:10px;align-items:center;justify-content:space-between;}
+.wC-btn{border-radius:999px;border:1px solid rgba(0,255,170,.22);background:rgba(0,255,170,.07);color:var(--fg0);padding:10px 14px;cursor:pointer;letter-spacing:.16em;text-transform:uppercase;font-size:12px;white-space:nowrap;}
+.wC-btn:hover{border-color:var(--wire);}
+.wC-out{flex:1;padding:10px 12px;border-radius:999px;border:1px dashed rgba(0,255,170,.22);background:rgba(0,0,0,.18);color:rgba(191,255,230,.92);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}

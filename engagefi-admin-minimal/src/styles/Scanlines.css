@@ -1,0 +1,43 @@
+:root{
+  --bg0:#050807;
+  --bg1:#060b09;
+  --fg:rgba(240,255,250,.92);
+  --muted:rgba(240,255,250,.7);
+  --wire:rgba(0,255,170,.42);
+  --wire2:rgba(0,255,170,.25);
+  --glow:rgba(0,255,170,.18);
+    --card: rgba(0,0,0,.92);
+  --radius:18px;
+  --gap:18px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+html,body{
+  height:100%;
+   background-image:
+              url("/wallpaper333.png"),
+              radial-gradient(1200px 700px at 20% 0%, rgba(0,255,170,.06), transparent 60%),
+              radial-gradient(900px 600px at 80% 10%, rgba(0,255,170,.04), transparent 55%),
+              linear-gradient(180deg, var(--bg0), var(--bg1));
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    background-position: center center, 20% 0%, 80% 10%, 0 0;
+  background-size: cover, auto, auto, auto;
+  background-attachment: fixed, scroll, scroll, scroll;
+  color: var(--fg);
+  font-family: var(--mono);
+  margin:0;
+  overflow-x: hidden;
+}
+.scanlines{
+  pointer-events:none;
+  position:fixed;
+  inset:0;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(0,0,0,0) 0px,
+    rgba(0,0,0,0) 2px,
+    rgba(0,0,0,.15) 3px
+  );
+  mix-blend-mode: overlay;
+  opacity:.35;
+  z-index:1;
+}

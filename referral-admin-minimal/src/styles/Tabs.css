@@ -1,0 +1,4 @@
+.mm-tabs{display:flex;gap:10px;flex-wrap:wrap;}
+.mm-tab{background:linear-gradient(180deg,rgba(0,255,170,.09),rgba(0,255,170,.03));color:var(--fg0);border:1px solid var(--wire2);border-radius:999px;padding:10px 14px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 0 1px rgba(0,255,170,.06) inset,0 12px 28px rgba(0,0,0,.35);}
+.mm-tab:hover{border-color:var(--wire);}
+.mm-tabOn{border-color:var(--wire);box-shadow:0 0 0 1px rgba(0,255,170,.16) inset,0 0 22px rgba(0,255,170,.10),0 16px 40px rgba(0,0,0,.38);}

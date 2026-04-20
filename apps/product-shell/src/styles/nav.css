@@ -1,0 +1,253 @@
+.topNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  z-index: 50;
+  background: transparent;
+  border-bottom: none;
+}
+
+.topNavInner {
+  height: calc(100% - 12px);
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 18px;
+  padding: 0 22px;
+  max-width: 1300px;
+  margin-left: auto;
+  margin-right: auto;
+  background: rgba(10, 10, 14, .55);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.brand { display: flex; align-items: center; gap: 10px; justify-self: start; }
+.brandMark { width: 40px; height: 40px; flex-shrink: 0; }
+.brandText { text-align: center; }
+.brandTitle { font-weight: 800; font-size: 27px; letter-spacing: .2px; line-height: 1.1; }
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  justify-self: center;
+}
+
+.topNavRight {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+  justify-self: end;
+  flex-shrink: 0;
+}
+
+.loginTextBtn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,.88);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
+}
+.loginTextBtn:hover { color: #fff; }
+
+.cartIconBtn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,.88);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.cartIconBtn:hover { color: #fff; }
+.cartIconBtn.active { color: #60a5fa; }
+
+.navGate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255,255,255,.10);
+}
+
+.navBtn {
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255,255,255,.10);
+  color: rgba(255,255,255,.92);
+  cursor: pointer;
+}
+
+.navBtn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.navDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.20);
+}
+
+.navDot.on { background: rgba(46, 204, 113, .95); border-color: rgba(46, 204, 113, .85); }
+.navDot.off { background: rgba(255, 77, 77, .95); border-color: rgba(255, 77, 77, .85); }
+
+.brand {
+  cursor: pointer;
+}
+
+.navLink {
+  font-size: 16px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  color: rgba(255,255,255,.78);
+}
+
+.navLink:hover {
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.95);
+}
+
+.navLink.active {
+  background: rgba(255,255,255,.14);
+  color: #fff;
+}
+
+@media (max-width: 860px) {
+  .brand { min-width: auto; }
+}
+
+
+@media (max-width: 900px) {
+  /* Compact single-row nav — just below the action buttons */
+  :root { --nav-h: 60px; }
+
+  .topNavInner {
+    padding: 0 12px;
+    align-items: center;
+    gap: 8px;
+    background: rgba(10, 10, 14, .80);
+  }
+
+  .brandMark { width: 30px; height: 30px; }
+  .brandTitle { font-size: 18px; }
+
+  .brandTitleDesktop { display: none; }
+  .brandTitleMobile { display: inline; }
+
+  .navLinks { display: none; }
+
+  .mobileMenuBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    min-width: 34px;
+    padding: 0 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.92);
+    cursor: pointer;
+  }
+
+  .topNavRight {
+    gap: 8px;
+    flex: 0;
+  }
+
+  /* Remove demo-bypass from nav on mobile — no room in the compact bar */
+  .mobileDemoBypass { display: none; }
+  .demoBypassDesktop { display: none; }
+
+  .mobileNavMenu {
+    display: none;
+    position: absolute;
+    top: var(--nav-h);
+    left: 0;
+    right: 0;
+    padding: 10px 12px 14px 12px;
+    background: rgba(10, 10, 14, .92);
+    border-bottom: 1px solid rgba(255,255,255,.10);
+    backdrop-filter: blur(10px);
+    z-index: 51;
+  }
+
+  .mobileNavMenu.open { display: grid; gap: 8px; }
+
+  .mobileNavLink {
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(255,255,255,.06);
+    color: rgba(255,255,255,.86);
+    font-weight: 700;
+  }
+
+  .mobileNavLink.active {
+    background: rgba(255,255,255,.14);
+    border-color: rgba(255,255,255,.16);
+    color: rgba(255,255,255,.95);
+  }
+}
+
+@media (max-width: 900px) and (hover: none) and (pointer: coarse) {
+  :root { --nav-h: 60px; }
+  .brandTitleDesktop { display: none; }
+  .brandTitleMobile { display: inline; }
+  .navLinks { display: none; }
+  .mobileMenuBtn { display: inline-flex; }
+  .demoBypassDesktop { display: none; }
+  .mobileDemoBypass { display: none; }
+}
+
+
+/* Defaults for desktop */
+.brandTitleMobile { display: none; }
+.mobileMenuBtn { display: none; }
+.mobileDemoBypass { display: none; }
+.demoBypassDesktop { display: block; }
+.mobileNavMenu { display: none; }
+.mobileInlineNav { display: none; }
+
+@media (max-width: 900px) {
+  .walletConnectDesktopOnly { display: none; }
+
+  .mobileInlineNav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .mobileInlineLink {
+    font-size: 16px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.86);
+    white-space: nowrap;
+  }
+
+  .mobileInlineLink.active {
+    background: rgba(255,255,255,.18);
+    color: #fff;
+  }
+}

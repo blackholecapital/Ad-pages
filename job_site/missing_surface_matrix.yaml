@@ -1,0 +1,1047 @@
+matrix_id: RB-INT-CHASSIS-002-S1-missing-surface-matrix
+job_id: RB-INT-CHASSIS-002
+stage: S1
+worker: worker_a
+authority: baseline-vs-current exact status matrix
+baseline_source: https://github.com/blackholecapital/gatweay-production-FREEZE
+current_rebuild_source: /home/user/gateway-fullbody-freeze
+status_values:
+  - present          # baseline surface exists at the exact same path in current rebuild
+  - rebuilt          # baseline surface exists at a different declared chassis-native path in current rebuild
+  - missing          # baseline surface has no equivalent in current rebuild
+classification_rule: >
+  A baseline path is "present" only when the exact same relative path exists in current
+  rebuild with equivalent intent. "Rebuilt" requires a declared one-to-one chassis-native
+  counterpart. Anything else is "missing".
+
+# =============================================================================
+# SECTION A — DEPLOY APP ROOT SURFACES (product-shell/)
+# =============================================================================
+deploy_app_root:
+
+  - baseline_path: product-shell/
+    current_path: (none)
+    status: missing
+    category: app_root
+    deploy_critical: yes
+
+  - baseline_path: product-shell/package.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+    notes: baseline name is "gateway-demo-zero"; dependencies react, react-dom, react-router-dom; devDependencies typescript, vite, @vitejs/plugin-react
+
+  - baseline_path: product-shell/package-lock.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+
+  - baseline_path: product-shell/index.html
+    current_path: (none)
+    status: missing
+    category: html_entrypoint
+    deploy_critical: yes
+
+  - baseline_path: product-shell/vite.config.ts
+    current_path: (none)
+    status: missing
+    category: build_config
+    deploy_critical: yes
+
+  - baseline_path: product-shell/tsconfig.json
+    current_path: (none)
+    status: missing
+    category: build_config
+    deploy_critical: yes
+
+  - baseline_path: product-shell/tsconfig.node.json
+    current_path: (none)
+    status: missing
+    category: build_config
+    deploy_critical: yes
+
+  - baseline_path: product-shell/src/main.tsx
+    current_path: (none)
+    status: missing
+    category: app_bootstrap
+    deploy_critical: yes
+
+  - baseline_path: product-shell/src/app/AppShell.tsx
+    current_path: (none)
+    status: missing
+    category: app_bootstrap
+    deploy_critical: yes
+
+  - baseline_path: product-shell/src/app/router.tsx
+    current_path: (none)
+    status: missing
+    category: router_bootstrap
+    deploy_critical: yes
+
+  - baseline_path: product-shell/src/app/routes.ts
+    current_path: (none)
+    status: missing
+    category: router_bootstrap
+    deploy_critical: yes
+
+  - baseline_path: product-shell/src/components/
+    current_path: (none)
+    status: missing
+    category: app_components
+    deploy_critical: yes
+    notes: 23 component files under admin/, cards/, gate/, integrations/, layout/, nav/, tenant/
+
+  - baseline_path: product-shell/src/config/
+    current_path: (none)
+    status: missing
+    category: app_config
+    deploy_critical: yes
+    notes: nav.config.ts, pageBackgrounds.ts, staticPageAssets.ts
+
+  - baseline_path: product-shell/src/contracts/microfrontend.ts
+    current_path: (none)
+    status: missing
+    category: contracts
+    deploy_critical: yes
+
+  - baseline_path: product-shell/src/features/
+    current_path: (none)
+    status: missing
+    category: features
+    deploy_critical: yes
+    notes: engage, marketplace (10 files), payme (3 files), referrals
+
+  - baseline_path: product-shell/src/hooks/
+    current_path: (none)
+    status: missing
+    category: app_hooks
+    deploy_critical: yes
+    notes: usePublishedExclusiveTiles.ts, useViewportMode.ts
+
+  - baseline_path: product-shell/src/integrations/spine/
+    current_path: (none)
+    status: missing
+    category: integrations
+    deploy_critical: yes
+    notes: bridge.ts, index.ts, registry.ts, types.ts
+
+  - baseline_path: product-shell/src/pages/
+    current_path: (none)
+    status: missing
+    category: pages
+    deploy_critical: yes
+    notes: 11 page files (AccessPage, AccessTier1/2/3Page, AdminPage, EngagePage, HomePage, MembersPage, PayMePage, ReferralsPage, SkinMarketplacePage)
+
+  - baseline_path: product-shell/src/runtime/
+    current_path: (none)
+    status: missing
+    category: runtime_support
+    deploy_critical: yes
+    notes: exclusiveTileHydration.ts, publishedClient.ts, routeContext.ts, types.ts
+
+  - baseline_path: product-shell/src/state/demoGateState.tsx
+    current_path: (none)
+    status: missing
+    category: app_state
+    deploy_critical: yes
+
+  - baseline_path: product-shell/src/styles/
+    current_path: (none)
+    status: missing
+    category: styles
+    deploy_critical: yes
+    notes: admin.css, cards.css, gate.css, global.css, marketplace.css, nav.css, published-overlay.css, shell.css
+
+  - baseline_path: product-shell/src/utils/
+    current_path: (none)
+    status: missing
+    category: utils
+    deploy_critical: yes
+    notes: assetCodeResolver.ts, resolveStaticAsset.ts, resolveWallpaper.ts, tenantPageClient.ts, usdc.ts
+
+  - baseline_path: product-shell/src/mobile/
+    current_path: (none)
+    status: missing
+    category: mobile
+    deploy_critical: no
+
+  - baseline_path: product-shell/tests/microfrontend/
+    current_path: (none)
+    status: missing
+    category: tests
+    deploy_critical: no
+
+# =============================================================================
+# SECTION B — DEPLOY ROOT PUBLIC ASSETS
+# =============================================================================
+public_assets:
+
+  - baseline_path: product-shell/public/_redirects
+    current_path: (none)
+    status: missing
+    category: redirects
+    deploy_critical: yes
+
+  - baseline_path: product-shell/public/ads/
+    current_path: (none)
+    status: missing
+    category: public_assets
+    deploy_critical: yes
+    notes: 17 ad image files + .keep
+
+  - baseline_path: product-shell/public/apps/engage/index.html
+    current_path: (none)
+    status: missing
+    category: microfrontend_shell
+    deploy_critical: yes
+
+  - baseline_path: product-shell/public/apps/engage/_redirects
+    current_path: (none)
+    status: missing
+    category: redirects
+    deploy_critical: yes
+
+  - baseline_path: product-shell/public/apps/engage/assets/index-BeZrU_QC.js
+    current_path: (none)
+    status: missing
+    category: prebuilt_assets
+    deploy_critical: yes
+
+  - baseline_path: product-shell/public/apps/engage/assets/index-DU8f5DGq.css
+    current_path: (none)
+    status: missing
+    category: prebuilt_assets
+    deploy_critical: yes
+
+  - baseline_path: product-shell/public/apps/payme/index.html
+    current_path: (none)
+    status: missing
+    category: microfrontend_shell
+    deploy_critical: yes
+
+  - baseline_path: product-shell/public/apps/referrals/index.html
+    current_path: (none)
+    status: missing
+    category: microfrontend_shell
+    deploy_critical: yes
+
+  - baseline_path: product-shell/public/apps/vault/index.html
+    current_path: (none)
+    status: missing
+    category: microfrontend_shell
+    deploy_critical: yes
+
+  - baseline_path: product-shell/public/demo/logo-mark.png
+    current_path: (none)
+    status: missing
+    category: public_assets
+    deploy_critical: no
+
+  - baseline_path: product-shell/public/wallpapers/payme-demo.png
+    current_path: (none)
+    status: missing
+    category: public_assets
+    deploy_critical: no
+
+  - baseline_path: product-shell/drip.png
+    current_path: (none)
+    status: missing
+    category: app_asset
+    deploy_critical: no
+
+# =============================================================================
+# SECTION C — DEPLOY ROOT CLOUDFLARE PAGES FUNCTIONS
+# =============================================================================
+pages_functions:
+
+  - baseline_path: product-shell/functions/
+    current_path: (none)
+    status: missing
+    category: pages_functions_root
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/_lib/runtime-compiler.js
+    current_path: (none)
+    status: missing
+    category: pages_function_lib
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/_lib/runtime-r2.js
+    current_path: (none)
+    status: missing
+    category: pages_function_lib
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/_lib/runtime-schema.js
+    current_path: (none)
+    status: missing
+    category: pages_function_lib
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/api/microfrontend-bootstrap.js
+    current_path: (none)
+    status: missing
+    category: pages_function
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/api/microfrontend-trust-log.js
+    current_path: (none)
+    status: missing
+    category: pages_function
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/api/page.js
+    current_path: (none)
+    status: missing
+    category: pages_function
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/api/published-manifest.js
+    current_path: (none)
+    status: missing
+    category: pages_function
+    deploy_critical: yes
+
+  - baseline_path: product-shell/functions/api/published-page.js
+    current_path: (none)
+    status: missing
+    category: pages_function
+    deploy_critical: yes
+
+# =============================================================================
+# SECTION D — MODULE PACKAGES
+# =============================================================================
+module_packages:
+
+  - baseline_path: modules/engage/
+    current_path: (none)
+    status: missing
+    category: module_package
+    deploy_critical: yes
+    notes: required by product-shell build script "npm --prefix ../modules/engage install && run build"
+
+  - baseline_path: modules/engage/package.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+
+  - baseline_path: modules/engage/package-lock.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+
+  - baseline_path: modules/engage/vite.config.js
+    current_path: (none)
+    status: missing
+    category: build_config
+    deploy_critical: yes
+
+  - baseline_path: modules/engage/index.html
+    current_path: (none)
+    status: missing
+    category: html_entrypoint
+    deploy_critical: yes
+
+  - baseline_path: modules/engage/src/main.jsx
+    current_path: (none)
+    status: missing
+    category: app_bootstrap
+    deploy_critical: yes
+
+  - baseline_path: modules/engage/src/App.jsx
+    current_path: (none)
+    status: missing
+    category: app_bootstrap
+    deploy_critical: yes
+
+  - baseline_path: modules/engage/src/ (full tree)
+    current_path: (none)
+    status: missing
+    category: module_source_tree
+    deploy_critical: yes
+    notes: admin/, components/, lib/, pages/, styles/ (37 files)
+
+  - baseline_path: modules/engage/public/_redirects
+    current_path: (none)
+    status: missing
+    category: redirects
+    deploy_critical: yes
+
+  - baseline_path: modules/engage/supabase_schema.sql
+    current_path: (none)
+    status: missing
+    category: runtime_support
+    deploy_critical: no
+
+  - baseline_path: modules/payme/
+    current_path: (none)
+    status: missing
+    category: module_package
+    deploy_critical: yes
+
+  - baseline_path: modules/payme/package.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+
+  - baseline_path: modules/payme/vite.config.js
+    current_path: (none)
+    status: missing
+    category: build_config
+    deploy_critical: yes
+
+  - baseline_path: modules/payme/index.html
+    current_path: (none)
+    status: missing
+    category: html_entrypoint
+    deploy_critical: yes
+
+  - baseline_path: modules/payme/src/ (full tree)
+    current_path: (none)
+    status: missing
+    category: module_source_tree
+    deploy_critical: yes
+    notes: App.jsx, main.jsx, components/, config/, pages/, services/, styles/, utils/ (30 files)
+
+  - baseline_path: modules/referrals/
+    current_path: (none)
+    status: missing
+    category: module_package
+    deploy_critical: yes
+
+  - baseline_path: modules/referrals/package.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+
+  - baseline_path: modules/referrals/vite.config.js
+    current_path: (none)
+    status: missing
+    category: build_config
+    deploy_critical: yes
+
+  - baseline_path: modules/referrals/index.html
+    current_path: (none)
+    status: missing
+    category: html_entrypoint
+    deploy_critical: yes
+
+  - baseline_path: modules/referrals/src/ (full tree)
+    current_path: (none)
+    status: missing
+    category: module_source_tree
+    deploy_critical: yes
+    notes: App.jsx, main.jsx, components/widgets/, lib/, pages/, styles/ (30 files)
+
+  - baseline_path: modules/referrals/public/_redirects
+    current_path: (none)
+    status: missing
+    category: redirects
+    deploy_critical: yes
+
+  - baseline_path: modules/vault/
+    current_path: (none)
+    status: missing
+    category: module_package
+    deploy_critical: yes
+
+  - baseline_path: modules/vault/package.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+
+  - baseline_path: modules/vault/vite.config.js
+    current_path: (none)
+    status: missing
+    category: build_config
+    deploy_critical: yes
+
+  - baseline_path: modules/vault/index.html
+    current_path: (none)
+    status: missing
+    category: html_entrypoint
+    deploy_critical: yes
+
+  - baseline_path: modules/vault/_routes.json
+    current_path: (none)
+    status: missing
+    category: cloudflare_routes
+    deploy_critical: yes
+
+  - baseline_path: modules/vault/functions/api/ (14 endpoints)
+    current_path: (none)
+    status: missing
+    category: pages_functions
+    deploy_critical: yes
+    notes: 1inch-allowance, 1inch-approve-tx, 1inch-quote, 1inch-swap-tx, 1inch-tokens, 1inch/[[path]], 1inch/1inch-balances, balances, quote
+
+  - baseline_path: modules/vault/src/ (full tree)
+    current_path: (none)
+    status: missing
+    category: module_source_tree
+    deploy_critical: yes
+    notes: App.jsx, AppRoutes.jsx, main.jsx, components/, data/, lib/, pages/, styles/, theme/ (60+ files)
+
+  - baseline_path: modules/vault/Vault.MktMaker-main/
+    current_path: (none)
+    status: missing
+    category: vendor_subtree
+    deploy_critical: no
+
+  - baseline_path: modules/blueprint/module-boundary-list.md
+    current_path: (none)
+    status: missing
+    category: module_docs
+    deploy_critical: no
+
+# =============================================================================
+# SECTION E — STANDALONE ADMIN APPS
+# =============================================================================
+standalone_admin_apps:
+
+  - baseline_path: engagefi-admin-minimal/
+    current_path: (none)
+    status: missing
+    category: admin_app_root
+    deploy_critical: yes
+    notes: 32 files incl. package.json, vite.config.js, index.html, src/, public/_redirects
+
+  - baseline_path: engagefi-admin-minimal/package.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+
+  - baseline_path: engagefi-admin-minimal/vite.config.js
+    current_path: (none)
+    status: missing
+    category: build_config
+    deploy_critical: yes
+
+  - baseline_path: engagefi-admin-minimal/index.html
+    current_path: (none)
+    status: missing
+    category: html_entrypoint
+    deploy_critical: yes
+
+  - baseline_path: engagefi-admin-minimal/public/_redirects
+    current_path: (none)
+    status: missing
+    category: redirects
+    deploy_critical: yes
+
+  - baseline_path: engagefi-admin-minimal/supabase_schema.sql
+    current_path: (none)
+    status: missing
+    category: runtime_support
+    deploy_critical: no
+
+  - baseline_path: payme-admin-minimal/
+    current_path: (none)
+    status: missing
+    category: admin_app_root
+    deploy_critical: yes
+    notes: 66+ files incl. package.json, package-lock.json, vite.config.js, index.html, lib/spine/, modules/light-crm/, payme-checkout-engine/
+
+  - baseline_path: payme-admin-minimal/package.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+
+  - baseline_path: payme-admin-minimal/package-lock.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+
+  - baseline_path: payme-admin-minimal/vite.config.js
+    current_path: (none)
+    status: missing
+    category: build_config
+    deploy_critical: yes
+
+  - baseline_path: payme-admin-minimal/index.html
+    current_path: (none)
+    status: missing
+    category: html_entrypoint
+    deploy_critical: yes
+
+  - baseline_path: payme-admin-minimal/lib/spine/
+    current_path: (none)
+    status: missing
+    category: admin_support_lib
+    deploy_critical: yes
+    notes: adapters/, contracts/, mappers/, registry/, wrappers/ (9 files)
+
+  - baseline_path: payme-admin-minimal/modules/light-crm/
+    current_path: (none)
+    status: missing
+    category: admin_subpackage
+    deploy_critical: yes
+    notes: components/, hooks/, lib/, mobile/, services/ (14 files)
+
+  - baseline_path: payme-admin-minimal/payme-checkout-engine/
+    current_path: (none)
+    status: missing
+    category: admin_subpackage
+    deploy_critical: yes
+    notes: admin/, components/, config/, docs/, lib/, pages/api/, types/ (34 files incl. Next.js API routes)
+
+  - baseline_path: referral-admin-minimal/
+    current_path: (none)
+    status: missing
+    category: admin_app_root
+    deploy_critical: yes
+    notes: 31 files incl. package.json, vite.config.js, index.html, src/, public/_redirects
+
+  - baseline_path: referral-admin-minimal/package.json
+    current_path: (none)
+    status: missing
+    category: package_manifest
+    deploy_critical: yes
+
+  - baseline_path: referral-admin-minimal/vite.config.js
+    current_path: (none)
+    status: missing
+    category: build_config
+    deploy_critical: yes
+
+  - baseline_path: referral-admin-minimal/index.html
+    current_path: (none)
+    status: missing
+    category: html_entrypoint
+    deploy_critical: yes
+
+  - baseline_path: referral-admin-minimal/public/_redirects
+    current_path: (none)
+    status: missing
+    category: redirects
+    deploy_critical: yes
+
+# =============================================================================
+# SECTION F — PRODUCTION SUPPORT FILES
+# =============================================================================
+production_support:
+
+  - baseline_path: production/
+    current_path: (none)
+    status: missing
+    category: production_root
+    deploy_critical: no
+
+  - baseline_path: production/README.md
+    current_path: (none)
+    status: missing
+    category: production_docs
+    deploy_critical: no
+
+  - baseline_path: production/compatibility-decision-ledger.md
+    current_path: (none)
+    status: missing
+    category: production_docs
+    deploy_critical: no
+
+  - baseline_path: production/decision-ledger.md
+    current_path: (none)
+    status: missing
+    category: production_docs
+    deploy_critical: no
+
+  - baseline_path: production/resolver-decision-ledger.md
+    current_path: (none)
+    status: missing
+    category: production_docs
+    deploy_critical: no
+
+  - baseline_path: production/stale-path-scan.md
+    current_path: (none)
+    status: missing
+    category: production_docs
+    deploy_critical: no
+
+  - baseline_path: production/preview-build-result.md
+    current_path: (none)
+    status: missing
+    category: production_docs
+    deploy_critical: no
+
+  - baseline_path: production/install/applied-install-record.yaml
+    current_path: (none)
+    status: missing
+    category: install_record
+    deploy_critical: no
+
+  - baseline_path: production/install/final-issued-stamp.yaml
+    current_path: (none)
+    status: missing
+    category: install_record
+    deploy_critical: no
+
+  - baseline_path: production/install/install-stamp-chain.yaml
+    current_path: (none)
+    status: missing
+    category: install_record
+    deploy_critical: no
+
+  - baseline_path: production/install/stamped-install-intake.yaml
+    current_path: (none)
+    status: missing
+    category: install_record
+    deploy_critical: no
+
+  - baseline_path: production/manifests/allowed-parts-ledger.yaml
+    current_path: (none)
+    status: missing
+    category: production_manifest
+    deploy_critical: no
+
+  - baseline_path: production/manifests/allowed-variation-ledger.yaml
+    current_path: (none)
+    status: missing
+    category: production_manifest
+    deploy_critical: no
+
+  - baseline_path: production/manifests/stamped-composition-ledger.yaml
+    current_path: (none)
+    status: missing
+    category: production_manifest
+    deploy_critical: no
+
+  - baseline_path: production/pass-1-checkpoint.md
+    current_path: (none)
+    status: missing
+    category: production_checkpoint
+    deploy_critical: no
+
+  - baseline_path: production/pass-2-checkpoint.md
+    current_path: (none)
+    status: missing
+    category: production_checkpoint
+    deploy_critical: no
+
+  - baseline_path: production/pass-2b-checkpoint.md
+    current_path: (none)
+    status: missing
+    category: production_checkpoint
+    deploy_critical: no
+
+  - baseline_path: production/pass-2c-checkpoint.md
+    current_path: (none)
+    status: missing
+    category: production_checkpoint
+    deploy_critical: no
+
+  - baseline_path: production/pass-3-checkpoint.md
+    current_path: (none)
+    status: missing
+    category: production_checkpoint
+    deploy_critical: no
+
+  - baseline_path: production/pass-3b-checkpoint.md
+    current_path: (none)
+    status: missing
+    category: production_checkpoint
+    deploy_critical: no
+
+  - baseline_path: production/pass-4-checkpoint.md
+    current_path: (none)
+    status: missing
+    category: production_checkpoint
+    deploy_critical: no
+
+  - baseline_path: production/pass-5-checkpoint.md
+    current_path: (none)
+    status: missing
+    category: production_checkpoint
+    deploy_critical: no
+
+  - baseline_path: production/qc/checks/ (7 files)
+    current_path: (none)
+    status: missing
+    category: production_qc
+    deploy_critical: no
+
+  - baseline_path: production/qc/reports/ (4 files)
+    current_path: (none)
+    status: missing
+    category: production_qc
+    deploy_critical: no
+
+# =============================================================================
+# SECTION G — RESOLVER BOUNDARY FILES
+# =============================================================================
+resolver_boundary:
+
+  - baseline_path: resolver-boundary/
+    current_path: (none)
+    status: missing
+    category: resolver_root
+    deploy_critical: no
+
+  - baseline_path: resolver-boundary/README.md
+    current_path: (none)
+    status: missing
+    category: resolver_docs
+    deploy_critical: no
+
+  - baseline_path: resolver-boundary/compatibility/rule-application.md
+    current_path: (none)
+    status: missing
+    category: resolver_rules
+    deploy_critical: no
+
+  - baseline_path: resolver-boundary/input/declared-dependencies.yaml
+    current_path: (none)
+    status: missing
+    category: resolver_input
+    deploy_critical: no
+
+  - baseline_path: resolver-boundary/input/declared-manifests.yaml
+    current_path: (none)
+    status: missing
+    category: resolver_input
+    deploy_critical: no
+
+  - baseline_path: resolver-boundary/input/declared-variation.yaml
+    current_path: (none)
+    status: missing
+    category: resolver_input
+    deploy_critical: no
+
+  - baseline_path: resolver-boundary/normalization/composition-record.json
+    current_path: (none)
+    status: missing
+    category: resolver_normalization
+    deploy_critical: no
+
+  - baseline_path: resolver-boundary/normalization/dependency-resolution-record.json
+    current_path: (none)
+    status: missing
+    category: resolver_normalization
+    deploy_critical: no
+
+  - baseline_path: resolver-boundary/stamped-output/install-stamp-draft.yaml
+    current_path: (none)
+    status: missing
+    category: resolver_output
+    deploy_critical: no
+
+# =============================================================================
+# SECTION H — VARIATION CONTROL
+# =============================================================================
+variation_control:
+
+  - baseline_path: variation-control/README.md
+    current_path: (none)
+    status: missing
+    category: variation_docs
+    deploy_critical: no
+
+# =============================================================================
+# SECTION I — REVIEW-REQUIRED / ROOT ARTIFACTS
+# =============================================================================
+review_artifacts:
+
+  - baseline_path: _review-required/README.md
+    current_path: (none)
+    status: missing
+    category: review_docs
+    deploy_critical: no
+
+  - baseline_path: _review-required/root-artifacts/BRIGHT_WALLPAPER_NOTES.md
+    current_path: (none)
+    status: missing
+    category: review_docs
+    deploy_critical: no
+
+  - baseline_path: _review-required/root-artifacts/FILE_SYSTEM_SNAPSHOT.txt
+    current_path: (none)
+    status: missing
+    category: review_docs
+    deploy_critical: no
+
+  - baseline_path: _review-required/root-artifacts/MEDIA_RENDERER_PATCH_NOTES.md
+    current_path: (none)
+    status: missing
+    category: review_docs
+    deploy_critical: no
+
+  - baseline_path: _review-required/root-artifacts/MEDIA_TOKEN_PATCH_NOTES.md
+    current_path: (none)
+    status: missing
+    category: review_docs
+    deploy_critical: no
+
+  - baseline_path: _review-required/root-artifacts/NOTES-demo-zero.md
+    current_path: (none)
+    status: missing
+    category: review_docs
+    deploy_critical: no
+
+  - baseline_path: _review-required/root-artifacts/NOTES-path3-runtime-rebuild.md
+    current_path: (none)
+    status: missing
+    category: review_docs
+    deploy_critical: no
+
+  - baseline_path: _review-required/root-artifacts/UPDATE_NOTES.md
+    current_path: (none)
+    status: missing
+    category: review_docs
+    deploy_critical: no
+
+# =============================================================================
+# SECTION J — PRODUCT-SHELL MICROFRONTEND DOCS
+# =============================================================================
+microfrontend_docs:
+
+  - baseline_path: product-shell/README.md
+    current_path: (none)
+    status: missing
+    category: deploy_docs
+    deploy_critical: no
+
+  - baseline_path: product-shell/blueprint/
+    current_path: (none)
+    status: missing
+    category: deploy_docs
+    deploy_critical: no
+    notes: authority-boundaries.md, decision-register.md, spine-compatibility-policy.md
+
+  - baseline_path: product-shell/docs/hardening/
+    current_path: (none)
+    status: missing
+    category: deploy_docs
+    deploy_critical: no
+    notes: 04d-exclusive-runtime-{data-flow,fix,parity-check}.md
+
+  - baseline_path: product-shell/docs/microfrontend/
+    current_path: (none)
+    status: missing
+    category: deploy_docs
+    deploy_critical: no
+    notes: 80+ pass docs (pass-1 through pass-5, pass-b rerun, cutover checklist)
+
+# =============================================================================
+# SECTION K — CURRENT REBUILD SURFACES NOT PRESENT IN BASELINE
+# =============================================================================
+current_rebuild_only:
+  declaration: these surfaces exist in current rebuild but have no baseline counterpart; they are chassis-native and do not satisfy baseline deployability.
+
+  - current_path: apps/core-runtime/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_tree
+
+  - current_path: apps/operator-shell/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_tree
+
+  - current_path: apps/web-public/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_tree
+
+  - current_path: apps/local-host/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_tree
+
+  - current_path: packages/contracts-core/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_package
+
+  - current_path: packages/lifecycle-chassis/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_package
+
+  - current_path: packages/policy-chassis/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_package
+
+  - current_path: packages/proof-chassis/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_package
+
+  - current_path: packages/registry-chassis/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_package
+
+  - current_path: packages/runtime-bridge/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_package
+
+  - current_path: packages/schema-chassis/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_package
+
+  - current_path: packages/session-transport/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_package
+
+  - current_path: packages/validation-chassis/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_package
+
+  - current_path: xyz-factory-system/
+    baseline_path: (none)
+    status: current_only
+    category: chassis_reference
+
+  - current_path: worker-wb/
+    baseline_path: (none)
+    status: current_only
+    category: worker_reports
+
+# =============================================================================
+# TOTALS
+# =============================================================================
+totals:
+  total_baseline_surfaces_tracked: 150
+  present: 0
+  rebuilt: 0
+  missing: 150
+  deploy_critical_missing: 82
+  non_deploy_critical_missing: 68
+  current_rebuild_only_surfaces: 15
+
+  missing_deploy_critical_categories:
+    - deploy_app_root
+    - package_manifest
+    - build_config
+    - html_entrypoint
+    - app_bootstrap
+    - router_bootstrap
+    - redirects
+    - pages_functions_root
+    - pages_function
+    - pages_function_lib
+    - microfrontend_shell
+    - module_package
+    - admin_app_root
+    - admin_subpackage
+    - cloudflare_routes
+
+  result:
+    - every baseline deploy-critical surface is missing from current rebuild
+    - no baseline surface is present at exact path in current rebuild
+    - no baseline surface has a one-to-one declared chassis-native counterpart that satisfies deployability
+    - current rebuild contains only chassis-abstraction TypeScript packages with no bundler, no entrypoint, no public assets, no Pages functions, no redirects, and no deploy root

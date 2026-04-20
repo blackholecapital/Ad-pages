@@ -1,0 +1,112 @@
+/* ── Exclusive Tile Grid (tier-2 pages) ── */
+.exclusiveTileGrid{
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  padding: 24px 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  pointer-events: auto;
+}
+
+.exclusiveTile{
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  aspect-ratio: 4/3;
+  display: flex;
+  flex-direction: column;
+}
+
+.exclusiveTileImageWrap{
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.exclusiveTileImage{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.exclusiveTilePlaceholder{
+  flex: 1;
+  background: rgba(255,255,255,.04);
+}
+
+/* Red tint overlay for locked tiles — no blur, content visible */
+.exclusiveTileTint{
+  position: absolute;
+  inset: 0;
+  background: rgba(180, 30, 30, .18);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Label at top-left */
+.exclusiveTileLabelTop{
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  z-index: 2;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,.85);
+  text-shadow: 0 1px 4px rgba(0,0,0,.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 20px);
+}
+
+/* Bottom-left badge area (lock + price) */
+.exclusiveTileBadgeArea{
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.exclusiveTileBadgeCol{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.exclusiveTileBadgeText{
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.exclusiveTilePrice{
+  font-size: 14px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.8);
+}
+
+.exclusiveTileBadgeSubtext{
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255,255,255,.7);
+  text-transform: uppercase;
+}
+
+.exclusiveTileUnlocked{
+  cursor: pointer;
+}
+.exclusiveTileUnlocked:hover .exclusiveTileImage{
+  transform: scale(1.03);
+  transition: transform .2s ease;
+}

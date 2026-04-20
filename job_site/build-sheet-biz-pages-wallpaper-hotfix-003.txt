@@ -1,0 +1,498 @@
+form_id:build-sheet
+
+1. JOB
+   1.1 job_id: BIZ-PAGES-WALLPAPER-HOTFIX-003
+   1.2 job_name: Biz Pages premium wallpaper/fullscreen hotfix and legacy published-path cleanup
+   1.3 objective: Fix the live Biz Pages wallpaper/render failure by removing only the legacy published-path logic that blocks premium fullscreen rendering, wiring published premium pages to the correct receiver, unifying wallpaper resolution for that path, and preserving all non-conflicting functionality.
+   1.4 requested_outcome: Published Biz premium pages render the selected wallpaper across the full premium stage surface, the live slug route uses the premium receiver instead of the old static shell for premium payloads, old fallback wallpaper logic is removed only from the conflicting published-premium path, and all unrelated functionality remains intact.
+   1.5 target_root_path: /job_site/repo_mirror/Biz-Pages-FB-frozen-main
+   1.6 target_repo_url:
+   1.7 inspection_url:
+
+2. RUN CONTROL
+   2.1 mode: lean-factory single-issue hotfix run
+   2.2 execution_foreman: Foreman A
+   2.3 checksum_foreman: Foreman B
+   2.4 final_validator: Factory Control Interface
+
+3. TAG FORMAT
+   3.1 foreman_header
+   3.1.1 job_id: BIZ-PAGES-WALLPAPER-HOTFIX-003
+   3.1.2 foreman:
+   3.1.3 current_stage:
+   3.1.4 current_pass:
+   3.1.5 next_stage:
+   3.1.6 next_owner:
+   3.1.7 passes_remaining:
+   3.1.8 status:
+   3.1.9 current_action:
+
+3.2 worker_tag_format
+3.2.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER | STAGE | RESULT]
+
+4. PATHS
+   4.1 stage_activity_log: /job_site/stage_activity_log.txt
+   4.2 final_checksum_path: /job_site/final_checksum.md
+   4.3 final_tps_report: /job_site/TPS_REPORT.txt
+
+5. REFERENCES
+   5.1 required_references:
+   5.1.1 /job_site/factory-manual-v1.11.txt
+   5.1.2 /job_site/foreman-manual-v1.11.txt
+   5.1.3 /job_site/worker-execution-manual-v1.1.txt
+   5.1.4 /job_site/build-sheet-active.txt
+   5.1.5 /job_site/repo_mirror/Biz-Pages-FB-frozen-main
+   5.1.6 /job_site/reference_repo_gateway/gateway-integration-main
+   5.1.7 /job_site/wallpaper_issue_audit.md
+   5.1.8 /job_site/premium_route_contract.md
+   5.1.9 /job_site/known_slug_test_vector.json
+   5.2 external_references:
+   5.2.1 live Biz Pages slug route behavior
+   5.2.2 working Gateway published overlay/reference behavior
+
+6. STAGE
+   6.1 stage_id: S1
+   6.2 stage_name: isolate and remove conflicting legacy published-premium path
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Identify and remove only the legacy published-page shell logic that intercepts premium payloads, while preserving non-premium and unrelated application functionality.
+   6.5 stage_inputs:
+   6.5.1 current Biz slug routing
+   6.5.2 current PageShell/AppShell behavior
+   6.5.3 current premium receiver behavior
+   6.5.4 Gateway reference routing behavior
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER A | S1 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Audit the live Biz published slug route and trace exactly where premium pages are being routed into the old shell. Patch routing and shell selection so premium published payloads bypass the conflicting legacy published shell path. Do not remove non-premium routes or unrelated app chrome. Remove only the conflicting legacy published-premium interception path.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/router.tsx
+6.6.4.2 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/pages/HomePage.tsx
+6.6.4.3 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/components/layout/PageShell.tsx
+6.6.4.4 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/components/layout/AppShell.tsx
+6.6.4.5 /job_site/premium_route_contract.md
+6.6.4.6 /job_site/wallpaper_issue_audit.md
+6.6.5 required_references:
+6.6.5.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main
+6.6.5.2 /job_site/reference_repo_gateway/gateway-integration-main
+6.6.5.3 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER B | S1 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Verify that the legacy published shell path no longer owns premium slug rendering and that the patch preserves non-premium route ownership. Record the exact premium-route decision rule and exact preserved route surfaces.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/preserved_functionality_matrix.md
+6.7.4.2 /job_site/stage_activity_log.txt
+6.7.5 required_references:
+6.7.5.1 /job_site/premium_route_contract.md
+6.7.5.2 /job_site/wallpaper_issue_audit.md
+6.7.5.3 /job_site/build-sheet-active.txt
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/premium_route_contract.md
+6.8.2 /job_site/wallpaper_issue_audit.md
+6.8.3 /job_site/preserved_functionality_matrix.md
+6.8.4 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S1-LEGACY-BYPASS
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Premium published routes no longer render through the conflicting legacy PageShell/AppShell path; the exact premium route rule is documented; and preserved non-premium surfaces are explicitly listed.
+   7.2 patch_condition: Premium routes can still land in the old shell path; non-premium functionality is unintentionally removed; or route ownership remains ambiguous.
+   7.3 handoff_on_pass: Foreman B validates and releases S2.
+   7.4 handoff_on_patch: Return to Foreman A for route/shell correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S2
+   6.2 stage_name: wire published premium pages into the fullscreen receiver
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Ensure live published premium payloads mount the premium receiver as the controlling surface so the wallpaper fills the full premium stage and is no longer just a background behind legacy shell chrome.
+   6.5 stage_inputs:
+   6.5.1 premium route contract
+   6.5.2 existing DesktopPremiumReceiver implementation
+   6.5.3 Gateway reference implementation
+   6.5.4 live published page entry path
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER A | S2 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Patch the live published premium page entry path so DesktopPremiumReceiver becomes the top-level rendering owner for premium published pages. Remove any conflicting layering where wallpaper is painted as a background behind legacy nav/content. Preserve required premium UI but make the premium stage the owning surface.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/DesktopPremiumReceiver.tsx
+6.6.4.2 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/DesktopPremiumShell.tsx
+6.6.4.3 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/pages/StudioPage.tsx
+6.6.4.4 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/components/layout/PageShell.tsx
+6.6.4.5 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/styles/published-overlay.css
+6.6.4.6 /job_site/premium_surface_ownership.md
+6.6.5 required_references:
+6.6.5.1 /job_site/premium_route_contract.md
+6.6.5.2 /job_site/reference_repo_gateway/gateway-integration-main
+6.6.5.3 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER B | S2 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Verify that premium published pages are now controlled by the premium receiver and that wallpaper is rendered as part of the premium stage, not as a shell background. Record exact removed conflicting layers and exact preserved UI layers.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/premium_fullscreen_proof.md
+6.7.4.2 /job_site/stage_activity_log.txt
+6.7.5 required_references:
+6.7.5.1 /job_site/premium_surface_ownership.md
+6.7.5.2 /job_site/preserved_functionality_matrix.md
+6.7.5.3 /job_site/build-sheet-active.txt
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/premium_surface_ownership.md
+6.8.2 /job_site/premium_fullscreen_proof.md
+6.8.3 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S2-RECEIVER-OWNER
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Live premium published pages mount DesktopPremiumReceiver as the controlling surface; legacy shell background rendering no longer owns the wallpaper; and preserved functionality is documented.
+   7.2 patch_condition: Wallpaper is still rendered by the old shell path; premium receiver is mounted only in preview/studio; or removed layers are not clearly documented.
+   7.3 handoff_on_pass: Foreman B validates and releases S3.
+   7.4 handoff_on_patch: Return to Foreman A for premium entry-path correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S3
+   6.2 stage_name: unify published premium data contract
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Remove contract drift so published premium payloads carry the exact fields the premium receiver needs, including shell identity, stage metadata, wallpaper source, and tile data.
+   6.5 stage_inputs:
+   6.5.1 backend runtime compiler output
+   6.5.2 frontend published runtime types
+   6.5.3 DesktopPremiumReceiver input shape
+   6.5.4 known slug test vector
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER A | S3 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Patch the published runtime compiler and frontend runtime contract so premium payloads include and consume one canonical structure. Remove the shape drift between backend output and receiver input. Premium published runtime must provide shellId, stage, wallpaper, and tiles in the exact shape used by the receiver.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/_lib/runtime-compiler.js
+6.6.4.2 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/api/published-page.js
+6.6.4.3 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/runtime/types.ts
+6.6.4.4 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/runtime/publishedClient.ts
+6.6.4.5 /job_site/known_slug_test_vector.json
+6.6.4.6 /job_site/premium_payload_contract.md
+6.6.5 required_references:
+6.6.5.1 /job_site/premium_surface_ownership.md
+6.6.5.2 /job_site/repo_mirror/Biz-Pages-FB-frozen-main
+6.6.5.3 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER B | S3 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Validate that published premium runtime payload shape matches receiver expectations exactly and that the known slug fixture now resolves through that contract with no fallback conversion hacks.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/premium_payload_checksum.md
+6.7.4.2 /job_site/stage_activity_log.txt
+6.7.5 required_references:
+6.7.5.1 /job_site/premium_payload_contract.md
+6.7.5.2 /job_site/known_slug_test_vector.json
+6.7.5.3 /job_site/build-sheet-active.txt
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/premium_payload_contract.md
+6.8.2 /job_site/premium_payload_checksum.md
+6.8.3 /job_site/known_slug_test_vector.json
+6.8.4 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S3-PAYLOAD-UNITY
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Published premium runtime contract exactly matches receiver expectations; shellId and stage are preserved end-to-end; and tiles/wallpaper are provided without adapter drift.
+   7.2 patch_condition: Backend and frontend shapes still differ; premium receiver still depends on ad hoc mapping; or the known slug fixture does not prove the exact contract.
+   7.3 handoff_on_pass: Foreman B validates and releases S4.
+   7.4 handoff_on_patch: Return to Foreman A for contract correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S4
+   6.2 stage_name: remove old wallpaper fallback from published premium path
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Eliminate old static wallpaper fallback and unresolved literal wallpaper paths from the premium published route only, while preserving safe fallback behavior for unrelated non-premium surfaces if still needed.
+   6.5 stage_inputs:
+   6.5.1 AppShell wallpaper fallback logic
+   6.5.2 resolveWallpaper logic
+   6.5.3 build log unresolved wallpaper path evidence
+   6.5.4 premium payload contract
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER A | S4 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Patch wallpaper resolution so premium published pages no longer use old local static wallpaper fallbacks or literal unresolved root-path wallpaper strings. Keep fallback logic only where it does not interfere with published premium rendering. Remove or gate DEFAULT_WALLPAPER_URL behavior away from the premium published path.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/utils/resolveWallpaper.ts
+6.6.4.2 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/components/layout/AppShell.tsx
+6.6.4.3 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/_lib/runtime-r2.js
+6.6.4.4 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/api/published-manifest.js
+6.6.4.5 /job_site/wallpaper_resolution_contract.md
+6.6.5 required_references:
+6.6.5.1 /job_site/premium_payload_contract.md
+6.6.5.2 /job_site/wallpaper_issue_audit.md
+6.6.5.3 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER B | S4 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Verify that published premium pages no longer depend on DEFAULT_WALLPAPER_URL or unresolved literal root-path wallpaper assets and record preserved fallback behavior outside the premium published path.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/wallpaper_fallback_removal_proof.md
+6.7.4.2 /job_site/stage_activity_log.txt
+6.7.5 required_references:
+6.7.5.1 /job_site/wallpaper_resolution_contract.md
+6.7.5.2 /job_site/preserved_functionality_matrix.md
+6.7.5.3 /job_site/build-sheet-active.txt
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/wallpaper_resolution_contract.md
+6.8.2 /job_site/wallpaper_fallback_removal_proof.md
+6.8.3 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S4-FALLBACK-KILL
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Premium published pages no longer use the old wallpaper fallback path; unresolved literal wallpaper strings are removed or gated; and preserved fallback behavior for unrelated surfaces is documented.
+   7.2 patch_condition: DEFAULT_WALLPAPER_URL still affects premium published pages; unresolved literal root-path wallpaper references remain; or fallback boundaries are unclear.
+   7.3 handoff_on_pass: Foreman B validates and releases S5.
+   7.4 handoff_on_patch: Return to Foreman A for resolver/fallback correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S5
+   6.2 stage_name: premium stage scaling and fullscreen fit proof
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Ensure the premium receiver scales the selected 2560x1440 stage correctly to the available viewport and fully owns the surface without top-left clipping or legacy 1400px overlay interference.
+   6.5 stage_inputs:
+   6.5.1 DesktopPremiumReceiver scale logic
+   6.5.2 legacy published overlay CSS
+   6.5.3 premium payload contract
+   6.5.4 target viewport proof requirement
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER A | S5 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Patch premium stage scaling so the 2560x1440 premium stage is the only active layout model for premium published pages. Remove or bypass any remaining legacy 1400px published overlay sizing from that path. Produce deterministic proof that the premium stage scales and centers as one unit.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/useStageScale.ts
+6.6.4.2 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/DesktopPremiumShell.tsx
+6.6.4.3 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/styles/published-overlay.css
+6.6.4.4 /job_site/premium_stage_scaling_spec.md
+6.6.4.5 /job_site/premium_fullscreen_proof.md
+6.6.5 required_references:
+6.6.5.1 /job_site/premium_surface_ownership.md
+6.6.5.2 /job_site/premium_payload_contract.md
+6.6.5.3 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER B | S5 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Validate that premium published pages no longer use the legacy 1400px overlay sizing model and that the premium stage scales as a single fullscreen-controlled surface with no top-left clipping.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/premium_scale_checksum.md
+6.7.4.2 /job_site/stage_activity_log.txt
+6.7.5 required_references:
+6.7.5.1 /job_site/premium_stage_scaling_spec.md
+6.7.5.2 /job_site/premium_fullscreen_proof.md
+6.7.5.3 /job_site/build-sheet-active.txt
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/premium_stage_scaling_spec.md
+6.8.2 /job_site/premium_fullscreen_proof.md
+6.8.3 /job_site/premium_scale_checksum.md
+6.8.4 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S5-SCALE-PASS
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: Premium published pages use only the premium stage scaling model; legacy 1400px overlay sizing is bypassed for that path; and fullscreen proof/checksum are present.
+   7.2 patch_condition: Legacy overlay sizing still affects premium published pages; top-left clipping remains; or proof artifacts do not demonstrate premium-stage ownership.
+   7.3 handoff_on_pass: Foreman B validates and releases S6.
+   7.4 handoff_on_patch: Return to Foreman A for scale correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. STAGE
+   6.1 stage_id: S6
+   6.2 stage_name: regression lock and closeout
+   6.3 stage_owner: Foreman A
+   6.4 stage_goal: Lock the wallpaper fix with route/contract/resolution regression evidence and close the run.
+   6.5 stage_inputs:
+   6.5.1 all prior stage artifacts
+   6.5.2 known slug test vector
+   6.5.3 preserved functionality matrix
+
+6.6 worker_a_order
+6.6.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER A | S6 | RESULT]
+6.6.2 expected_status: PASS
+6.6.3 task: Produce final regression evidence for one known premium slug showing route ownership, payload shape, wallpaper resolution path, receiver ownership, and fullscreen premium-stage scaling. Record commit and push details for the hotfix.
+6.6.4 expected_artifacts:
+6.6.4.1 /job_site/final_regression_evidence.md
+6.6.4.2 /job_site/final_checksum.md
+6.6.4.3 /job_site/commit_push_record.md
+6.6.5 required_references:
+6.6.5.1 /job_site/preserved_functionality_matrix.md
+6.6.5.2 /job_site/known_slug_test_vector.json
+6.6.5.3 /job_site/build-sheet-active.txt
+6.6.6 repo_mirror_required: yes
+6.6.7 commit_required: yes
+6.6.8 push_required: yes
+
+6.7 worker_b_order
+6.7.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER B | S6 | RESULT]
+6.7.2 expected_status: PASS
+6.7.3 task: Validate all required stage artifacts, verify that the hotfix removed only the conflicting wallpaper/render path, confirm preserved functionality documentation exists, and write the final TPS report.
+6.7.4 expected_artifacts:
+6.7.4.1 /job_site/final_validation_report.md
+6.7.4.2 /job_site/TPS_REPORT.txt
+6.7.5 required_references:
+6.7.5.1 /job_site/final_regression_evidence.md
+6.7.5.2 /job_site/final_checksum.md
+6.7.5.3 /job_site/commit_push_record.md
+6.7.5.4 /job_site/build-sheet-active.txt
+6.7.6 repo_mirror_required: yes
+6.7.7 commit_required: yes
+6.7.8 push_required: yes
+
+6.8 required_stage_artifacts:
+6.8.1 /job_site/final_regression_evidence.md
+6.8.2 /job_site/final_checksum.md
+6.8.3 /job_site/commit_push_record.md
+6.8.4 /job_site/final_validation_report.md
+6.8.5 /job_site/TPS_REPORT.txt
+6.8.6 /job_site/stage_activity_log.txt
+6.9 checkpoint_id: CP-S6-CLOSEOUT
+
+7. VALIDATION CHECKS
+   7.1 pass_condition: The hotfix proves premium published pages no longer use the conflicting legacy wallpaper/render path, preserved functionality is documented, final checksum exists, and TPS report exists.
+   7.2 patch_condition: Regression evidence is incomplete; preserved functionality is not documented; final checksum missing; or TPS report absent.
+   7.3 handoff_on_pass: Factory Control Interface final validation and closeout.
+   7.4 handoff_on_patch: Return to Foreman A for exact missing artifact correction.
+   7.5 handoff_on_error: Return to Factory Control Interface.
+
+8. FINAL VALIDATION
+   8.1 required_inputs:
+   8.1.1 /job_site/wallpaper_issue_audit.md
+   8.1.2 /job_site/premium_route_contract.md
+   8.1.3 /job_site/preserved_functionality_matrix.md
+   8.1.4 /job_site/premium_surface_ownership.md
+   8.1.5 /job_site/premium_payload_contract.md
+   8.1.6 /job_site/wallpaper_resolution_contract.md
+   8.1.7 /job_site/premium_stage_scaling_spec.md
+   8.1.8 /job_site/premium_fullscreen_proof.md
+   8.1.9 /job_site/final_regression_evidence.md
+   8.1.10 /job_site/final_checksum.md
+   8.1.11 /job_site/TPS_REPORT.txt
+   8.1.12 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/router.tsx
+   8.1.13 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/components/layout/PageShell.tsx
+   8.1.14 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/features/desktop-premium/DesktopPremiumReceiver.tsx
+   8.1.15 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/functions/_lib/runtime-compiler.js
+   8.1.16 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/runtime/types.ts
+   8.1.17 /job_site/repo_mirror/Biz-Pages-FB-frozen-main/apps/product-shell/src/utils/resolveWallpaper.ts
+   8.2 validation_check_1: Route ownership check — premium published routes must bypass the conflicting legacy shell path and mount the premium receiver.
+   8.3 validation_check_2: Payload/resolver check — published premium runtime contract and wallpaper resolution path must match the premium receiver with no old fallback interference.
+   8.4 validation_check_3: Fullscreen check — premium stage must be the only active layout model for premium published pages and must scale as one fullscreen-controlled surface.
+   8.5 outputs:
+   8.5.1 /job_site/final_checksum.md
+   8.5.2 /job_site/TPS_REPORT.txt
+   8.5.3 /job_site/final_validation_report.md
+   8.6 completion_status: PASS only when all six stages pass with exact artifacts and preserved functionality is explicitly documented.
+
+9. FOREMAN OUTPUT FORM
+   9.1 job_id: BIZ-PAGES-WALLPAPER-HOTFIX-003
+   9.2 foreman:
+   9.3 current_stage:
+   9.4 current_pass:
+   9.5 next_stage:
+   9.6 next_owner:
+   9.7 passes_remaining:
+   9.8 status:
+   9.9 current_action:
+   9.10 artifacts:
+   9.11 checkpoint_result:
+   9.12 handoff_instruction:
+   9.13 issue:
+
+10. WORKER DISPATCH FORM
+    10.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER | STAGE | RESULT]
+    10.2 expected_status:
+    10.3 task:
+    10.4 expected_artifacts:
+    10.5 required_references:
+    10.6 repo_mirror_required:
+    10.7 commit_required:
+    10.8 push_required:
+
+11. WORKER RESULT FORM
+    11.1 [BIZ-PAGES-WALLPAPER-HOTFIX-003 | WORKER | STAGE | RESULT]
+    11.2 status:
+    11.3 artifacts:
+    11.4 summary:
+    11.5 issues:
+
+12. TPS REPORT FORM
+    12.1 job_id: BIZ-PAGES-WALLPAPER-HOTFIX-003
+    12.2 completion_status:
+    12.3 job_summary:
+    12.4 stage_results:
+    12.5 artifact_summary:
+    12.6 patch_history:
+    12.7 closeout_note:
+
+13. REFERENCE MATERIAL
+    13.1 job_site: /job_site
+    13.2 target_file_system: /job_site/repo_mirror/Biz-Pages-FB-frozen-main
+    13.3 factory_manual: /job_site/factory-manual-v1.11.txt
+    13.4 foreman_manual: /job_site/foreman-manual-v1.11.txt
+    13.5 worker_execution_manual: /job_site/worker-execution-manual-v1.1.txt
+    13.6 active_build_sheet: /job_site/build-sheet-active.txt
+    13.7 reference_repo_1:
+    13.7.1 url: /job_site/reference_repo_gateway/gateway-integration-main
+    13.7.2 reference_use: working published premium route and runtime comparison
+    13.8 reference_repo_2:
+    13.8.1 url:
+    13.8.2 reference_use:
+    13.9 reference_repo_3:
+    13.9.1 url:
+    13.9.2 reference_use:
+
+FORM LAW BLOCK
+L1. stage numbering must use S1, S2, S3 format only
+L2. field numbering must use 1.1, 1.2, 1.3 format only
+L3. foreman status values allowed: PASS | PATCH | ERROR
+L4. worker status values allowed: PASS | PATCH
+L5. unused fields must remain blank
+L6. do not delete fields from the template
+L7. all expected_artifacts must be exact target paths
+L8. worker dispatch tag must exactly match worker result tag format
+L9. required_references only in worker orders
+L10. all file writes must use declared target paths only

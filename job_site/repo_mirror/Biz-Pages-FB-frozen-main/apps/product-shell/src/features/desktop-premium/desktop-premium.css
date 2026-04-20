@@ -1,0 +1,342 @@
+/* ── Desktop Premium v1 Shell — 2560×1440 canonical stage ── */
+
+/* Viewport: fills the container, clips the scaled stage */
+.dpv1Viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0b0b0f;
+}
+
+/* Stage: fixed 2560×1440, positioned via CSS transform scale + offset.
+   transform-origin top left so offset math stays additive. */
+.dpv1Stage {
+  position: absolute;
+  overflow: hidden;
+}
+
+/* Wallpaper: cover the entire stage, same rules as the spec */
+.dpv1Wallpaper {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header band — top of stage, full width */
+.dpv1Header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(8, 8, 16, 0.84);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 16px;
+}
+
+.dpv1HeaderLabel {
+  font-size: 20px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.04em;
+  font-family: ui-monospace, monospace;
+}
+
+/* Left rail — below header, fixed width on left */
+.dpv1LeftRail {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background: rgba(8, 8, 16, 0.76);
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  z-index: 2;
+}
+
+/* Right rail — below header, fixed width on right */
+.dpv1RightRail {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background: rgba(8, 8, 16, 0.76);
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  z-index: 2;
+}
+
+/* Workspace visual region — transparent by default, dashed outline in Studio */
+.dpv1Workspace {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.dpv1WorkspaceStudio {
+  outline: 1px dashed rgba(255, 255, 255, 0.10);
+  outline-offset: -1px;
+}
+
+/* Tiles layer: sits above workspace chrome, below nothing */
+.dpv1TilesLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Individual tile */
+.dpv1Tile {
+  position: absolute;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  overflow: hidden;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+/* Studio: tiles are draggable */
+.dpv1TileInteractive {
+  cursor: move;
+  user-select: none;
+}
+
+.dpv1TileInteractive:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25);
+}
+
+.dpv1TileSelected {
+  border-color: #3B82F6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.45) !important;
+}
+
+/* Tile media: image fills tile. max-width:none overrides global img{max-width:100%}
+   so tile images are not constrained by their tile's rendered CSS width. */
+.dpv1TileMedia {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+}
+
+/* Tile label overlay (Studio mode) */
+.dpv1TileLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 14px;
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Resize handle — bottom-right corner grip */
+.dpv1ResizeHandle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  cursor: se-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.dpv1ResizeHandle::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid rgba(255, 255, 255, 0.55);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 1px;
+}
+
+/* Delete button — top-right corner (Studio only) */
+.dpv1TileDelete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 16px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 3;
+  line-height: 1;
+}
+
+.dpv1TileDelete:hover {
+  background: rgba(220, 38, 38, 0.7);
+  border-color: rgba(220, 38, 38, 0.8);
+  color: #fff;
+}
+
+/* ── Studio toolbar overlay (viewport-relative, not stage-relative) ── */
+.dpv1StudioToolbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.62);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.dpv1ToolbarBtn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 100ms ease;
+}
+
+.dpv1ToolbarBtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.dpv1ToolbarBtn.primary {
+  background: #3B82F6;
+  border-color: #2563EB;
+  color: #fff;
+}
+
+.dpv1ToolbarBtn.primary:hover {
+  background: #2563EB;
+}
+
+/* Snap grid indicator (shown when dragging) */
+.dpv1GridOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.dpv1GridOverlay.visible {
+  opacity: 1;
+}
+
+/* Save output panel */
+.dpv1SavePanel {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-family: ui-monospace, monospace;
+  max-width: 90%;
+  max-height: 200px;
+  overflow: auto;
+  white-space: pre;
+  backdrop-filter: blur(8px);
+}
+
+/* ── Receiver: empty state ── */
+.dpv1ReceiverEmpty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.22);
+  font-size: 28px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+/* ── Page wrapper for Studio / Receiver that fills screen below nav ── */
+.dpv1PageWrapper {
+  position: fixed;
+  top: var(--nav-h, 72px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+/* ── Published receiver owning surface ──────────────────────────────────────
+ * Used when DesktopPremiumReceiver renders with asMount={true} (published
+ * page path). Covers the full viewport so the AppShell default wallpaper
+ * (z-index -1) is fully occluded and the premium stage's own wallpaper is
+ * the sole background. The app nav (z-index 50) renders above.
+ *
+ * Explicit width/height in viewport units (100vw × 100vh) are required
+ * alongside inset:0 so that:
+ *   (a) any future ancestor CSS transform that changes the fixed-element
+ *       containing block still produces a full-viewport mount via the vw/vh
+ *       fallback;
+ *   (b) no inherited max-width from ancestor nodes can clamp the surface;
+ *   (c) test harnesses that measure offsetWidth/clientWidth see the canonical
+ *       100vw value without resolving from inset offsets.
+ *
+ * The receiver positions itself — PageShell supplies no external wrapper. */
+.dpv1ReceiverMount {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  z-index: 4;
+  overflow: hidden;
+  background: #0b0b0f;
+}
+
+/* Viewport fills the mount completely. Explicit 100%/100% restated here so
+   the rule wins over any base .dpv1Viewport cascade from other contexts. */
+.dpv1ReceiverMount > .dpv1Viewport {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 900px) {
+  .dpv1ReceiverMount {
+    /* Use dynamic viewport height so the surface survives URL-bar collapse. */
+    height: 100dvh;
+    max-height: 100dvh;
+    bottom: auto;
+  }
+}

@@ -1,0 +1,790 @@
+/* Unified Workspace Tile — same visual language as PayMe modal tile.
+   Centered over wallpaper, sits above wallpaper (z 3) but below nav (z 50).
+   Off-white body with a faint blue-gray tint to drop the brightness; header
+   one notch darker for contrast against the inner cards. */
+.workspaceTile {
+  position: relative;
+  z-index: 3;
+  width: min(1300px, calc(100vw - 36px));
+  margin: 0 auto;
+  min-height: calc(100vh - var(--nav-h) - 48px);
+  max-height: calc(100vh - var(--nav-h) - 36px);
+  border-radius: 18px;
+  border: 1px solid rgba(59,130,246,.18);
+  background: #E8EDF3;
+  box-shadow: 0 12px 40px rgba(0,0,0,.25), 0 0 40px rgba(255,255,255,.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspaceTileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 18px;
+  background: #D8DEE7;
+  border-bottom: 1px solid rgba(71,85,105,.18);
+  flex-wrap: wrap;
+}
+
+.workspaceTileTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: #1E40AF;
+  letter-spacing: .2px;
+}
+
+.workspaceTileHeaderExtras {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.workspaceTab {
+  border-radius: 14px;
+  padding: 8px 14px;
+  font-weight: 800;
+  font-size: 13px;
+  border: 1px solid rgba(59,130,246,.32);
+  background: linear-gradient(180deg, #FFFFFF 0%, #DBE7FB 100%);
+  color: #1D4ED8;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.workspaceTab:hover {
+  background: linear-gradient(180deg, #FFFFFF 0%, #C5D7F8 100%);
+  border-color: rgba(59,130,246,.55);
+}
+.workspaceTab.active {
+  background: #3B82F6;
+  border-color: #2563EB;
+  color: #fff;
+}
+
+.workspaceTileBody {
+  flex: 1 1 auto;
+  padding: 18px 20px 22px;
+  overflow: auto;
+  color: #1E293B;
+  background: #E8EDF3;
+}
+
+.workspaceTileBody.workspaceTileFill {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.workspaceTileBody.workspaceTileFill > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+.workspaceTileBody.workspaceTileFill > section.card {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  height: 100%;
+}
+
+.workspaceTileBody.workspaceTileFill iframe {
+  border: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Keep wallpaper interactive behind tile — tile is opaque, no blocker needed. */
+.workspaceTile, .workspaceTileBody { pointer-events: auto; }
+
+/* Inner cards inside workspace body sit a tone brighter than the body, so they
+   read as the "active" surface on top of the workspace background. */
+.workspaceTileBody .adminBlock {
+  background: #FFFFFF;
+  border: 1px solid rgba(59,130,246,.20);
+  box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 6px 18px rgba(15,23,42,.06);
+}
+.workspaceTileBody .adminBlockTitle {
+  background: #F4F7FC;
+  color: #1D4ED8;
+  border-bottom: 1px solid rgba(59,130,246,.14);
+}
+
+.workspaceTileBody .cardGlow {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(59,130,246,.22) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 6px 18px rgba(15,23,42,.06) !important;
+}
+
+@media (max-width: 900px) {
+  .workspaceTile {
+    width: calc(100vw - 16px);
+    min-height: calc(100dvh - var(--nav-h) - 18px);
+    max-height: calc(100dvh - var(--nav-h) - 10px);
+    border-radius: 14px;
+  }
+  .workspaceTileHeader {
+    padding: 10px 12px;
+  }
+  .workspaceTileTitle { font-size: 18px; }
+  .workspaceTileBody { padding: 12px 12px 16px; }
+}
+
+
+/* PayMe right-side panel, opened via top-nav cart toggle.
+   z 40 so it floats over workspace content but sits below nav (50). */
+.paymeSidePanel {
+  position: fixed;
+  top: calc(var(--nav-h) + 6px);
+  right: 12px;
+  bottom: 12px;
+  width: min(460px, calc(100vw - 24px));
+  z-index: 40;
+  border-radius: 18px;
+  border: 1px solid rgba(59,130,246,.22);
+  background: #F4F7FC;
+  color: #1E293B;
+  box-shadow: -12px 12px 36px rgba(0,0,0,.28);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateX(calc(100% + 24px));
+  transition: transform 260ms ease;
+  visibility: hidden;
+}
+
+.paymeSidePanel.paymeSidePanelOpen {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.paymeSidePanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #D8DEE7;
+  border-bottom: 1px solid rgba(71,85,105,.18);
+}
+
+.paymeSidePanelTitle {
+  font-weight: 900;
+  color: #1D4ED8;
+  font-size: 16px;
+  letter-spacing: .2px;
+}
+
+.paymeSidePanelClose {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(59,130,246,.22);
+  background: #fff;
+  color: #3B82F6;
+  font-size: 18px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.paymeSidePanelClose:hover { background: rgba(59,130,246,.06); }
+
+.paymeSidePanelBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  background: #fff;
+}
+
+.paymeSidePanelBody > section,
+.paymeSidePanelBody > iframe {
+  flex: 1 1 auto;
+  min-height: 0;
+  border: none;
+  height: 100%;
+}
+
+.paymeSidePanelBody .card { height: 100%; border-radius: 0; border: none; }
+
+
+/* Shell-side PayMe Checkout (replaces old Basket layout) */
+.paymeCheckout {
+  padding: 18px 18px 24px;
+  color: #1E293B;
+  background: #fff;
+  min-height: 100%;
+  display: grid;
+  gap: 14px;
+}
+
+.paymeCheckoutHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.paymeCheckoutTitle {
+  font-weight: 900;
+  font-size: 22px;
+  color: #1D4ED8;
+}
+.paymeCheckoutDrop {
+  width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border-radius: 999px;
+  background: rgba(59,130,246,.1);
+}
+
+.paymeReviewCard,
+.paymeSummaryCard {
+  border: 1px solid rgba(59,130,246,.18);
+  border-radius: 16px;
+  padding: 14px 14px 16px;
+  background: #F8FAFC;
+}
+
+.paymeReviewHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.paymeSectionTitle {
+  font-weight: 800;
+  color: #1D4ED8;
+  font-size: 15px;
+}
+
+.paymeUsdcHelp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(59,130,246,.28);
+  color: #1D4ED8;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+}
+.paymeUsdcHelp:hover { background: rgba(59,130,246,.05); }
+.paymeUsdcDot {
+  width: 18px; height: 18px;
+  display: inline-grid; place-items: center;
+  border-radius: 999px;
+}
+
+.paymeReviewEmpty {
+  padding: 18px 8px;
+  text-align: center;
+  color: #64748B;
+  font-size: 13px;
+}
+
+.paymeReviewList { display: grid; gap: 8px; }
+.paymeReviewItem {
+  padding: 10px 12px;
+  border: 1px solid rgba(59,130,246,.12);
+  border-radius: 12px;
+  background: #fff;
+  display: grid;
+  gap: 4px;
+}
+.paymeReviewTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.paymeReviewItemHead {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.paymeReviewItemName {
+  font-weight: 800;
+  font-size: 14px;
+  color: #1E293B;
+}
+.paymeReviewItemSku {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: #64748B;
+  text-transform: uppercase;
+}
+.paymeReviewRemove {
+  background: none;
+  border: none;
+  color: #9CA3AF;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.paymeReviewRemove:hover { color: #ef4444; }
+
+.paymeReviewRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #475569;
+}
+.paymeReviewRow.recurring {
+  color: #1D4ED8;
+  font-weight: 800;
+}
+
+.paymeReviewQty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+.paymeReviewQty button {
+  width: 24px; height: 24px; border-radius: 6px;
+  border: 1px solid #D5DCE5; background: #F9FAFB;
+  font-size: 13px; cursor: pointer; color: #1E293B;
+}
+.paymeReviewQty span { min-width: 20px; text-align: center; font-weight: 700; font-size: 13px; }
+
+/* Summary */
+.paymeSummaryCard { display: grid; gap: 8px; }
+.paymeSummaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #475569;
+}
+.paymeSummaryRow.recurring { color: #1D4ED8; font-weight: 800; }
+.paymeSummaryRow.discount { color: #64748B; }
+.paymeSummaryRow.grand {
+  padding-top: 8px;
+  border-top: 1px solid rgba(59,130,246,.15);
+  font-size: 17px;
+  font-weight: 900;
+  color: #1E293B;
+}
+.paymeSummaryThen {
+  text-align: right;
+  font-size: 12px;
+  color: #64748B;
+}
+
+/* Coupon */
+.paymeCouponRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.paymeCouponRow input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #D5DCE5;
+  border-radius: 12px;
+  background: #fff;
+  color: #1E293B;
+  outline: none;
+}
+.paymeCouponRow input:focus {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.12);
+}
+.paymeCouponRow button {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 0;
+  background: #3B82F6;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+.paymeCouponRow button:hover { background: #2563EB; }
+.paymeCouponMsg { font-size: 12px; color: #6B7280; }
+.paymeCouponMsg.ok { color: #166534; }
+
+/* Promo */
+.paymePromoBanner {
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #9A3412;
+  display: grid;
+  gap: 4px;
+}
+
+/* Method selector */
+.paymeMethodsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.paymeMethod {
+  padding: 12px 10px;
+  border-radius: 12px;
+  border: 1px solid #D5DCE5;
+  background: #fff;
+  color: #1E293B;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.paymeMethod:hover { border-color: rgba(59,130,246,.30); }
+.paymeMethod.active { border-color: #3B82F6; box-shadow: 0 0 0 1px #3B82F6 inset; color: #1D4ED8; }
+.paymeMethod span { font-size: 15px; }
+
+.paymePayBtn {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 0;
+  background: #3B82F6;
+  color: #fff;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+}
+.paymePayBtn:hover:not(:disabled) { background: #2563EB; }
+.paymePayBtn:disabled { opacity: .5; cursor: default; }
+
+.paymeCheckoutConfirmed {
+  padding: 10px 12px;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #065F46;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.paymePoweredBy {
+  text-align: center;
+  font-size: 12px;
+  color: #2f7df6;
+  font-weight: 700;
+}
+
+/* USDC help modal */
+.paymeUsdcModalBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, .65);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  border-radius: 18px;
+  z-index: 4;
+}
+.paymeUsdcModal {
+  width: min(360px, 100%);
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 14px 40px rgba(0,0,0,.25);
+  display: grid;
+  gap: 12px;
+}
+.paymeUsdcModalHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+  color: #1D4ED8;
+  font-size: 15px;
+}
+.paymeUsdcModalHead .paymeUsdcModalClose {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #9CA3AF;
+  font-size: 18px;
+  cursor: pointer;
+}
+.paymeUsdcList {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: #1E293B;
+}
+.paymeUsdcList .muted { color: #64748B; font-size: 12px; }
+
+
+/* PayMe sub-panel layout (Coupons / Recurring / Settings) */
+.paymeSubGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (max-width: 960px) {
+  .paymeSubGrid { grid-template-columns: 1fr; }
+}
+
+.paymeFormGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 720px) {
+  .paymeFormGrid { grid-template-columns: 1fr; }
+}
+.paymeFormGrid label { display: grid; gap: 4px; }
+.paymeLabel { font-size: 12px; color: #64748B; font-weight: 700; }
+.paymeCheckbox { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; color: #1E293B; cursor: pointer; }
+
+.paymeCouponList { display: grid; gap: 8px; }
+.paymeCouponRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(59,130,246,.18);
+  border-radius: 12px;
+  background: #F8FAFC;
+}
+.paymeCouponRow.inactive { opacity: .55; }
+.paymeCouponCode { font-weight: 800; color: #1D4ED8; }
+.paymeCouponMeta { font-size: 12px; color: #64748B; }
+.paymeCouponActions { display: flex; gap: 6px; }
+
+/* Shared admin button accents (keep primary/danger theming consistent) */
+.workspaceTileBody .adminBtn {
+  background: #fff;
+  border: 1px solid rgba(59,130,246,.22);
+  color: #1D4ED8;
+}
+.workspaceTileBody .adminBtn:hover { background: rgba(59,130,246,.06); }
+.workspaceTileBody .adminBtn.primary {
+  background: #3B82F6;
+  border-color: #3B82F6;
+  color: #fff;
+}
+.workspaceTileBody .adminBtn.primary:hover { background: #2563EB; }
+.workspaceTileBody .adminBtn.danger {
+  background: #fff;
+  border-color: rgba(239,68,68,.45);
+  color: #b91c1c;
+}
+
+/* PayMe stats */
+.paymeStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 720px) {
+  .paymeStats { grid-template-columns: 1fr; }
+}
+.paymeStat {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #F4F7FC;
+  border: 1px solid rgba(59,130,246,.18);
+}
+.paymeStatValue { font-size: 24px; font-weight: 900; color: #1D4ED8; }
+.paymeStatLabel { font-size: 12px; color: #64748B; margin-top: 4px; }
+
+/* PayMe table */
+.paymeTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: #1E293B;
+}
+.paymeTable th {
+  text-align: left;
+  padding: 8px 10px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #64748B;
+  border-bottom: 1px solid rgba(59,130,246,.14);
+  background: #F8FAFC;
+}
+.paymeTable td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(59,130,246,.08);
+}
+.paymeTable tr:hover td { background: rgba(59,130,246,.03); }
+.paymePill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.paymePill.on,
+.paymePill.status-active { background: #DCFCE7; color: #166534; }
+.paymePill.off { background: #E5E7EB; color: #475569; }
+.paymePill.status-past_due { background: #FEF3C7; color: #92400E; }
+.paymePill.status-canceled { background: #FEE2E2; color: #991B1B; }
+
+/* Payment methods list */
+.paymeMethodsList { display: grid; gap: 8px; }
+.paymeMethodRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid rgba(59,130,246,.18);
+  border-radius: 12px;
+  background: #F8FAFC;
+}
+.paymeSwitch { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #1D4ED8; cursor: pointer; font-weight: 800; }
+.paymeSwitch input { transform: scale(1.1); }
+
+/* Active tab highlight in workspace header (drive via inline className) */
+.workspaceTab.active {
+  background: #3B82F6;
+  border-color: #2563EB;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .paymeSidePanel {
+    top: calc(var(--nav-h) + 6px);
+    right: 8px;
+    left: 8px;
+    bottom: 8px;
+    width: auto;
+  }
+}
+
+
+/* Login modal — centered over the workspace, popped by the top-nav Login button. */
+.authModalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(15, 23, 42, .55);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.authModal {
+  width: min(420px, 100%);
+  border-radius: 18px;
+  border: 1px solid rgba(59,130,246,.20);
+  background: #F4F7FC;
+  color: #1E293B;
+  box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  overflow: hidden;
+}
+
+.authModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #D8DEE7;
+  border-bottom: 1px solid rgba(71,85,105,.18);
+  font-weight: 900;
+  color: #1D4ED8;
+}
+
+.authModalTabs {
+  display: flex;
+  gap: 6px;
+  padding: 12px 16px 0;
+}
+
+.authModalTab {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid rgba(59,130,246,.20);
+  border-bottom: none;
+  background: #E8EDF3;
+  color: #475569;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 13px;
+}
+.authModalTab.active {
+  background: #fff;
+  color: #1D4ED8;
+}
+
+.authModalBody {
+  padding: 14px 16px 16px;
+  background: #fff;
+  display: grid;
+  gap: 10px;
+  /* Height locked to tallest (Sign Up) layout so the modal doesn't resize. */
+  min-height: 340px;
+  align-content: start;
+}
+
+.authModalLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.authModalInput {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(59,130,246,.22);
+  background: #fff;
+  color: #1E293B;
+  outline: none;
+}
+.authModalInput:focus {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.10);
+}
+
+.authModalActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+.authModalActions .primary {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #2563EB;
+  background: #3B82F6;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+.authModalActions .primary:hover { background: #2563EB; }
+
+.authModalClose {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(59,130,246,.22);
+  background: #fff;
+  color: #1D4ED8;
+  font-size: 16px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}

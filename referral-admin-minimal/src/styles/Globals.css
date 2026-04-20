@@ -1,0 +1,27 @@
+:root{
+  --bg0:#050807; --bg1:#060b09;
+  --fg0:rgba(240,255,250,.92);
+  --fg1:rgba(191,255,230,.92);
+  --muted:rgba(191,255,230,.68);
+  --wire:rgba(0,255,170,.55);
+  --wire2:rgba(0,255,170,.22);
+  --r18:18px;
+  --gap:18px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+   background:
+    radial-gradient(1200px 600px at 40% 0%, rgba(0,255,170,.08), transparent 55%),
+    radial-gradient(900px 500px at 80% 40%, rgba(0,255,170,.06), transparent 60%),
+    url("/wallpaper333.png") center/cover no-repeat fixed,
+    linear-gradient(180deg, var(--bg1), var(--bg0));
+  color:var(--fg0);
+  font-family:var(--mono);
+}
+a{color:inherit;text-decoration:none;}
+button,input,textarea{font-family:var(--mono);}
+::selection{background:rgba(0,255,170,.22);}
+#root{min-height:100%;}

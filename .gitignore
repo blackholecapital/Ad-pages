@@ -1,0 +1,6 @@
+
+# local wrangler state
+.wrangler/
+
+# vendored deps in submodule area
+modules/payme/node_modules/

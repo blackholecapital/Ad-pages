@@ -1,0 +1,22 @@
+@media (max-width: 640px) {
+  .marketplaceLayout {
+    padding-right: 14px !important;
+    padding-left: 14px !important;
+    padding-bottom: 22px !important;
+  }
+
+  .marketUsdcWrap,
+  .marketBasketWrap {
+    position: static !important;
+    width: 100% !important;
+    max-height: none !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    margin-top: 14px !important;
+  }
+
+  .marketBasketWrap {
+    height: auto !important;
+  }
+}

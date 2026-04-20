@@ -1,0 +1,208 @@
+BUILD SHEET
+
+job_id: RB-INT-CHASSIS-004
+job_name: gateway-finish + payme stitch
+objective: Finish the current gateway rebuild and stitch in PayMe so the deployed system is fully functional on the chassis.
+outcome: gateway-fullbody-freeze builds from apps/product-shell, /access works, PayMe works, and required pages are no longer incorrectly locked or blocked.
+
+baseline:
+
+Gateway Production Freeze behavior is truth.
+Continue on top of https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main.
+Current repo already has:
+apps/product-shell with functions, public, src, index.html, package.json, tsconfig.json, tsconfig.node.json, vite.config.ts
+apps/product-shell/src/pages with AccessPage.tsx, tier pages, MembersPage.tsx, and PayMePage.tsx
+apps/product-shell/functions/_lib and apps/product-shell/functions/api
+apps/modules/payme with src, index.html, package.json, and vite.config.js
+apps/core-runtime/src/routes/payme-admin.route.ts
+packages/runtime-bridge/src and packages/session-transport/src
+
+evidence_rule:
+
+Use repo URL and active repo filesystem as primary evidence.
+Use the newly added PayMe filesystem as source material for stitch/recreate work.
+No zip staging unless a required source file cannot be reached from repo or attached local filesystem.
+
+scope_lock:
+
+In scope:
+apps/product-shell
+apps/modules/payme
+apps/core-runtime/src/routes
+packages/runtime-bridge/src
+packages/session-transport/src
+exact Pages functions and access/session/provider files required for gateway + PayMe parity
+Out of scope:
+referrals
+vault
+unrelated chassis refactors
+broad redesign
+
+stage_1:
+name: lock exact stitch targets
+goal: Identify the exact current files to patch so workers do not guess.
+worker_orders:
+worker_a:
+task: Audit apps/product-shell access flow and page guards. Lock exact files for /access, member unlock, route guard, router, provider, runtime, and state wiring.
+expected_artifacts:
+- /job_site/access_target_lock.md
+required_references:
+- https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main
+
+- /job_site/build-sheet-RB-INT-CHASSIS-004.txt
+repo_mirror_required: no
+commit_required: no
+push_required: no
+worker_b:
+task: Audit the added PayMe filesystem against the current repo and lock exact stitch targets for UI, functions, module imports, route bindings, session bridge, and transport.
+expected_artifacts:
+- /job_site/payme_target_lock.md
+required_references:
+- https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main
+
+- /job_site/build-sheet-RB-INT-CHASSIS-004.txt
+repo_mirror_required: no
+commit_required: no
+push_required: no
+exact_target_roots:
+- apps/product-shell/src/pages/
+- apps/product-shell/src/app/
+- apps/product-shell/src/features/
+- apps/product-shell/src/runtime/
+- apps/product-shell/src/state/
+- apps/product-shell/functions/api/
+- apps/product-shell/functions/_lib/
+- apps/modules/payme/src/
+- apps/core-runtime/src/routes/
+- packages/runtime-bridge/src/
+- packages/session-transport/src/
+pass_gate:
+- exact target files are named
+- no broad “fix access” or “stitch payme” wording remains
+- every required patch path is locked before file edits begin
+patch_gate:
+- any required target remains unspecified
+
+stage_2:
+name: stitch payme + access behavior
+goal: Patch only the missing functional wiring.
+worker_orders:
+worker_a:
+task: Implement access/member unlock parity in the exact files named in /job_site/access_target_lock.md. Remove incorrect default-deny, blocked, deferred, or mock-only behavior where baseline requires working behavior. Commit and push.
+expected_artifacts:
+- patched files from /job_site/access_target_lock.md
+- /job_site/access_patch_manifest.md
+required_references:
+- https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main
+
+- /job_site/access_target_lock.md
+- /job_site/build-sheet-RB-INT-CHASSIS-004.txt
+repo_mirror_required: yes
+commit_required: yes
+push_required: yes
+worker_b:
+task: Stitch the newly added PayMe filesystem into the exact current target files named in /job_site/payme_target_lock.md. Relocate or recreate only what is needed for working gateway + PayMe parity. Commit and push.
+expected_artifacts:
+- patched files from /job_site/payme_target_lock.md
+- /job_site/payme_patch_manifest.md
+required_references:
+- https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main
+
+- /job_site/payme_target_lock.md
+- /job_site/build-sheet-RB-INT-CHASSIS-004.txt
+repo_mirror_required: yes
+commit_required: yes
+push_required: yes
+pass_gate:
+- /access path logic is wired
+- PayMe UI + functions + route bindings are stitched
+- no undeclared substitute files used
+- commit and push evidence present for both workers
+patch_gate:
+- any locked target is unpatched
+- PayMe exists only as dead files
+- access still depends on blocked/mock/deferred fallback
+
+stage_3:
+name: repair build + deploy chain
+goal: Make the deploy root build cleanly with local tooling only.
+worker_orders:
+worker_a:
+task: Patch apps/product-shell/package.json and any directly required config so build runs from apps/product-shell without relying on global vite. Current script is npm run build:engage && vite build; replace global-binary assumption with local-script-safe execution. Commit and push.
+expected_artifacts:
+- apps/product-shell/package.json
+- any directly required config file
+- /job_site/build_patch_manifest.md
+required_references:
+- https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main
+
+- /job_site/build-sheet-RB-INT-CHASSIS-004.txt
+repo_mirror_required: yes
+commit_required: yes
+push_required: yes
+worker_b:
+task: Run install and production build from apps/product-shell only. Record exact command, working directory, output path, and result. Fail if any step still depends on undeclared global tooling.
+expected_artifacts:
+- /job_site/build_verification_results.md
+required_references:
+- https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main
+
+- /job_site/build-sheet-RB-INT-CHASSIS-004.txt
+repo_mirror_required: no
+commit_required: no
+push_required: no
+pass_gate:
+- build passes from apps/product-shell
+- no bare global vite dependency remains
+- output is valid for Cloudflare Pages deploy root
+patch_gate:
+- build fails
+- wrong working directory
+- global-tool assumption remains
+
+stage_4:
+name: live behavior verification + closeout
+goal: Prove the repaired system works, not just builds.
+worker_orders:
+worker_a:
+task: Verify live behavior for /access, member-gated pages, PayMe page, and any PayMe-linked actions. Record exact pass/fail for render, unlock behavior, provider/session behavior, and blocked/deferred state removal.
+expected_artifacts:
+- /job_site/behavior_verification_matrix.md
+required_references:
+- https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main
+
+- /job_site/build-sheet-RB-INT-CHASSIS-004.txt
+repo_mirror_required: no
+commit_required: no
+push_required: no
+worker_b:
+task: Check Cloudflare Pages readiness for the repaired deploy root and record any remaining in-scope blocker only.
+expected_artifacts:
+- /job_site/pages_readiness_matrix.md
+- /job_site/patch_register.md
+required_references:
+- https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main
+
+- /job_site/build-sheet-RB-INT-CHASSIS-004.txt
+repo_mirror_required: no
+commit_required: no
+push_required: no
+pass_gate:
+- /access works
+- required pages are not incorrectly locked or blocked
+- PayMe-linked behavior works within scope
+- build proof exists
+- no unresolved in-scope blocker remains
+patch_gate:
+- any required route still fails
+- PayMe still renders as deferred/mock-only
+- any required page remains incorrectly denied
+
+final_success_condition:
+
+apps/product-shell builds successfully from the real deploy root
+/access is functional
+required member/public pages are no longer incorrectly locked or blocked
+PayMe is stitched into the current gateway flow and works within scope
+Cloudflare Pages readiness passes
+/job_site/TPS_REPORT.txt exists

@@ -1,0 +1,552 @@
+job:
+job_id: RB-INT-CHASSIS-002
+job_name: deployable-identical-working-copy second pass
+objective: Create a deployable identical working copy of Gateway Production Freeze on the chassis by continuing on top of the current `gateway-fullbody-freeze` repo.
+requested_outcome: Rebuilt system matches required app, module, runtime, build, and deployment behavior of Gateway Production Freeze and is ready to deploy on Cloudflare Pages from a declared deploy root.
+factory_approved_chassis: attached for reference
+job_site_root: /job_site
+reference_materials:
+- factory-manual-v1.11.txt
+- foreman-manual-v1.11.txt
+- worker-execution-manual-v1.1.txt
+- build-sheet-v1.11.txt
+- build-sheet-RB-INT-CHASSIS-001.txt
+- gateway-fullbody-freeze-main.zip
+- gatweay-production-FREEZE-main.zip
+- gateway-fullbody-freeze repo continuation target
+active_run_docs:
+- /job_site/factory-manual-v1.11.txt
+- /job_site/foreman-manual-v1.11.txt
+- /job_site/worker-execution-manual-v1.1.txt
+- /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+operator_notes:
+- Continue on top of [https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main](https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main).
+- Current continuation repo root exposes `apps`, `job_site`, `packages`, `worker-wb`, and `xyz-factory-system`. ([GitHub][1])
+- Baseline truth is Gateway Production Freeze.
+- Success target is deployable identical working copy on the chassis.
+- Do not stop at route/runtime parity.
+- Include app surfaces, module surfaces, build surfaces, and deployment surfaces.
+- Default repo write policy is mirror yes, commit yes, push yes.
+
+run_control:
+control_interface: Factory Control Interface
+execution_foreman: Foreman A the Blueprint Foreman
+checksum_foreman: Foreman B the Systems Foreman
+mode: single
+final_validator: Factory Control Interface
+
+output_rules:
+stage_activity_log: /job_site/stage_activity_log.txt
+final_tps_report: /job_site/TPS_REPORT.txt
+mandatory_foreman_tag_block:
+- job_id
+- foreman
+- current_stage
+- current_pass
+- next_stage
+- next_owner
+- passes_remaining
+- status
+- current_action
+mandatory_foreman_execution_block:
+- artifacts
+- checkpoint_result
+- handoff_instruction
+- issue_if_patch_or_error
+mandatory_worker_output:
+- "[PROJECT | WORKER | STAGE | RESULT]"
+- status
+- artifacts
+- summary
+- issues_if_patch
+
+stages:
+
+* stage_id: S1
+  stage_name: full parity audit and deployability inventory
+  owner: Factory Control Interface
+  goal: Establish exact missing work by comparing Gateway Production Freeze against the current rebuild and inventorying every required deployable surface.
+  inputs:
+
+  * gateway-fullbody-freeze-main.zip
+  * gatweay-production-FREEZE-main.zip
+  * build-sheet-RB-INT-CHASSIS-001.txt
+  * /job_site/factory-manual-v1.11.txt
+  * /job_site/foreman-manual-v1.11.txt
+  * /job_site/worker-execution-manual-v1.1.txt
+  * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+    accepted_validation_evidence:
+  * attached_archive
+  * exact_repo_url
+  * foreman_handoff_text
+  * worker_handoff_text
+    worker_orders:
+    worker_a:
+    assigned: yes
+    task: Compare baseline and current rebuild path-by-path. Inventory all app roots, package manifests, build configs, entrypoints, public assets, redirects, functions, module packages, production support files, and resolver-boundary files. Write exact missing-present-rebuilt status only.
+    expected_artifacts:
+
+    * /job_site/baseline_inventory.md
+    * /job_site/current_rebuild_inventory.md
+    * /job_site/missing_surface_matrix.yaml
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+      repo_mirror_required: no
+      commit_required: no
+      push_required: no
+      worker_b:
+      assigned: yes
+      task: Produce deployability inventory and runtime dependency inventory from baseline. Declare exact deploy-critical surfaces required to build and deploy on Cloudflare Pages, including app root, build config, static routing, Pages functions, and module dependency edges.
+      expected_artifacts:
+    * /job_site/deployability_inventory.md
+    * /job_site/runtime_dependency_inventory.md
+    * /job_site/parity_scope_lock.md
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+      repo_mirror_required: no
+      commit_required: no
+      push_required: no
+      required_stage_artifacts:
+  * /job_site/baseline_inventory.md
+  * /job_site/current_rebuild_inventory.md
+  * /job_site/missing_surface_matrix.yaml
+  * /job_site/deployability_inventory.md
+  * /job_site/runtime_dependency_inventory.md
+  * /job_site/parity_scope_lock.md
+  * /job_site/stage_activity_log.txt
+    required_log_entries:
+  * S1 started
+  * S1 parity audit complete
+  * S1 checkpoint result
+    checkpoint:
+    checkpoint_id: S1-CP1
+    pass_condition: Every deploy-critical and runtime-critical baseline surface is classified as present, rebuilt elsewhere, or missing, and all missing required work is explicitly captured with exact paths.
+    patch_condition: Any baseline deploy-critical or runtime-critical surface is omitted, ambiguously mapped, or left without an exact status.
+    handoff:
+    on_pass:
+    next_stage: S2
+    next_owner: Foreman A the Blueprint Foreman
+    on_patch:
+    return_stage: S1
+    return_owner: Factory Control Interface
+    on_error:
+    return_to: Factory Control Interface
+
+* stage_id: S2
+  stage_name: deployable parity blueprint freeze
+  owner: Foreman A the Blueprint Foreman
+  goal: Freeze the exact implementation plan for all missing app, module, build, and deployment surfaces required for a deployable identical working copy.
+  inputs:
+
+  * /job_site/missing_surface_matrix.yaml
+  * /job_site/deployability_inventory.md
+  * /job_site/runtime_dependency_inventory.md
+  * /job_site/parity_scope_lock.md
+    accepted_validation_evidence:
+  * attached_archive
+  * exact_repo_url
+  * foreman_handoff_text
+  * worker_handoff_text
+    worker_orders:
+    worker_a:
+    assigned: yes
+    task: Map every missing baseline surface to an exact chassis-native target path. Include package manifests, app roots, build configs, entrypoints, assets, redirects, functions, and module package surfaces. Declare exact target files only.
+    expected_artifacts:
+
+    * /job_site/full_parity_target_path_manifest.yaml
+    * /job_site/deploy_root_plan.md
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+      repo_mirror_required: no
+      commit_required: no
+      push_required: no
+      worker_b:
+      assigned: yes
+      task: Write the approved rebuild order and copy-fragment allowlist for all missing surfaces. Include exact source-to-target mapping and prohibit omission of deploy-critical files.
+      expected_artifacts:
+    * /job_site/full_parity_rebuild_order.md
+    * /job_site/full_parity_fragment_allowlist.md
+    * /job_site/pages_deployment_spec.md
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+      repo_mirror_required: no
+      commit_required: no
+      push_required: no
+      required_stage_artifacts:
+  * /job_site/full_parity_target_path_manifest.yaml
+  * /job_site/deploy_root_plan.md
+  * /job_site/full_parity_rebuild_order.md
+  * /job_site/full_parity_fragment_allowlist.md
+  * /job_site/pages_deployment_spec.md
+    required_log_entries:
+  * S2 started
+  * S2 blueprint frozen
+  * S2 checkpoint result
+    checkpoint:
+    checkpoint_id: S2-CP1
+    pass_condition: Every missing required baseline surface has an exact target path, exact artifact declaration, exact source mapping, rebuild order, and Cloudflare Pages deploy-root specification.
+    patch_condition: Any required deploy, app, module, or support surface lacks a target path, source mapping, or deployment specification.
+    handoff:
+    on_pass:
+    next_stage: S3
+    next_owner: Foreman A the Blueprint Foreman
+    on_patch:
+    return_stage: S2
+    return_owner: Foreman A the Blueprint Foreman
+    on_error:
+    return_to: Factory Control Interface
+
+* stage_id: S3
+  stage_name: app and module surface reconstruction
+  owner: Foreman A the Blueprint Foreman
+  goal: Rebuild the missing baseline app and module surfaces onto the chassis at the declared target paths.
+  inputs:
+
+  * /job_site/full_parity_target_path_manifest.yaml
+  * /job_site/full_parity_rebuild_order.md
+  * /job_site/full_parity_fragment_allowlist.md
+  * gateway-fullbody-freeze-main.zip
+  * gatweay-production-FREEZE-main.zip
+    accepted_validation_evidence:
+  * attached_file_system
+  * exact_repo_url
+  * attached_archive
+  * foreman_handoff_text
+  * worker_handoff_text
+    worker_orders:
+    worker_a:
+    assigned: yes
+    task: Recreate the baseline deploy app surface in the chassis-native app root, including package manifest, HTML entry, TS configs, build config, app bootstrap, router bootstrap, public assets, redirects, and Pages functions. Report exact repo mirror, commit, and push details.
+    expected_artifacts:
+
+    * declared deploy app root from /job_site/deploy_root_plan.md
+    * package.json
+    * index.html
+    * vite.config.ts
+    * tsconfig.json
+    * tsconfig.node.json
+    * src/main.tsx
+    * src/app/
+    * public/_redirects
+    * functions/api/
+    * functions/_lib/
+    * /job_site/deploy_surface_change_manifest.md
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+    * /job_site/full_parity_target_path_manifest.yaml
+    * /job_site/full_parity_fragment_allowlist.md
+    * /job_site/pages_deployment_spec.md
+      repo_mirror_required: yes
+      commit_required: yes
+      push_required: yes
+      worker_b:
+      assigned: yes
+      task: Recreate missing admin and module package surfaces required by the deploy app and runtime, including package manifests, entrypoints, module assets, and exact dependency edges declared in the runtime dependency inventory. Report exact repo mirror, commit, and push details.
+      expected_artifacts:
+    * declared admin and module target paths from /job_site/full_parity_target_path_manifest.yaml
+    * module package surfaces
+    * admin app surfaces
+    * /job_site/module_surface_change_manifest.md
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+    * /job_site/full_parity_target_path_manifest.yaml
+    * /job_site/runtime_dependency_inventory.md
+    * /job_site/full_parity_fragment_allowlist.md
+      repo_mirror_required: yes
+      commit_required: yes
+      push_required: yes
+      required_stage_artifacts:
+  * /job_site/deploy_surface_change_manifest.md
+  * /job_site/module_surface_change_manifest.md
+  * repo commit evidence for worker_a changes
+  * repo push evidence for worker_a changes
+  * repo commit evidence for worker_b changes
+  * repo push evidence for worker_b changes
+    required_log_entries:
+  * S3 started
+  * S3 deploy app reconstruction complete
+  * S3 module reconstruction complete
+  * S3 checkpoint result
+    checkpoint:
+    checkpoint_id: S3-CP1
+    pass_condition: All declared missing app and module surfaces are implemented at exact target paths, no deploy-critical file is omitted, and all repo mirror, commit, and push evidence is present.
+    patch_condition: Any declared app or module surface is missing, misplaced, incomplete, or lacks required repo evidence.
+    handoff:
+    on_pass:
+    next_stage: S4
+    next_owner: Foreman A the Blueprint Foreman
+    on_patch:
+    return_stage: S3
+    return_owner: Foreman A the Blueprint Foreman
+    on_error:
+    return_to: Factory Control Interface
+
+* stage_id: S4
+  stage_name: runtime and support parity closure
+  owner: Foreman A the Blueprint Foreman
+  goal: Rebuild any remaining baseline runtime, production-support, and resolver-support surfaces required for identical working behavior on the chassis.
+  inputs:
+
+  * /job_site/full_parity_target_path_manifest.yaml
+  * /job_site/runtime_dependency_inventory.md
+  * gateway-fullbody-freeze-main.zip
+  * gatweay-production-FREEZE-main.zip
+    accepted_validation_evidence:
+  * attached_file_system
+  * exact_repo_url
+  * attached_archive
+  * foreman_handoff_text
+  * worker_handoff_text
+    worker_orders:
+    worker_a:
+    assigned: yes
+    task: Recreate remaining runtime support surfaces, contracts, route bindings, session transport, bridges, and any production support files declared missing in the parity matrix. Report exact repo mirror, commit, and push details.
+    expected_artifacts:
+
+    * declared runtime support target paths
+    * /job_site/runtime_support_change_manifest.md
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+    * /job_site/full_parity_target_path_manifest.yaml
+    * /job_site/runtime_dependency_inventory.md
+      repo_mirror_required: yes
+      commit_required: yes
+      push_required: yes
+      worker_b:
+      assigned: yes
+      task: Recreate remaining resolver-boundary and support surfaces declared required for matching behavior. Report exact repo mirror, commit, and push details.
+      expected_artifacts:
+    * declared resolver and support target paths
+    * /job_site/resolver_support_change_manifest.md
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+    * /job_site/full_parity_target_path_manifest.yaml
+      repo_mirror_required: yes
+      commit_required: yes
+      push_required: yes
+      required_stage_artifacts:
+  * /job_site/runtime_support_change_manifest.md
+  * /job_site/resolver_support_change_manifest.md
+  * repo commit evidence for worker_a changes
+  * repo push evidence for worker_a changes
+  * repo commit evidence for worker_b changes
+  * repo push evidence for worker_b changes
+    required_log_entries:
+  * S4 started
+  * S4 support parity complete
+  * S4 checkpoint result
+    checkpoint:
+    checkpoint_id: S4-CP1
+    pass_condition: All declared remaining runtime and support surfaces required for identical behavior are implemented at exact target paths and no unresolved required support gap remains.
+    patch_condition: Any declared runtime or support surface remains missing, mismapped, or unresolved.
+    handoff:
+    on_pass:
+    next_stage: S5
+    next_owner: Foreman B the Systems Foreman
+    on_patch:
+    return_stage: S4
+    return_owner: Foreman A the Blueprint Foreman
+    on_error:
+    return_to: Factory Control Interface
+
+* stage_id: S5
+  stage_name: build and deployment-readiness verification
+  owner: Foreman B the Systems Foreman
+  goal: Prove the rebuilt system builds from the real deploy root and is ready for Cloudflare Pages deployment.
+  inputs:
+
+  * /job_site/deploy_root_plan.md
+  * /job_site/pages_deployment_spec.md
+  * /job_site/deploy_surface_change_manifest.md
+  * /job_site/module_surface_change_manifest.md
+  * /job_site/runtime_support_change_manifest.md
+  * /job_site/resolver_support_change_manifest.md
+  * repo mirror evidence
+  * commit evidence
+  * push evidence
+    accepted_validation_evidence:
+  * attached_file_system
+  * exact_repo_url
+  * attached_archive
+  * foreman_handoff_text
+  * worker_handoff_text
+    worker_orders:
+    worker_a:
+    assigned: yes
+    task: Run install and build from the declared deploy root only. Record exact command, working directory, output directory, and build result. If build succeeds, write verification artifacts only.
+    expected_artifacts:
+
+    * /job_site/build_verification_runbook.md
+    * /job_site/build_verification_results.md
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+    * /job_site/deploy_root_plan.md
+    * /job_site/pages_deployment_spec.md
+      repo_mirror_required: no
+      commit_required: no
+      push_required: no
+      worker_b:
+      assigned: yes
+      task: Verify Cloudflare Pages readiness against the declared deploy root, build command, output directory, redirects, functions, and public asset requirements. Record exact pass-fail criteria only.
+      expected_artifacts:
+    * /job_site/pages_readiness_matrix.md
+    * /job_site/parity_verification_matrix.md
+    * /job_site/patch_register.md
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+    * /job_site/pages_deployment_spec.md
+    * /job_site/missing_surface_matrix.yaml
+      repo_mirror_required: no
+      commit_required: no
+      push_required: no
+      required_stage_artifacts:
+  * /job_site/build_verification_runbook.md
+  * /job_site/build_verification_results.md
+  * /job_site/pages_readiness_matrix.md
+  * /job_site/parity_verification_matrix.md
+  * /job_site/patch_register.md
+    required_log_entries:
+  * S5 started
+  * S5 build verification complete
+  * S5 Pages readiness verification complete
+  * S5 checkpoint result
+    checkpoint:
+    checkpoint_id: S5-CP1
+    pass_condition: Build passes from the declared deploy root, Pages deployment inputs are valid, declared parity surfaces are present, and patch_register contains no unresolved in-scope blocker.
+    patch_condition: Build fails, deploy root is invalid, Pages inputs are incomplete, or any declared required parity surface remains unresolved.
+    handoff:
+    on_pass:
+    next_stage: S6
+    next_owner: Factory Control Interface
+    on_patch:
+    return_stage: S3
+    return_owner: Foreman A the Blueprint Foreman
+    on_error:
+    return_to: Factory Control Interface
+
+* stage_id: S6
+  stage_name: final validation and TPS
+  owner: Factory Control Interface
+  goal: Close the run only if the rebuilt system is a deployable identical working copy on the chassis.
+  inputs:
+
+  * /job_site/missing_surface_matrix.yaml
+  * /job_site/full_parity_target_path_manifest.yaml
+  * /job_site/deploy_root_plan.md
+  * /job_site/pages_deployment_spec.md
+  * /job_site/deploy_surface_change_manifest.md
+  * /job_site/module_surface_change_manifest.md
+  * /job_site/runtime_support_change_manifest.md
+  * /job_site/resolver_support_change_manifest.md
+  * /job_site/build_verification_results.md
+  * /job_site/pages_readiness_matrix.md
+  * /job_site/parity_verification_matrix.md
+  * /job_site/patch_register.md
+  * /job_site/stage_activity_log.txt
+    accepted_validation_evidence:
+  * attached_file_system
+  * exact_repo_url
+  * attached_archive
+  * foreman_handoff_text
+  * worker_handoff_text
+    worker_orders:
+    worker_a:
+    assigned: no
+    task:
+    expected_artifacts: []
+    required_references:
+
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+      repo_mirror_required: no
+      commit_required: no
+      push_required: no
+      worker_b:
+      assigned: no
+      task:
+      expected_artifacts: []
+      required_references:
+    * /job_site/factory-manual-v1.11.txt
+    * /job_site/worker-execution-manual-v1.1.txt
+    * /job_site/build-sheet-RB-INT-CHASSIS-002.txt
+      repo_mirror_required: no
+      commit_required: no
+      push_required: no
+      required_stage_artifacts:
+  * /job_site/TPS_REPORT.txt
+    required_log_entries:
+  * S6 started
+  * S6 final validation complete
+  * S6 run closed
+    checkpoint:
+    checkpoint_id: S6-CP1
+    pass_condition: All declared stages pass, all required artifacts exist, build passed from the declared deploy root, Pages readiness passed, stage activity log exists, and TPS report is written at /job_site/TPS_REPORT.txt.
+    patch_condition: Any declared artifact, build proof, or deploy-readiness proof is missing or failed.
+    handoff:
+    on_pass:
+    next_stage: COMPLETE
+    next_owner: none
+    on_patch:
+    return_stage: S5
+    return_owner: Foreman B the Systems Foreman
+    on_error:
+    return_to: Factory Control Interface
+
+final_validation:
+accepted_validation_evidence:
+- attached_file_system
+- exact_repo_url
+- attached_archive
+- foreman_handoff_text
+- worker_handoff_text
+required_inputs:
+- /job_site/missing_surface_matrix.yaml
+- /job_site/full_parity_target_path_manifest.yaml
+- /job_site/deploy_root_plan.md
+- /job_site/pages_deployment_spec.md
+- /job_site/build_verification_results.md
+- /job_site/pages_readiness_matrix.md
+- /job_site/parity_verification_matrix.md
+- /job_site/stage_activity_log.txt
+validation_checks:
+- Every required baseline app, module, runtime, build, and deployment surface is present or explicitly rebuilt at a declared target path.
+- The rebuilt system is an identical working copy within declared parity scope on the chassis.
+- Build succeeds from the declared deploy root.
+- Cloudflare Pages readiness passes with declared root, build command, and output directory.
+- Repo mirror, commit, and push evidence exists for all file-writing stages.
+outputs:
+- completion_status
+- /job_site/TPS_REPORT.txt
+
+completion:
+success_condition:
+- all declared stages completed
+- all required artifacts present
+- declared stage activity log present
+- declared TPS report present
+- build passed from declared deploy root
+- Cloudflare Pages readiness passed
+closeout_owner: Factory Control Interface
+
+[1]: https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main "https://github.com/blackholecapital/gateway-fullbody-freeze/tree/main"

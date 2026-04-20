@@ -1,0 +1,529 @@
+manifest_id: RB-INT-CHASSIS-001-S2-target-path-manifest
+job_id: RB-INT-CHASSIS-001
+stage: S2
+stage_name: integration blueprint freeze
+authority: non-authoritative — derived from chassis structure only
+chassis_boundary: preserved — no chassis law redesigned
+upstream_root: xyz-factory-system/invariants/chassis/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 1 — RUNTIME CONTRACTS
+# package: packages/contracts-core/
+# ─────────────────────────────────────────────────────────────────────────────
+runtime_contracts:
+
+  - path: packages/contracts-core/src/chassis/domain.ts
+    action: extend
+    category: runtime_contracts
+    change_summary: >
+      Append new ID sets: MODULE_IDS (payme.admin, referral.admin),
+      ROUTE_IDS (payme.admin, referral.admin),
+      TOUCHPOINT_IDS (cli.payme.admin, cli.referral.admin, api.payme.admin, api.referral.admin),
+      TRIGGER_IDS (payme.admin, referral.admin),
+      EVENT_IDS (6 events: payme.admin.{requested,completed,failed},
+      referral.admin.{requested,completed,failed}).
+      No removals. No SURFACE_IDS or SHELL_OWNER_IDS additions.
+    assigned_worker: worker_a_s3
+
+  - path: packages/contracts-core/src/profiles/compatibility-map.ts
+    action: extend
+    category: runtime_contracts
+    change_summary: >
+      Extend FULL_BODY_PROFILE allowed buckets: add ROUTE_IDS.PAYME_ADMIN and
+      ROUTE_IDS.REFERRAL_ADMIN to routes.allowed; add all 4 new TOUCHPOINT_IDS
+      to touchpoints.allowed and mounts.allowed.
+      MOBILE_OPTIMIZED_PROFILE and PC_OPTIMIZED_PROFILE unchanged (empty, unresolved).
+    assigned_worker: worker_a_s3
+
+  # Contract shape files — no change required
+  # packages/contracts-core/src/chassis/module.contract.ts        — NO CHANGE
+  # packages/contracts-core/src/chassis/route.contract.ts         — NO CHANGE
+  # packages/contracts-core/src/chassis/touchpoint.contract.ts    — NO CHANGE
+  # packages/contracts-core/src/chassis/trigger.contract.ts       — NO CHANGE
+  # packages/contracts-core/src/chassis/event.contract.ts         — NO CHANGE
+  # packages/contracts-core/src/chassis/surface.contract.ts       — NO CHANGE
+  # packages/contracts-core/src/chassis/manifest.contract.ts      — NO CHANGE
+  # packages/contracts-core/src/chassis/install-stamp.contract.ts — NO CHANGE
+  # packages/contracts-core/src/chassis/index.ts                  — NO CHANGE
+  # packages/contracts-core/src/profiles/profile-domain.ts        — NO CHANGE
+  # packages/contracts-core/src/profiles/index.ts                 — NO CHANGE
+  # packages/contracts-core/src/index.ts                          — NO CHANGE
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 2 — REGISTRIES
+# package: packages/registry-chassis/
+# ─────────────────────────────────────────────────────────────────────────────
+registries:
+
+  - path: packages/registry-chassis/src/module-registry.ts
+    action: extend
+    category: registries
+    change_summary: >
+      Add 2 entries to internal entries array:
+      mod.payme.admin (lifecycle_state: installed, registry_state: registered)
+      mod.referral.admin (lifecycle_state: installed, registry_state: registered)
+    assigned_worker: worker_a_s3
+
+  - path: packages/registry-chassis/src/route-registry.ts
+    action: extend
+    category: registries
+    change_summary: >
+      Add 2 entries to internal entries array:
+      rt.payme.admin (surface_id: sf.api.factory, registry_state: registered)
+      rt.referral.admin (surface_id: sf.api.factory, registry_state: registered)
+    assigned_worker: worker_a_s3
+
+  - path: packages/registry-chassis/src/trigger-registry.ts
+    action: extend
+    category: registries
+    change_summary: >
+      Add 2 entries to internal entries array:
+      trg.payme.admin (registry_state: registered)
+      trg.referral.admin (registry_state: registered)
+    assigned_worker: worker_a_s3
+
+  - path: packages/registry-chassis/src/event-registry.ts
+    action: extend
+    category: registries
+    change_summary: >
+      Add 6 entries to internal entries array:
+      evt.payme.admin.requested, evt.payme.admin.completed, evt.payme.admin.failed,
+      evt.referral.admin.requested, evt.referral.admin.completed, evt.referral.admin.failed
+      (all registry_state: registered)
+    assigned_worker: worker_a_s3
+
+  # No change required:
+  # packages/registry-chassis/src/surface-registry.ts — NO CHANGE (sf.api.factory already registered)
+  # packages/registry-chassis/src/index.ts            — NO CHANGE (existing lookups cover new entries)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 3 — ROUTES
+# app: apps/core-runtime/src/routes/
+# ─────────────────────────────────────────────────────────────────────────────
+routes:
+
+  - path: apps/core-runtime/src/routes/payme-admin.route.ts
+    action: create
+    category: routes
+    change_summary: >
+      Export PAYME_ADMIN_ROUTE: Route with
+      route_id: ROUTE_IDS.PAYME_ADMIN,
+      surface_id: SURFACE_IDS.API_FACTORY,
+      registry_state: REGISTRY_STATES.REGISTERED.
+      Imports from packages/contracts-core/src/chassis/.
+      Downstream status: non-authoritative.
+    assigned_worker: worker_a_s3
+
+  - path: apps/core-runtime/src/routes/referral-admin.route.ts
+    action: create
+    category: routes
+    change_summary: >
+      Export REFERRAL_ADMIN_ROUTE: Route with
+      route_id: ROUTE_IDS.REFERRAL_ADMIN,
+      surface_id: SURFACE_IDS.API_FACTORY,
+      registry_state: REGISTRY_STATES.REGISTERED.
+      Imports from packages/contracts-core/src/chassis/.
+      Downstream status: non-authoritative.
+    assigned_worker: worker_a_s3
+
+  - path: apps/core-runtime/src/routes/index.ts
+    action: extend
+    category: routes
+    change_summary: >
+      Add barrel exports: PAYME_ADMIN_ROUTE from ./payme-admin.route.js,
+      REFERRAL_ADMIN_ROUTE from ./referral-admin.route.js
+    assigned_worker: worker_a_s3
+
+  - path: apps/core-runtime/src/routes/proof.ts
+    action: extend
+    category: proof_surfaces
+    change_summary: >
+      Add PAYME_ADMIN_ROUTE and REFERRAL_ADMIN_ROUTE to ROUTES array.
+      Result: 2 additional ProofResult pairs (validation + compatibility)
+      per new route from routeProofs(). Consumption point: ROUTE_LAYER.
+      No new adapters or closed-set expansion.
+    assigned_worker: worker_a_s3
+
+  # Existing route files unchanged:
+  # apps/core-runtime/src/routes/install.route.ts — NO CHANGE
+  # apps/core-runtime/src/routes/update.route.ts  — NO CHANGE
+  # apps/core-runtime/src/routes/disable.route.ts — NO CHANGE
+  # apps/core-runtime/src/routes/remove.route.ts  — NO CHANGE
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 4 — TOUCHPOINTS
+# app: apps/core-runtime/src/touchpoints/
+# ─────────────────────────────────────────────────────────────────────────────
+touchpoints:
+
+  - path: apps/core-runtime/src/touchpoints/payme-admin.touchpoint.ts
+    action: create
+    category: touchpoints
+    change_summary: >
+      Export PAYME_ADMIN_TOUCHPOINT: Touchpoint with
+      touchpoint_id: TOUCHPOINT_IDS.API_PAYME_ADMIN,
+      surface_id: SURFACE_IDS.API_FACTORY.
+      Export PAYME_ADMIN_EVENTS: TouchpointEventRefs referencing
+      EVENT_IDS.PAYME_ADMIN_REQUESTED, PAYME_ADMIN_COMPLETED, PAYME_ADMIN_FAILED.
+      Downstream status: non-authoritative.
+    assigned_worker: worker_a_s3
+
+  - path: apps/core-runtime/src/touchpoints/referral-admin.touchpoint.ts
+    action: create
+    category: touchpoints
+    change_summary: >
+      Export REFERRAL_ADMIN_TOUCHPOINT: Touchpoint with
+      touchpoint_id: TOUCHPOINT_IDS.API_REFERRAL_ADMIN,
+      surface_id: SURFACE_IDS.API_FACTORY.
+      Export REFERRAL_ADMIN_EVENTS: TouchpointEventRefs referencing
+      EVENT_IDS.REFERRAL_ADMIN_REQUESTED, REFERRAL_ADMIN_COMPLETED, REFERRAL_ADMIN_FAILED.
+      Downstream status: non-authoritative.
+    assigned_worker: worker_a_s3
+
+  - path: apps/core-runtime/src/touchpoints/index.ts
+    action: extend
+    category: touchpoints
+    change_summary: >
+      Add barrel exports: PAYME_ADMIN_TOUCHPOINT, PAYME_ADMIN_EVENTS,
+      REFERRAL_ADMIN_TOUCHPOINT, REFERRAL_ADMIN_EVENTS
+    assigned_worker: worker_a_s3
+
+  - path: apps/core-runtime/src/touchpoints/proof.ts
+    action: extend
+    category: proof_surfaces
+    change_summary: >
+      Add PAYME_ADMIN_TOUCHPOINT and REFERRAL_ADMIN_TOUCHPOINT to TOUCHPOINTS array.
+      Result: 2 additional ProofResult pairs per new touchpoint from touchpointProofs().
+      Consumption point: TOUCHPOINT_LAYER. No closed-set expansion.
+    assigned_worker: worker_a_s3
+
+  # Existing touchpoint files unchanged:
+  # apps/core-runtime/src/touchpoints/install.touchpoint.ts — NO CHANGE
+  # apps/core-runtime/src/touchpoints/update.touchpoint.ts  — NO CHANGE
+  # apps/core-runtime/src/touchpoints/disable.touchpoint.ts — NO CHANGE
+  # apps/core-runtime/src/touchpoints/remove.touchpoint.ts  — NO CHANGE
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 5 — SHELL MOUNTS
+# apps: apps/operator-shell/, apps/web-public/
+# ─────────────────────────────────────────────────────────────────────────────
+shell_mounts:
+
+  # ── operator-shell — CLI surface (sf.cli.factory) ──────────────────────────
+
+  - path: apps/operator-shell/src/mounts/payme-admin.mount.ts
+    action: create
+    category: shell_mounts
+    surface: sf.cli.factory
+    change_summary: >
+      Export PAYME_ADMIN_MOUNT: Touchpoint with
+      touchpoint_id: TOUCHPOINT_IDS.CLI_PAYME_ADMIN,
+      surface_id: SURFACE_IDS.CLI_FACTORY.
+      Export isMountAuthorized(): boolean — returns
+      PAYME_ADMIN_MOUNT.surface_id === SURFACE_IDS.CLI_FACTORY.
+      Downstream status: non-authoritative — no undeclared surface mounting.
+    assigned_worker: worker_b_s3
+
+  - path: apps/operator-shell/src/mounts/referral-admin.mount.ts
+    action: create
+    category: shell_mounts
+    surface: sf.cli.factory
+    change_summary: >
+      Export REFERRAL_ADMIN_MOUNT: Touchpoint with
+      touchpoint_id: TOUCHPOINT_IDS.CLI_REFERRAL_ADMIN,
+      surface_id: SURFACE_IDS.CLI_FACTORY.
+      Export isMountAuthorized(): boolean — returns
+      REFERRAL_ADMIN_MOUNT.surface_id === SURFACE_IDS.CLI_FACTORY.
+      Downstream status: non-authoritative — no undeclared surface mounting.
+    assigned_worker: worker_b_s3
+
+  - path: apps/operator-shell/src/mounts/index.ts
+    action: extend
+    category: shell_mounts
+    change_summary: >
+      Add barrel exports: PAYME_ADMIN_MOUNT from ./payme-admin.mount.js,
+      REFERRAL_ADMIN_MOUNT from ./referral-admin.mount.js
+    assigned_worker: worker_b_s3
+
+  - path: apps/operator-shell/src/mounts/proof.ts
+    action: extend
+    category: proof_surfaces
+    change_summary: >
+      Add PAYME_ADMIN_MOUNT and REFERRAL_ADMIN_MOUNT entries to OPERATOR_SHELL_MOUNTS array,
+      each with label, touchpoint_id, and authorized() referencing respective isMountAuthorized().
+      Result: 2 additional ProofResult pairs per new mount from operatorMountProofs().
+      Consumption point: TOUCHPOINT_LAYER. No closed-set expansion.
+    assigned_worker: worker_b_s3
+
+  - path: apps/operator-shell/src/app/layout/shell.layout.ts
+    action: extend
+    category: shell_mounts
+    change_summary: >
+      Add PAYME_ADMIN_PANEL and REFERRAL_ADMIN_PANEL configuration entries to SHELL_CONFIG
+      object, referencing TOUCHPOINT_IDS.CLI_PAYME_ADMIN and CLI_REFERRAL_ADMIN.
+      No change to shell_id (SHELL_OWNER_IDS.FACTORY) or surface_id (SURFACE_IDS.CLI_FACTORY).
+      resolveShellSurface() return value unchanged.
+    assigned_worker: worker_b_s3
+
+  # Existing operator-shell files unchanged:
+  # apps/operator-shell/src/mounts/install.mount.ts                   — NO CHANGE
+  # apps/operator-shell/src/mounts/update.mount.ts                    — NO CHANGE
+  # apps/operator-shell/src/app/layout/shell.layout.proof.ts          — NO CHANGE
+  # apps/operator-shell/src/app/layout/shell.layout.proof-run.ts      — NO CHANGE
+
+  # ── web-public — API surface (sf.api.factory) ──────────────────────────────
+
+  - path: apps/web-public/src/mounts/payme-admin.mount.ts
+    action: create
+    category: shell_mounts
+    surface: sf.api.factory
+    change_summary: >
+      Export PAYME_ADMIN_MOUNT: Touchpoint with
+      touchpoint_id: TOUCHPOINT_IDS.API_PAYME_ADMIN,
+      surface_id: SURFACE_IDS.API_FACTORY.
+      Export isMountAuthorized(): boolean — returns
+      PAYME_ADMIN_MOUNT.surface_id === SURFACE_IDS.API_FACTORY.
+      Downstream status: non-authoritative — no undeclared surface mounting.
+    assigned_worker: worker_b_s3
+
+  - path: apps/web-public/src/mounts/referral-admin.mount.ts
+    action: create
+    category: shell_mounts
+    surface: sf.api.factory
+    change_summary: >
+      Export REFERRAL_ADMIN_MOUNT: Touchpoint with
+      touchpoint_id: TOUCHPOINT_IDS.API_REFERRAL_ADMIN,
+      surface_id: SURFACE_IDS.API_FACTORY.
+      Export isMountAuthorized(): boolean — returns
+      REFERRAL_ADMIN_MOUNT.surface_id === SURFACE_IDS.API_FACTORY.
+      Downstream status: non-authoritative — no undeclared surface mounting.
+    assigned_worker: worker_b_s3
+
+  - path: apps/web-public/src/mounts/index.ts
+    action: extend
+    category: shell_mounts
+    change_summary: >
+      Add barrel exports: PAYME_ADMIN_MOUNT from ./payme-admin.mount.js,
+      REFERRAL_ADMIN_MOUNT from ./referral-admin.mount.js
+    assigned_worker: worker_b_s3
+
+  - path: apps/web-public/src/mounts/proof.ts
+    action: extend
+    category: proof_surfaces
+    change_summary: >
+      Add PAYME_ADMIN_MOUNT and REFERRAL_ADMIN_MOUNT entries to WEB_PUBLIC_MOUNTS array,
+      each with label, touchpoint_id, and authorized() referencing respective isMountAuthorized().
+      Result: 2 additional ProofResult pairs per new mount from webPublicMountProofs().
+      Consumption point: TOUCHPOINT_LAYER. No closed-set expansion.
+    assigned_worker: worker_b_s3
+
+  - path: apps/web-public/src/app/layout/shell.layout.ts
+    action: extend
+    category: shell_mounts
+    change_summary: >
+      Add PAYME_ADMIN_PANEL and REFERRAL_ADMIN_PANEL configuration entries to SHELL_CONFIG
+      object, referencing TOUCHPOINT_IDS.API_PAYME_ADMIN and API_REFERRAL_ADMIN.
+      No change to shell_id (SHELL_OWNER_IDS.FACTORY) or surface_id (SURFACE_IDS.API_FACTORY).
+      resolveShellSurface() return value unchanged.
+    assigned_worker: worker_b_s3
+
+  # Existing web-public files unchanged:
+  # apps/web-public/src/mounts/disable.mount.ts                    — NO CHANGE
+  # apps/web-public/src/mounts/remove.mount.ts                     — NO CHANGE
+  # apps/web-public/src/app/layout/shell.layout.proof.ts           — NO CHANGE
+  # apps/web-public/src/app/layout/shell.layout.proof-run.ts       — NO CHANGE
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 6 — TRANSPORT LINKS
+# packages: packages/session-transport/ (new), packages/runtime-bridge/
+# apps: apps/local-host/src/bridge/
+# ─────────────────────────────────────────────────────────────────────────────
+transport_links:
+
+  # ── New package: packages/session-transport/ ────────────────────────────────
+
+  - path: packages/session-transport/src/transport.contract.ts
+    action: create
+    category: transport_links
+    package_status: new_package
+    change_summary: >
+      Declare SessionTransportState interface:
+        readonly bridge_ready: boolean
+        readonly activation_eligible: boolean
+        readonly admin_panels_registered: boolean
+      Declare SessionTransportConfig interface:
+        readonly session_id: string
+        readonly transport_state: SessionTransportState
+      Downstream status: non-authoritative — consumes declared contracts only.
+      No resolver authority. No install path override.
+    assigned_worker: worker_a_s3
+
+  - path: packages/session-transport/src/session-transport-link.ts
+    action: create
+    category: transport_links
+    package_status: new_package
+    change_summary: >
+      Import SessionTransportConfig from ./transport.contract.js.
+      Export isTransportReady(config: SessionTransportConfig): boolean —
+      returns config.transport_state.bridge_ready
+             && config.transport_state.activation_eligible
+             && config.transport_state.admin_panels_registered.
+      NOTE: this function is NOT a gate in INSTALL_CHAIN_GATES and must
+      not be added to the install chain gate sequence.
+      Downstream status: non-authoritative — transport only.
+    assigned_worker: worker_a_s3
+
+  - path: packages/session-transport/src/index.ts
+    action: create
+    category: transport_links
+    package_status: new_package
+    change_summary: >
+      Barrel export:
+        SessionTransportState, SessionTransportConfig from ./transport.contract.js
+        isTransportReady from ./session-transport-link.js
+      Downstream status: non-authoritative.
+    assigned_worker: worker_a_s3
+
+  # ── Existing package: packages/runtime-bridge/ ───────────────────────────
+
+  - path: packages/runtime-bridge/src/admin-bridge-contract.ts
+    action: create
+    category: transport_links
+    change_summary: >
+      Import InstallStamp from ../../contracts-core/src/chassis/install-stamp.contract.js.
+      Import STAMP_STATES from ../../contracts-core/src/chassis/domain.js.
+      Export AdminBridgeState interface:
+        readonly install_stamp: InstallStamp
+        readonly payme_admin_registered: boolean
+        readonly referral_admin_registered: boolean
+      Export isAdminBridgeActivatable(state: AdminBridgeState): boolean —
+      returns state.install_stamp.stamp_state === STAMP_STATES.ISSUED
+             && state.payme_admin_registered
+             && state.referral_admin_registered.
+      Downstream status: non-authoritative — pass-through only; no resolver authority.
+    assigned_worker: worker_a_s3
+
+  - path: packages/runtime-bridge/src/index.ts
+    action: extend
+    category: transport_links
+    change_summary: >
+      Add exports: AdminBridgeState, isAdminBridgeActivatable from ./admin-bridge-contract.js
+    assigned_worker: worker_a_s3
+
+  # ── Existing app: apps/local-host/src/bridge/ ────────────────────────────
+
+  - path: apps/local-host/src/bridge/admin-bridge.ts
+    action: create
+    category: transport_links
+    change_summary: >
+      Import InstallStamp from ../../../../packages/contracts-core/src/chassis/install-stamp.contract.js.
+      Import STAMP_STATES from ../../../../packages/contracts-core/src/chassis/domain.js.
+      Export AdminBridgeConfig interface:
+        readonly install_stamp: InstallStamp
+        readonly production_install_verified: boolean
+        readonly payme_admin_mount_ready: boolean
+        readonly referral_admin_mount_ready: boolean
+      Export isAdminBridgeReady(config: AdminBridgeConfig): boolean —
+      returns config.install_stamp.stamp_state === STAMP_STATES.ISSUED
+             && config.production_install_verified
+             && config.payme_admin_mount_ready
+             && config.referral_admin_mount_ready.
+      Downstream status: non-authoritative — bridge only; no resolver authority.
+    assigned_worker: worker_a_s3
+
+  - path: apps/local-host/src/bridge/index.ts
+    action: extend
+    category: transport_links
+    change_summary: >
+      Add exports: AdminBridgeConfig, isAdminBridgeReady from ./admin-bridge.js
+    assigned_worker: worker_a_s3
+
+  # Existing transport files unchanged:
+  # apps/local-host/src/bridge/runtime-bridge.ts    — NO CHANGE
+  # apps/local-host/src/transport/session-link.ts   — NO CHANGE
+  # apps/local-host/src/transport/index.ts          — NO CHANGE
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 7 — PROOF SURFACES (consolidated index)
+# (detailed specs appear in sections 3–6 above; this is the validation index)
+# ─────────────────────────────────────────────────────────────────────────────
+proof_surfaces:
+
+  - path: apps/core-runtime/src/routes/proof.ts
+    action: extend
+    category: proof_surfaces
+    new_coverage: [PAYME_ADMIN_ROUTE, REFERRAL_ADMIN_ROUTE]
+    proof_pairs_added: 4
+    consumption_point: ROUTE_LAYER
+
+  - path: apps/core-runtime/src/touchpoints/proof.ts
+    action: extend
+    category: proof_surfaces
+    new_coverage: [PAYME_ADMIN_TOUCHPOINT, REFERRAL_ADMIN_TOUCHPOINT]
+    proof_pairs_added: 4
+    consumption_point: TOUCHPOINT_LAYER
+
+  - path: apps/operator-shell/src/mounts/proof.ts
+    action: extend
+    category: proof_surfaces
+    new_coverage: [PAYME_ADMIN_MOUNT (CLI), REFERRAL_ADMIN_MOUNT (CLI)]
+    proof_pairs_added: 4
+    consumption_point: TOUCHPOINT_LAYER
+
+  - path: apps/web-public/src/mounts/proof.ts
+    action: extend
+    category: proof_surfaces
+    new_coverage: [PAYME_ADMIN_MOUNT (API), REFERRAL_ADMIN_MOUNT (API)]
+    proof_pairs_added: 4
+    consumption_point: TOUCHPOINT_LAYER
+
+  # Proof files with no change required:
+  # apps/operator-shell/src/app/layout/shell.layout.proof.ts     — NO CHANGE
+  # apps/operator-shell/src/app/layout/shell.layout.proof-run.ts — NO CHANGE
+  # apps/web-public/src/app/layout/shell.layout.proof.ts         — NO CHANGE
+  # apps/web-public/src/app/layout/shell.layout.proof-run.ts     — NO CHANGE
+  # apps/core-runtime/src/session/install-chain.proof.ts         — NO CHANGE
+
+# ─────────────────────────────────────────────────────────────────────────────
+# COMPLETE TARGET FILE COUNT
+# ─────────────────────────────────────────────────────────────────────────────
+summary:
+  files_to_create: 15
+  files_to_extend: 14
+  files_unchanged: 28
+  new_packages: 1  # packages/session-transport/
+
+  create_list:
+    - packages/session-transport/src/transport.contract.ts
+    - packages/session-transport/src/session-transport-link.ts
+    - packages/session-transport/src/index.ts
+    - packages/runtime-bridge/src/admin-bridge-contract.ts
+    - apps/local-host/src/bridge/admin-bridge.ts
+    - apps/core-runtime/src/routes/payme-admin.route.ts
+    - apps/core-runtime/src/routes/referral-admin.route.ts
+    - apps/core-runtime/src/touchpoints/payme-admin.touchpoint.ts
+    - apps/core-runtime/src/touchpoints/referral-admin.touchpoint.ts
+    - apps/operator-shell/src/mounts/payme-admin.mount.ts
+    - apps/operator-shell/src/mounts/referral-admin.mount.ts
+    - apps/web-public/src/mounts/payme-admin.mount.ts
+    - apps/web-public/src/mounts/referral-admin.mount.ts
+
+  extend_list:
+    - packages/contracts-core/src/chassis/domain.ts
+    - packages/contracts-core/src/profiles/compatibility-map.ts
+    - packages/registry-chassis/src/module-registry.ts
+    - packages/registry-chassis/src/route-registry.ts
+    - packages/registry-chassis/src/trigger-registry.ts
+    - packages/registry-chassis/src/event-registry.ts
+    - packages/runtime-bridge/src/index.ts
+    - apps/local-host/src/bridge/index.ts
+    - apps/core-runtime/src/routes/index.ts
+    - apps/core-runtime/src/routes/proof.ts
+    - apps/core-runtime/src/touchpoints/index.ts
+    - apps/core-runtime/src/touchpoints/proof.ts
+    - apps/operator-shell/src/mounts/index.ts
+    - apps/operator-shell/src/mounts/proof.ts
+    - apps/operator-shell/src/app/layout/shell.layout.ts
+    - apps/web-public/src/mounts/index.ts
+    - apps/web-public/src/mounts/proof.ts
+    - apps/web-public/src/app/layout/shell.layout.ts

@@ -1,0 +1,202 @@
+{
+  "job_id": "BIZ-PAGES-PROD-DETANGLE-002",
+  "stage": "S3",
+  "worker": "Worker B",
+  "fixture_id": "known-slug-acme-premium-v1",
+  "required_references": [
+    "/job_site/resolver_contract_spec.md",
+    "/job_site/runtime_parity_matrix.md",
+    "/job_site/cloudflare_runtime_notes.md",
+    "/job_site/build-sheet-active.txt"
+  ],
+  "slug": "acme-premium",
+  "page": "tier-2",
+  "shellId": "desktop-premium-v1",
+  "stage_envelope": { "w": 2560, "h": 1440 },
+
+  "resolver_impl": {
+    "server": "apps/product-shell/functions/_lib/runtime-r2.js :: resolveAssetUrl(code, env)",
+    "client": "apps/product-shell/src/utils/resolveWallpaper.ts :: resolveWallpaperUrl(code, baseUrl)",
+    "asset_class_map": {
+      "w": { "folder": "wallpaper", "ext": "png" },
+      "m": { "folder": "mobile-wallpaper", "ext": "png" },
+      "s": { "folder": "skin", "ext": "png" },
+      "g": { "folder": "gif", "ext": "gif" },
+      "c": { "folder": "content", "ext": "png" },
+      "x": { "folder": "extra", "ext": "png" }
+    },
+    "url_rule": {
+      "pages_only": "/assets/<folder>/<code>.<ext>",
+      "worker_fronted": "${ASSET_BASE_URL}/<folder>/<code>.<ext>"
+    },
+    "code_grammar": "lowercase prefix + one-or-more digits; anything else returns empty string (server) or null (client)"
+  },
+
+  "compiler_output": {
+    "produced_by": "apps/product-shell/functions/_lib/runtime-compiler.js :: compileRuntimePage",
+    "env": { "ASSET_BASE_URL": "" },
+    "x_runtime_source_header": "json/acme-premium/site.json",
+    "payload": {
+      "ok": true,
+      "version": 2,
+      "page": "tier-2",
+      "source": { "mode": "published-page", "key": "json/acme-premium/site.json" },
+      "slug": "acme-premium",
+      "shellId": "desktop-premium-v1",
+      "stage": { "w": 2560, "h": 1440 },
+      "desktop": {
+        "canvas": { "width": 2560, "minHeight": 1440 },
+        "blocks": [
+          {
+            "id": "blk-1",
+            "x": 120, "y": 200, "w": 1080, "h": 720,
+            "title": "Welcome",
+            "lines": ["Premium offer"],
+            "kind": "text",
+            "image": "",
+            "mediaUrl": ""
+          }
+        ]
+      },
+      "wallpaper": "w91",
+      "wallpaperUrl": "/assets/wallpaper/w91.png",
+      "skin": "s7",
+      "skinUrl": "/assets/skin/s7.png",
+      "gif": "g3",
+      "gifUrl": "/assets/gif/g3.gif",
+      "exclusiveTiles": [
+        {
+          "slot": 1,
+          "id": "c1734",
+          "label": "Tile A",
+          "imageUrl": "/assets/content/c1734.png",
+          "locked": true,
+          "price": "9.99",
+          "assetCode": "c1734",
+          "destinationPath": "/exclusive/acme-premium/tile-a"
+        },
+        {
+          "slot": 2,
+          "id": "c1735",
+          "label": "Tile B",
+          "imageUrl": "https://cdn.example.com/preview/tile-b.jpg",
+          "locked": true,
+          "price": "9.99",
+          "assetCode": "c1735"
+        },
+        {
+          "slot": 3,
+          "id": "EC-003",
+          "label": "Tile C (missing asset)",
+          "imageUrl": null,
+          "locked": true,
+          "price": null
+        }
+      ]
+    }
+  },
+
+  "resolver_cases": [
+    {
+      "case_id": "RC1-WALLPAPER-CODE",
+      "subject": "wallpaper asset",
+      "input_code": "w91",
+      "input_origin": "spec.wallpaper validated by validateAssetCode(value,[\"w\",\"m\"]) at apps/product-shell/functions/_lib/runtime-schema.js:189",
+      "server_path": "resolveAssetUrl(\"w91\", env) at apps/product-shell/functions/_lib/runtime-r2.js:49",
+      "computation": "prefix w → folder wallpaper; rest 91 is all digits; base = getAssetBaseUrl(env)",
+      "pages_only": {
+        "env": {},
+        "computed_value": "/assets/wallpaper/w91.png",
+        "payload_field": "wallpaperUrl"
+      },
+      "worker_fronted": {
+        "env": { "ASSET_BASE_URL": "https://assets.example" },
+        "computed_value": "https://assets.example/wallpaper/w91.png",
+        "payload_field": "wallpaperUrl",
+        "assetBaseUrl_mirrored": "https://assets.example"
+      },
+      "client_fallback": "resolveWallpaperUrl(\"w91\", payload.assetBaseUrl) at apps/product-shell/src/utils/resolveWallpaper.ts:26 — same algorithm, same output"
+    },
+    {
+      "case_id": "RC2-CONTENT-TILE-CODE",
+      "subject": "sticker tile / exclusive tile content asset",
+      "input_code": "c1734",
+      "input_origin": "exclusiveTiles[0].contentCode normalised by normalizeExclusiveTile at apps/product-shell/functions/_lib/runtime-schema.js:147 → assetCode validated against [\"c\",\"x\"]",
+      "server_path": "resolveAssetUrl(\"c1734\", env) at apps/product-shell/functions/_lib/runtime-r2.js:49",
+      "computation": "prefix c → folder content; rest 1734 is all digits; URL composed",
+      "pages_only": {
+        "env": {},
+        "computed_value": "/assets/content/c1734.png",
+        "payload_field": "exclusiveTiles[0].imageUrl",
+        "operator_override_rule": "tile.imageUrl already set (e.g. Tile B) → returned unchanged; resolveAssetUrl is NOT called"
+      },
+      "worker_fronted": {
+        "env": { "ASSET_BASE_URL": "https://assets.example" },
+        "computed_value": "https://assets.example/content/c1734.png",
+        "payload_field": "exclusiveTiles[0].imageUrl"
+      },
+      "client_fallback": "resolveWallpaperUrl does not cover c-prefix tiles; tile imageUrl must be pre-resolved by the server compiler or supplied as inline contentUrl"
+    },
+    {
+      "case_id": "RC3-MISSING-ASSET",
+      "subject": "asset code present and valid format but object does not exist in R2",
+      "input_code": "w9999",
+      "input_origin": "hypothetical spec.wallpaper value that passes validateAssetCode but has no corresponding R2 object",
+      "server_path": "resolveAssetUrl(\"w9999\", env) at apps/product-shell/functions/_lib/runtime-r2.js:49",
+      "computation": "prefix w → folder wallpaper; rest 9999 is all digits; URL is composed correctly; resolver is pure and does not verify object existence",
+      "pages_only": {
+        "env": {},
+        "computed_value": "/assets/wallpaper/w9999.png",
+        "payload_field": "wallpaperUrl",
+        "network_result": "GET /assets/wallpaper/w9999.png → Pages static 404; SPA _redirects catch-all may mask as 200 index.html for non-image MIME contexts"
+      },
+      "worker_fronted": {
+        "env": { "ASSET_BASE_URL": "https://assets.example" },
+        "computed_value": "https://assets.example/wallpaper/w9999.png",
+        "network_result": "Worker receives GET /wallpaper/w9999.png; TENANTS_BUCKET.get(\"wallpaper/w9999.png\") returns null; Worker must return deterministic JSON 404 { ok:false, error:\"asset not found\", details:{ key:\"wallpaper/w9999.png\" } }"
+      },
+      "invariant": "resolver always returns a URL for a valid-format code regardless of object existence; the 404 is observable at the network layer, not silently masked"
+    },
+    {
+      "case_id": "RC4-WORKER-FRONTED-FETCH",
+      "subject": "worker-fronted bucket fetch — end-to-end network path when ASSET_BASE_URL is set",
+      "input_code": "w91",
+      "env": { "ASSET_BASE_URL": "https://assets.example" },
+      "resolver_output": "https://assets.example/wallpaper/w91.png",
+      "resolver_output_path": "resolveAssetUrl(\"w91\", { ASSET_BASE_URL:\"https://assets.example\" }) at runtime-r2.js:64-66 → base is non-empty → ${base}/${folder}/${code}.${ext}",
+      "network": {
+        "request": "GET https://assets.example/wallpaper/w91.png",
+        "routed_by": "Cloudflare Worker bound to the host backing ASSET_BASE_URL (external, operator-configured; see cloudflare_runtime_notes.md §3.1 and §3.3 topology T4)",
+        "binding_consumed": "TENANTS_BUCKET (worker-side binding; same logical R2 bucket as Pages Functions consume via env.TENANTS_BUCKET)",
+        "r2_key": "wallpaper/w91.png",
+        "lookup": "TENANTS_BUCKET.get(\"wallpaper/w91.png\")",
+        "success_response": "200 image/png; body = R2 object bytes; cache headers per worker policy",
+        "miss_response": "404 application/json; body = { ok:false, error:\"asset not found\", details:{ key:\"wallpaper/w91.png\" } }"
+      },
+      "manifest_mirror": {
+        "field": "assetBaseUrl",
+        "value": "https://assets.example",
+        "emitted_by": "apps/product-shell/functions/api/published-manifest.js via getAssetBaseUrl(env)",
+        "consumed_by": "client resolveWallpaperUrl(code, payload.assetBaseUrl) for any code the server did not pre-resolve"
+      }
+    }
+  ],
+
+  "regression_assertions": [
+    "resolveAssetUrl(\"w91\", {}) === \"/assets/wallpaper/w91.png\"  (runtime-r2.js:49, Pages-only path)",
+    "resolveAssetUrl(\"w91\", { ASSET_BASE_URL:\"https://assets.example\" }) === \"https://assets.example/wallpaper/w91.png\"  (runtime-r2.js:64)",
+    "resolveAssetUrl(\"c1734\", {}) === \"/assets/content/c1734.png\"  (prefix c → folder content)",
+    "resolveAssetUrl(\"c1734\", { ASSET_BASE_URL:\"https://assets.example\" }) === \"https://assets.example/content/c1734.png\"",
+    "resolveAssetUrl(\"\", {}) === \"\"  (empty input → empty string, no URL)",
+    "resolveAssetUrl(\"w9999\", {}) === \"/assets/wallpaper/w9999.png\"  (valid format; existence not checked by resolver)",
+    "resolveWallpaperUrl(\"w91\", \"https://assets.example\") === \"https://assets.example/wallpaper/w91.png\"  (resolveWallpaper.ts:26)",
+    "resolveWallpaperUrl(\"w91\", null) === \"/assets/wallpaper/w91.png\"",
+    "resolveWallpaperUrl(null, null) === null",
+    "resolveWallpaperUrl(\"not-a-code\", null) === null  (no valid prefix → null)",
+    "compileRuntimePage output for acme-premium/tier-2 with env={}: wallpaperUrl === \"/assets/wallpaper/w91.png\" AND exclusiveTiles[0].imageUrl === \"/assets/content/c1734.png\"",
+    "compileRuntimePage output for acme-premium/tier-2 with env={ASSET_BASE_URL:\"https://assets.example\"}: wallpaperUrl === \"https://assets.example/wallpaper/w91.png\" AND assetBaseUrl === \"https://assets.example\"",
+    "exclusiveTiles[1].imageUrl === \"https://cdn.example.com/preview/tile-b.jpg\" in both env variants (operator-supplied contentUrl is preserved verbatim, never re-resolved)",
+    "exclusiveTiles[2].imageUrl === null in both env variants (no assetCode → resolver not called → null preserved)",
+    "/wallpapers/<slug>.png does not appear in any resolved URL; slug is never substituted into an asset path"
+  ]
+}
