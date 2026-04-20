@@ -1,5 +1,9 @@
 const VALID_PAGES = new Set(["home", "members", "services", "exclusive"]);
 
+// Ad Pages product: only these two pages may be decorated or compiled.
+// Mirrors ADPAGES_STUDIO_PAGES in packages/contracts-core/src/profiles/adpages-page-domain.ts.
+export const ADPAGES_VALID_PAGES = new Set(["home", "members"]);
+
 export const json = (obj, status = 200, extraHeaders = {}) =>
   new Response(JSON.stringify(obj, null, 2), {
     status,

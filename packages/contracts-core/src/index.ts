@@ -63,6 +63,9 @@ export {
   PROFILE_COMPATIBILITY_MAP,
   lookupProfile,
   listProfiles,
+  // Ad Pages product page domain (ADPAGES-SKU-REDUCTION-001 S5)
+  ADPAGES_PAGE_KEYS,
+  ADPAGES_STUDIO_PAGES,
 } from "./profiles/index.js";
 export type {
   ProfileId,
@@ -70,4 +73,6 @@ export type {
   DerivationMode,
   ProfileExposure,
   ProfileConstraint,
+  AdPagesPageKey,
+  AdPagesStudioPage,
 } from "./profiles/index.js";

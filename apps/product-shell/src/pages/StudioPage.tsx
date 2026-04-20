@@ -1,28 +1,26 @@
 import { useState } from "react";
 import { DesktopPremiumStudio } from "../features/desktop-premium/DesktopPremiumStudio";
 import { DesktopPremiumReceiver } from "../features/desktop-premium/DesktopPremiumReceiver";
-import type { PremiumShellLayout } from "../features/desktop-premium/shellConfig";
+import {
+  ADPAGES_STUDIO_PAGES,
+  type AdPagesStudioPageKey,
+  type PremiumShellLayout,
+} from "../features/desktop-premium/shellConfig";
 
 type StudioMode = "edit" | "preview";
 
-/**
- * Studio page for desktop-premium-v1.
- *
- * Renders the Studio editor by default. Toggling to "Preview" swaps in the
- * Receiver renderer using the last saved layout — confirming parity between
- * what the creator sees and what end-users receive.
- */
 export function StudioPage() {
   const [mode, setMode] = useState<StudioMode>("edit");
+  const [selectedPage, setSelectedPage] = useState<AdPagesStudioPageKey>("home");
   const [lastLayout, setLastLayout] = useState<PremiumShellLayout | null>(null);
 
   function handleSave(layout: PremiumShellLayout) {
-    setLastLayout(layout);
+    setLastLayout({ ...layout, page: selectedPage });
   }
 
   return (
     <>
-      {/* Mode toggle bar — above the stage viewport */}
+      {/* Mode toggle + page picker — above the stage viewport */}
       <div
         style={{
           position: "fixed",
@@ -39,6 +37,7 @@ export function StudioPage() {
           zIndex: 50,
         }}
       >
+        {/* Mode buttons */}
         <button
           type="button"
           className="dpv1ToolbarBtn"
@@ -56,16 +55,45 @@ export function StudioPage() {
         >
           Receiver Preview
         </button>
+
+        {/* Divider */}
+        <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.12)", margin: "0 4px" }} />
+
+        {/* Page picker — Ad Pages: Home and Members only */}
+        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+          Page
+        </span>
+        {ADPAGES_STUDIO_PAGES.map((p) => (
+          <button
+            key={p.key}
+            type="button"
+            className="dpv1ToolbarBtn"
+            style={{
+              opacity: selectedPage === p.key ? 1 : 0.45,
+              borderColor: selectedPage === p.key ? "rgba(59,130,246,0.6)" : undefined,
+              background: selectedPage === p.key ? "rgba(59,130,246,0.16)" : undefined,
+            }}
+            onClick={() => {
+              setSelectedPage(p.key);
+              setLastLayout(null);
+            }}
+          >
+            {p.label}
+          </button>
+        ))}
+
+        {/* Save indicator */}
         {lastLayout && (
           <span
             style={{
-              marginLeft: 12,
+              marginLeft: 8,
               fontSize: 13,
               color: "rgba(255,255,255,0.45)",
               fontFamily: "ui-monospace, monospace",
             }}
           >
             {lastLayout.tiles.length} tile{lastLayout.tiles.length !== 1 ? "s" : ""} saved
+            {lastLayout.page ? ` · ${lastLayout.page}` : ""}
           </span>
         )}
       </div>

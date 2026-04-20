@@ -1,4 +1,4 @@
-import { bad, json, sanitize, assertRuntimeParams } from "../_lib/runtime-schema.js";
+import { bad, json, sanitize, assertRuntimeParams, ADPAGES_VALID_PAGES } from "../_lib/runtime-schema.js";
 import { compileRuntimePage, normalizePublishedPage } from "../_lib/runtime-compiler.js";
 import { readBucketJson } from "../_lib/runtime-r2.js";
 
@@ -63,6 +63,12 @@ export async function onRequestGet({ request, env }) {
 
   const source = pickSource(env, slug);
   if (!source.bucket) return bad(`Missing bucket binding for ${source.mode}`, 500);
+
+  // Ad Pages tenants may only serve Home and Members.
+  const info = parseSlugInfo(slug);
+  if (info.product === "ad" && !ADPAGES_VALID_PAGES.has(page)) {
+    return bad("Page not available for this product", 403, { slug, page, product: info.product });
+  }
 
   try {
     const file = await readBucketJson(source.bucket, source.key);

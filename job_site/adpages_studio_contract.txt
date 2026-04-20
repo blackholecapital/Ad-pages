@@ -1,0 +1,61 @@
+adpages_studio_contract
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S5
+artifact: /job_site/adpages_studio_contract.txt
+
+=== STUDIO PAGE SCOPE (POST-REDUCTION) ===
+
+Permitted pages for Ad Pages Studio: HOME and MEMBERS only.
+No other pages may be decorated, saved, or targeted via the Studio interface.
+
+=== PAGE PICKER ===
+FILE: apps/product-shell/src/pages/StudioPage.tsx
+
+Source of page list: ADPAGES_STUDIO_PAGES from shellConfig.ts (2 entries)
+  { key: "home",    label: "Home" }
+  { key: "members", label: "Members" }
+
+UI: Rendered as buttons in the Studio mode toolbar alongside Studio / Receiver Preview.
+Behavior:
+  - Selecting a different page clears lastLayout (resets save state for that session).
+  - Default selection: "home" (first entry in ADPAGES_STUDIO_PAGES).
+  - No other page keys appear in the picker; the list is exhaustive.
+
+Selected page is stamped into the saved layout object:
+  PremiumShellLayout.page = selectedPage ("home" | "members")
+  Downstream consumers (publish pipeline) use this field to target the correct page slot.
+
+=== PAGE SCHEMA (shellConfig.ts) ===
+FILE: apps/product-shell/src/features/desktop-premium/shellConfig.ts
+
+Added:
+  ADPAGES_STUDIO_PAGES — exported const array; same shape as contracts-core canonical.
+  AdPagesStudioPageKey — "home" | "members" derived type
+  PremiumShellLayout.page? — optional field; set by StudioPage on save
+
+=== CANONICAL PACKAGE DEFINITION ===
+FILE: packages/contracts-core/src/profiles/adpages-page-domain.ts (NEW)
+
+  ADPAGES_PAGE_KEYS   = ["home", "members"] as const
+  AdPagesPageKey      = "home" | "members"
+  ADPAGES_STUDIO_PAGES = [{ key: "home", label: "Home" }, { key: "members", label: "Members" }]
+  AdPagesStudioPage   = type of each entry
+
+Exported from:
+  packages/contracts-core/src/profiles/index.ts
+  packages/contracts-core/src/index.ts
+
+=== REMOVED / BLOCKED PAGES IN STUDIO ===
+  services    — not in ADPAGES_STUDIO_PAGES; never appears in picker
+  exclusive   — not in ADPAGES_STUDIO_PAGES; never appears in picker
+  customer    — not in ADPAGES_STUDIO_PAGES; never appears in picker
+  access      — not in ADPAGES_STUDIO_PAGES; never appears in picker
+  engage      — not in ADPAGES_STUDIO_PAGES; never appears in picker
+  referrals   — not in ADPAGES_STUDIO_PAGES; never appears in picker
+  skins       — not in ADPAGES_STUDIO_PAGES; never appears in picker
+
+=== SURFACE SUMMARY ===
+  Studio page picker entries: 2 (Home, Members)
+  Pages blocked from Studio:  all pages not in ADPAGES_STUDIO_PAGES
+  PremiumShellLayout.page:    stamped on save (used by publish pipeline)
+  Canonical package record:   packages/contracts-core/src/profiles/adpages-page-domain.ts

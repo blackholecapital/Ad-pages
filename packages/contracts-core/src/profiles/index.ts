@@ -22,3 +22,12 @@ export {
   lookupProfile,
   listProfiles,
 } from "./compatibility-map.js";
+
+export {
+  ADPAGES_PAGE_KEYS,
+  ADPAGES_STUDIO_PAGES,
+} from "./adpages-page-domain.js";
+export type {
+  AdPagesPageKey,
+  AdPagesStudioPage,
+} from "./adpages-page-domain.js";

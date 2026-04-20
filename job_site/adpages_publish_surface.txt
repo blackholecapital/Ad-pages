@@ -1,0 +1,84 @@
+adpages_publish_surface
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S5
+artifact: /job_site/adpages_publish_surface.txt
+
+=== PUBLISH-TIME PAGE LIST (POST-REDUCTION) ===
+
+Ad Pages tenants (slug prefix: xyz-ad- or ad-) may only receive and
+publish layouts for Home and Members. All other page keys return 403 or
+are omitted from the manifest.
+
+=== LAYER 1: MANIFEST (published-manifest.js) ===
+FILE: apps/product-shell/functions/api/published-manifest.js
+
+Before: PAGES = ["home", "members", "services", "exclusive"] (flat, all products)
+
+After:
+  PAGES_AD  = [...ADPAGES_VALID_PAGES]  → ["home", "members"]
+  PAGES_ALL = ["home", "members", "services", "exclusive"]
+
+  Product detection: parseSlugInfo(slug).product
+    ad   → pageList = PAGES_AD   (home, members only in manifest response)
+    biz  → pageList = PAGES_ALL
+    gate → pageList = PAGES_ALL
+
+  Effect: GET /api/published-manifest?slug=ad-tenant returns a pages object
+  with only "home" and "members" keys. services/exclusive are absent.
+
+=== LAYER 2: PAGE FETCH GUARD (published-page.js) ===
+FILE: apps/product-shell/functions/api/published-page.js
+
+Added after pickSource:
+  const info = parseSlugInfo(slug);
+  if (info.product === "ad" && !ADPAGES_VALID_PAGES.has(page)) {
+    return bad("Page not available for this product", 403, { slug, page, product });
+  }
+
+  Effect: GET /api/published-page?slug=ad-tenant&page=services → 403
+          GET /api/published-page?slug=ad-tenant&page=exclusive → 403
+          GET /api/published-page?slug=ad-tenant&page=home → passes guard, compiles normally
+
+=== LAYER 3: COMPILER GUARD (runtime-compiler.js) ===
+FILE: apps/product-shell/functions/_lib/runtime-compiler.js
+
+Added at top of compileRuntimePage():
+  if (slug && isAdSlug(slug) && !ADPAGES_VALID_PAGES.has(page)) return null;
+
+  isAdSlug(slug): true when slug starts with "xyz-ad-" or "ad-"
+
+  Effect: even if the page fetch guard is bypassed, the compiler returns null
+  for any non-home/non-members page requested for an ad slug.
+
+Also exported: ADPAGES_STUDIO_PAGES (re-export of ADPAGES_VALID_PAGES)
+
+=== SHARED CONSTANT (runtime-schema.js) ===
+FILE: apps/product-shell/functions/_lib/runtime-schema.js
+
+Added:
+  export const ADPAGES_VALID_PAGES = new Set(["home", "members"]);
+
+Imported by: published-manifest.js, published-page.js, runtime-compiler.js
+
+=== GUARD LAYER SUMMARY ===
+Layer                     File                        Gate type
+─────────────────────────────────────────────────────────────────────
+Studio page picker        StudioPage.tsx              UI — only Home/Members shown
+Manifest page list        published-manifest.js       API response filtering (ad product)
+Page fetch guard          published-page.js           HTTP 403 for out-of-scope pages
+Compiler guard            runtime-compiler.js         Returns null (defense-in-depth)
+Canonical constants       runtime-schema.js           Single source for ADPAGES_VALID_PAGES
+Package constants         contracts-core profiles     Canonical domain definition
+
+=== UNCHANGED ===
+  VALID_PAGES in runtime-schema.js: still ["home","members","services","exclusive"]
+    (used by assertRuntimeParams — broad validation for all products)
+  Non-ad slugs: continue to use PAGES_ALL; behavior unchanged
+  Router: /:slug/services and /:slug/exclusive routes still exist in router.tsx
+    (runtime-only, no nav link — not affected by this stage)
+
+=== SURFACE COUNTS ===
+  Ad Pages manifest pages:          2 (home, members)
+  Ad Pages page fetch allowed:      2 (home, members)
+  Ad Pages page fetch blocked (403): services, exclusive, customer, access, engage, referrals, skins
+  Non-ad manifest pages:            4 (home, members, services, exclusive — unchanged)
