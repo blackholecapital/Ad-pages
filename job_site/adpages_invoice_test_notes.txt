@@ -1,0 +1,120 @@
+adpages_invoice_test_notes
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S4
+artifact: /job_site/adpages_invoice_test_notes.txt
+
+=== INVOICE COMPOSER — MANUAL TEST NOTES ===
+
+SETUP
+  1. Start dev server: cd apps/product-shell && npm run dev (or pnpm dev)
+  2. Navigate to /admin (demo bypass → Enable Bypass)
+  3. Click "Pay Me" tab from AdminPage header
+
+--- TEST BLOCK 1: Surface reduction ---
+
+T1.1  PayMePage loads with NO tabs visible except "← Admin"
+      Expected: No Customers / Add Customer / History / Create Invoice / Coupons /
+                Recurring Billing / Admin Settings tabs present.
+      Pass condition: Only back button + InvoiceComposer form visible.
+
+T1.2  "← Admin" back button routes back to AdminPage
+      Expected: clicking navigates to /:slug/admin (or /admin if no slug).
+      Pass condition: AdminPage renders after click.
+
+--- TEST BLOCK 2: Field defaults ---
+
+T2.1  Invoice Number field is pre-populated on load
+      Expected: value matches INV-YYYYMMDD-XXXX format (today's date + 4 random digits).
+      Pass condition: field is not empty; format is correct.
+
+T2.2  Amount, Subject, Notes fields are empty on load
+      Expected: all three show placeholder text; no default value.
+
+T2.3  Both action buttons are disabled when Amount is empty
+      Expected: "Generate Payment Link" and "Download PDF" both have disabled attribute.
+      Pass condition: buttons are non-interactive.
+
+T2.4  Buttons enable when Invoice Number AND Amount are filled
+      Expected: typing a value into Amount (Invoice Number already pre-filled) enables both buttons.
+
+--- TEST BLOCK 3: Payment link generation ---
+
+T3.1  Generate Payment Link produces a URL containing inv, amt, subj params
+      Input: invoiceNumber=INV-20260420-0001, amount=250, subject=Web Design
+      Expected link contains: ?inv=INV-20260420-0001&amt=250&subj=Web+Design
+      Pass condition: link is displayed in invoiceLinkBox.
+
+T3.2  Subject omitted — link contains inv and amt only
+      Input: subject field empty.
+      Expected: URL has ?inv=...&amt=... with no &subj= param.
+
+T3.3  Copy button copies link to clipboard
+      Expected: clicking "Copy" writes the displayed URL to clipboard.
+      Pass condition: button label changes to "Copied!" for ~2 s.
+
+T3.4  Re-generating link with changed inputs updates the displayed link
+      Expected: editing amount and clicking Generate again replaces the old link.
+
+--- TEST BLOCK 4: PDF generation ---
+
+T4.1  Download PDF opens a new browser window/tab
+      Expected: new window appears with invoice HTML.
+      Pass condition: window has correct Invoice #, Amount, Date, Subject.
+
+T4.2  PDF content matches entered fields
+      Input: invoiceNumber=INV-TEST-0042, amount=500, subject=Consulting,
+             notes=Net 30 payment terms
+      Expected: PDF window shows Invoice # INV-TEST-0042, $500, subject "Consulting",
+                notes "Net 30 payment terms".
+
+T4.3  Payment link included in PDF when link was generated first
+      Flow: fill fields → Generate Payment Link → Download PDF
+      Expected: PDF window shows "Payment Link" block with the URL.
+      Pass condition: pay-link block visible and URL matches.
+
+T4.4  Notes absent from PDF when notes field is empty
+      Input: leave Notes empty.
+      Expected: no Notes row appears in the Details section of the PDF.
+
+T4.5  Print dialog triggered automatically
+      Expected: browser print dialog appears after ~350 ms.
+      Pass condition: user can immediately print-to-PDF without extra clicks.
+
+T4.6  XSS safety — special chars in fields are escaped in PDF
+      Input: subject = "<script>alert(1)</script>", notes = "1 & 2 > 0"
+      Expected: PDF shows literal text, not rendered HTML.
+      Pass condition: no alert fires; special chars rendered as entities.
+
+--- TEST BLOCK 5: Removed flows (regression) ---
+
+T5.1  Customers list is not accessible
+      Expected: no tab, no route change, no component renders customer records.
+
+T5.2  Coupons panel is not accessible
+      Expected: no Coupons tab or component in PayMePage.
+
+T5.3  Recurring Billing panel is not accessible
+      Expected: no RecurringBillingPanel rendered.
+
+T5.4  Admin Settings panel is not accessible
+      Expected: no PayMeSettingsPanel rendered.
+
+T5.5  iframe module (payme microfrontend) is not mounted
+      Expected: no <iframe> element in DOM on PayMePage; no postMessage traffic.
+
+--- TEST BLOCK 6: Cloudflare Function (api/invoice-link.js) ---
+
+T6.1  GET /api/invoice-link?inv=INV-001&amt=100&subj=Test returns 200 JSON
+      Expected response body:
+        { "invoiceNumber": "INV-001", "amount": "100", "subject": "Test", "resolvedAt": "<ISO string>" }
+
+T6.2  GET /api/invoice-link with missing inv and amt returns 400
+      Expected: { "error": "Missing required params: inv, amt" }
+
+--- KNOWN LIMITATIONS ---
+  - PDF generation relies on browser print dialog; no server-side PDF binary is produced.
+  - Payment link points to existing /:slug/payme route (admin-facing); a dedicated
+    consumer-facing pay page is out of scope for S4.
+  - No persistence: invoice data is not saved to localStorage or any backend.
+  - /api/invoice-link function requires Cloudflare Pages deployment to run; local
+    dev servers (Vite) will 404 on this endpoint; client-side link generation works locally.

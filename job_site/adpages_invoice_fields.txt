@@ -1,0 +1,72 @@
+adpages_invoice_fields
+job_id: ADPAGES-SKU-REDUCTION-001
+stage: S4
+artifact: /job_site/adpages_invoice_fields.txt
+
+=== INVOICE COMPOSER — FIELD SPECIFICATION ===
+FILE: apps/product-shell/src/features/payme/InvoiceComposer.tsx
+
+FIELD 1: Invoice Number
+  key:          invoiceNumber
+  type:         text input
+  required:     YES (blocks Generate Link + Download PDF when empty)
+  default:      auto-generated on mount: INV-YYYYMMDD-XXXX
+                  format: INV- + 8-digit date + - + 4-digit random (1000–9999)
+                  example: INV-20260420-3741
+  editable:     YES (operator may override)
+  used in:      payment link (?inv=), PDF header, PDF Invoice # line
+
+FIELD 2: Amount
+  key:          amount
+  type:         number input (min=0, step=0.01)
+  required:     YES (blocks Generate Link + Download PDF when empty)
+  default:      "" (empty)
+  unit:         USD (dollar sign shown in PDF)
+  used in:      payment link (?amt=), PDF amount-due display
+
+FIELD 3: Subject
+  key:          subject
+  type:         text input
+  required:     NO
+  default:      "" (empty)
+  placeholder:  "e.g. Website design — April 2026"
+  used in:      payment link (?subj=), PDF Subject row in Details section
+
+FIELD 4: Notes
+  key:          notes
+  type:         textarea (rows=4, resize=vertical)
+  required:     NO
+  default:      "" (empty)
+  placeholder:  "Payment terms, special instructions, or any additional details for the recipient."
+  used in:      PDF Notes row in Details section (not in payment link URL)
+
+=== OUTPUT 1: PAYMENT LINK ===
+  Trigger:      "Generate Payment Link" button
+  Enabled when: invoiceNumber.trim() && amount.trim() are both non-empty
+  Format:       {window.location.origin}/{designation}/{slug}/payme?inv=INV-...&amt=100&subj=...
+                bare fallback: {origin}/payme?...
+  Display:      invoiceLinkBox — monospace text + "Copy" button (clipboard API)
+  Copied state: button label changes to "Copied!" for 2 s
+  Resolver:     GET /api/invoice-link?inv=&amt=&subj= → JSON echo for server-side consumers
+
+=== OUTPUT 2: PDF INVOICE ===
+  Trigger:      "Download PDF" button
+  Enabled when: same as payment link (invoiceNumber + amount non-empty)
+  Mechanism:    window.open("","_blank") → document.write(html) → window.print() after 350 ms
+  HTML content:
+    - INVOICE header (large title + right-aligned Invoice #, Date, Amount)
+    - Invoice Details section (Subject row; Notes row if notes non-empty)
+    - Payment Link block (blue background; full URL as clickable link, if link was generated)
+    - Footer (generated date)
+  Escaping:     all user-supplied strings passed through esc() (& < > " entities)
+  Print CSS:    @media print { @page { margin: 0.8in } }, no buttons in print view
+
+=== VALIDATION RULES ===
+  invoiceNumber empty → both output buttons disabled (disabled attribute)
+  amount empty        → both output buttons disabled
+  No server-side validation; all fields are for invoice display only (demo environment)
+
+=== UNCHANGED INFRASTRUCTURE ===
+  Route registration in router.tsx: unchanged (/:slug/payme still maps to PayMePage)
+  RequireGate: not applied to /payme route directly; admin entry via Admin page only
+  localStorage keys (payme_customers_v1, payme_invoices_v1): no longer written by this surface

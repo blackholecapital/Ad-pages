@@ -285,6 +285,25 @@
 .paymeShell .adminTextInput::placeholder{ color:#94A3B8; }
 .adminTextInput::placeholder{ opacity:.6; }
 
+/* ---- Invoice Composer — payment link output ---- */
+.invoiceLinkBox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(47, 125, 246, .08);
+  border: 1px solid rgba(47, 125, 246, .28);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.invoiceLinkText {
+  flex: 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: #93c5fd;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
 /* ---- PayMe customers list — blue/white ---- */
 .paymeListItem{
   padding:10px 12px;
