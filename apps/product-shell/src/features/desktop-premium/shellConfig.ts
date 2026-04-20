@@ -2,6 +2,15 @@
 // Source of truth: shared/shells/desktop-premium-v1.json
 // Both Studio and Receiver import this module — never duplicate these values.
 
+// Ad Pages Studio page allowlist — only these pages may be decorated.
+// Mirrors ADPAGES_STUDIO_PAGES in packages/contracts-core/src/profiles/adpages-page-domain.ts.
+export const ADPAGES_STUDIO_PAGES = [
+  { key: "home"    as const, label: "Home" },
+  { key: "members" as const, label: "Members" },
+] as const;
+
+export type AdPagesStudioPageKey = typeof ADPAGES_STUDIO_PAGES[number]["key"];
+
 const SHELL_CONFIG = {
   shellId: "desktop-premium-v1",
   stage: { w: 2560, h: 1440 },
@@ -36,4 +45,6 @@ export type PremiumShellLayout = {
   stage: { w: 2560; h: 1440 };
   wallpaper?: string | null;
   tiles: PremiumStageTile[];
+  /** Ad Pages: which page this layout targets ("home" | "members"). */
+  page?: AdPagesStudioPageKey;
 };

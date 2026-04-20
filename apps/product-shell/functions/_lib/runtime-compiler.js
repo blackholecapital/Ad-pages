@@ -1,4 +1,4 @@
-import { normalizePageSpec } from "./runtime-schema.js";
+import { normalizePageSpec, ADPAGES_VALID_PAGES } from "./runtime-schema.js";
 import { getAssetBaseUrl, resolveAssetUrl } from "./runtime-r2.js";
 
 const STUDIO_PAGE_KEY = {
@@ -6,6 +6,15 @@ const STUDIO_PAGE_KEY = {
   members: "vip",
   access: "perks"
 };
+
+// Ad Pages product detection — mirrors parseSlugInfo in published-page / manifest.
+function isAdSlug(slug) {
+  const s = String(slug || "").trim().toLowerCase();
+  return s.startsWith("xyz-ad-") || s.startsWith("ad-");
+}
+
+// Exported so consumers can reference the canonical Ad Pages page set.
+export { ADPAGES_VALID_PAGES as ADPAGES_STUDIO_PAGES };
 
 function mediaFromLegacy(kind, lines) {
   const first = String(lines[0] || "").trim();
@@ -76,6 +85,9 @@ function compilePremiumTiles(blocks, env) {
 }
 
 export function compileRuntimePage(page, pageSpec, source, { slug, env } = {}) {
+  // Defense-in-depth: Ad Pages tenants may only compile Home and Members.
+  if (slug && isAdSlug(slug) && !ADPAGES_VALID_PAGES.has(page)) return null;
+
   const normalized = normalizePageSpec(pageSpec, page);
   if (!normalized) return null;
 

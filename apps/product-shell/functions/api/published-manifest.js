@@ -1,7 +1,10 @@
-import { bad, json, sanitize } from "../_lib/runtime-schema.js";
+import { bad, json, sanitize, ADPAGES_VALID_PAGES } from "../_lib/runtime-schema.js";
 import { getAssetBaseUrl, readBucketJson } from "../_lib/runtime-r2.js";
 
-const PAGES = ["home", "members", "services", "exclusive"];
+// Ad Pages tenants may only publish Home and Members.
+// All other products keep the full page list.
+const PAGES_ALL = ["home", "members", "services", "exclusive"];
+const PAGES_AD  = [...ADPAGES_VALID_PAGES];
 
 function parseSlugInfo(slug) {
   const value = String(slug || "").trim().toLowerCase();
@@ -56,6 +59,7 @@ export async function onRequestGet({ request, env }) {
   const slug = sanitize(url.searchParams.get("slug"));
   if (!slug) return bad("Missing slug", 400);
 
+  const info = parseSlugInfo(slug);
   const source = pickSource(env, slug);
   if (!source.bucket) return bad(`Missing bucket binding for ${source.mode}`, 500);
 
@@ -66,8 +70,9 @@ export async function onRequestGet({ request, env }) {
     file = null;
   }
 
+  const pageList = info.product === "ad" ? PAGES_AD : PAGES_ALL;
   const pages = {};
-  for (const page of PAGES) {
+  for (const page of pageList) {
     if (!file?.json) {
       pages[page] = { mode: "missing", key: source.key };
       continue;
